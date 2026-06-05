@@ -43,6 +43,14 @@ docker compose --env-file /etc/pv-edge-manager-pilot/compose.env pull
 docker compose --env-file /etc/pv-edge-manager-pilot/compose.env up -d --no-build
 ```
 
+Se i package GHCR sono privati, il device deve fare login prima del pull:
+
+```sh
+install -m 0600 deployment/docker/ghcr-login.env.example /etc/pv-edge-manager/registry.env
+# compilare /etc/pv-edge-manager/registry.env con utente GitHub e token read:packages
+sh deployment/docker/login-ghcr.sh /etc/pv-edge-manager/registry.env
+```
+
 ## Deploy controllato
 
 Lo script `deploy-compose-release.sh` estrae una release, aggiorna il symlink `current`,

@@ -29,6 +29,7 @@ fi
 
 RELEASE_DIR="$BASE_DIR/releases/$RELEASE_ID"
 CURRENT_LINK="$BASE_DIR/current"
+COMPOSE_ENV_BACKUP=""
 PREVIOUS_TARGET=""
 if [ -L "$CURRENT_LINK" ]; then
   PREVIOUS_TARGET="$(readlink "$CURRENT_LINK")"
@@ -52,6 +53,19 @@ upsert_env_value() {
   fi
 }
 
+backup_compose_env() {
+  if [ -z "$COMPOSE_ENV_BACKUP" ]; then
+    COMPOSE_ENV_BACKUP="$COMPOSE_ENV.bak-$(date -u +%Y%m%d%H%M%S)"
+    cp "$COMPOSE_ENV" "$COMPOSE_ENV_BACKUP"
+  fi
+}
+
+restore_compose_env() {
+  if [ -n "$COMPOSE_ENV_BACKUP" ] && [ -f "$COMPOSE_ENV_BACKUP" ]; then
+    cp "$COMPOSE_ENV_BACKUP" "$COMPOSE_ENV"
+  fi
+}
+
 http_ok() {
   url="$1"
   if command -v curl >/dev/null 2>&1; then
@@ -64,16 +78,27 @@ http_ok() {
   fi
 }
 
-compose() {
-  docker compose --env-file "$COMPOSE_ENV" -f "$CURRENT_LINK/docker-compose.yml" "$@"
+compose_file() {
+  compose_path="$1"
+  shift
+  docker compose --env-file "$COMPOSE_ENV" -f "$compose_path" "$@"
+}
+
+compose_current() {
+  compose_file "$CURRENT_LINK/docker-compose.yml" "$@"
+}
+
+compose_release() {
+  compose_file "$RELEASE_DIR/docker-compose.yml" "$@"
 }
 
 rollback() {
+  restore_compose_env
   if [ -n "$PREVIOUS_TARGET" ]; then
     echo "Health check failed. Rolling back to $PREVIOUS_TARGET." >&2
     ln -sfn "$PREVIOUS_TARGET" "$CURRENT_LINK.next"
     mv -Tf "$CURRENT_LINK.next" "$CURRENT_LINK"
-    compose up -d --no-build --remove-orphans || true
+    compose_current up -d --no-build --remove-orphans || true
   else
     echo "Health check failed and no previous release is available." >&2
   fi
@@ -92,7 +117,18 @@ if [ ! -f "$APP_ENV" ]; then
   chmod 0640 "$APP_ENV"
 fi
 
+DATA_DIR="$(read_env_value PV_EDGE_MANAGER_DATA_DIR || true)"
+LOG_DIR="$(read_env_value PV_EDGE_MANAGER_LOG_DIR || true)"
+mkdir -p "${DATA_DIR:-/var/lib/pv-edge-manager}" "${LOG_DIR:-/var/log/pv-edge-manager}"
+
+compose_release config >/tmp/pv-guardian-compose-config.yml
+
+if [ "${PV_EDGE_MANAGER_SKIP_PULL:-false}" != "true" ]; then
+  compose_release pull
+fi
+
 if [ "${PV_EDGE_MANAGER_WRITE_BUILD_METADATA:-true}" != "false" ]; then
+  backup_compose_env
   upsert_env_value PV_EDGE_MANAGER_BUILD_COMMIT "${PV_EDGE_MANAGER_RELEASE_COMMIT:-$RELEASE_ID}"
   upsert_env_value PV_EDGE_MANAGER_BUILD_TIME "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   if [ -n "${PV_EDGE_MANAGER_RELEASE_LABEL:-}" ]; then
@@ -100,20 +136,13 @@ if [ "${PV_EDGE_MANAGER_WRITE_BUILD_METADATA:-true}" != "false" ]; then
   fi
 fi
 
-DATA_DIR="$(read_env_value PV_EDGE_MANAGER_DATA_DIR || true)"
-LOG_DIR="$(read_env_value PV_EDGE_MANAGER_LOG_DIR || true)"
-mkdir -p "${DATA_DIR:-/var/lib/pv-edge-manager}" "${LOG_DIR:-/var/log/pv-edge-manager}"
-
 ln -sfn "releases/$RELEASE_ID" "$CURRENT_LINK.next"
 mv -Tf "$CURRENT_LINK.next" "$CURRENT_LINK"
 
-compose config >/tmp/pv-guardian-compose-config.yml
-
-if [ "${PV_EDGE_MANAGER_SKIP_PULL:-false}" != "true" ]; then
-  compose pull
+if ! compose_current up -d --no-build --remove-orphans; then
+  rollback
+  exit 1
 fi
-
-compose up -d --no-build --remove-orphans
 
 API_BIND="$(read_env_value PV_EDGE_MANAGER_API_BIND || true)"
 WEB_BIND="$(read_env_value PV_EDGE_MANAGER_WEB_BIND || true)"
@@ -130,5 +159,5 @@ until http_ok "$HEALTH_URL" && http_ok "$WEB_URL"; do
   sleep "${PV_EDGE_MANAGER_HEALTH_INTERVAL_SECONDS:-2}"
 done
 
-compose ps
+compose_current ps
 echo "PV_GUARDIAN release $RELEASE_ID is healthy."
