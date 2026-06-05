@@ -1,0 +1,5 @@
+fastapi
+pydantic
+pymodbus==3.12.1
+pyserial
+uvicorn

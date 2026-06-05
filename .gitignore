@@ -1,0 +1,47 @@
+# Python
+backend/.venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / frontend build
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+!*.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Runtime data
+backend/app/*.db
+backend/app/*.db-*
+backend/app/*.sqlite
+backend/app/*.sqlite3
+backend/app/*.sqlite-*
+backend/app/*.sqlite3-*
+backend/data/
+logs/
+tmp/
+
+# Generated releases and local backups
+.codex-backups/
+release/backup/
+*.log
+*.tar.gz
+*.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

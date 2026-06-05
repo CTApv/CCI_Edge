@@ -1,0 +1,18 @@
+[Unit]
+Description=PV Edge Manager Backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pv-edge-manager
+Group=pv-edge-manager
+SupplementaryGroups=dialout
+WorkingDirectory=/opt/pv-edge-manager/backend
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/pv-edge-manager/backend/.venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

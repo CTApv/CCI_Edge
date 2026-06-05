@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simulazione sfondo solare</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --sky-top: #06111f;
+        --sky-mid: #0b1a2b;
+        --sky-bottom: #111a2a;
+        --sun-x: 50%;
+        --sun-y: 120%;
+        --sun-size: 150px;
+        --sun-opacity: 0;
+        --sun-color: #ffd27a;
+        --sun-glow: rgba(255, 190, 98, 0.2);
+        --horizon-glow: rgba(92, 168, 255, 0.08);
+        --panel-bg: rgba(5, 11, 19, 0.66);
+        --panel-border: rgba(148, 184, 230, 0.16);
+        font-family:
+          "Bahnschrift",
+          "Segoe UI Variable",
+          "Segoe UI",
+          system-ui,
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        color: #e8eef8;
+        background: #06111f;
+        overflow: hidden;
+      }
+
+      .solar-simulation {
+        position: relative;
+        min-height: 100vh;
+        isolation: isolate;
+        background:
+          radial-gradient(
+            circle at var(--sun-x) var(--sun-y),
+            var(--sun-glow) 0,
+            rgba(255, 210, 122, 0.1) 12%,
+            transparent 34%
+          ),
+          linear-gradient(
+            180deg,
+            var(--sky-top) 0%,
+            var(--sky-mid) 48%,
+            var(--sky-bottom) 100%
+          );
+        transition: background 700ms ease;
+      }
+
+      .solar-simulation::before {
+        content: "";
+        position: fixed;
+        inset: auto 0 0;
+        height: 42vh;
+        pointer-events: none;
+        background: linear-gradient(180deg, transparent, var(--horizon-glow));
+        opacity: 0.9;
+        z-index: 0;
+      }
+
+      .app-blue-overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(124, 184, 255, 0.08), transparent 34%),
+          linear-gradient(180deg, rgba(4, 10, 18, 0.28), rgba(5, 12, 22, 0.58));
+        opacity: 0.95;
+        z-index: 1;
+      }
+
+      .sun {
+        position: fixed;
+        left: var(--sun-x);
+        top: var(--sun-y);
+        width: var(--sun-size);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 45% 44%, rgba(255, 248, 218, 0.72) 0 7%, transparent 22%),
+          radial-gradient(circle, var(--sun-color) 0 18%, rgba(255, 183, 92, 0.24) 42%, transparent 72%);
+        box-shadow:
+          0 0 58px 20px var(--sun-glow),
+          0 0 160px 44px rgba(255, 188, 98, 0.08);
+        opacity: var(--sun-opacity);
+        translate: -50% -50%;
+        transform: translateZ(0) scale(1);
+        filter: blur(7px) saturate(1.08);
+        transition:
+          left 700ms cubic-bezier(0.22, 0.8, 0.26, 1),
+          top 700ms cubic-bezier(0.22, 0.8, 0.26, 1),
+          opacity 700ms ease,
+          box-shadow 700ms ease;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .mock-shell {
+        position: relative;
+        z-index: 2;
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 24px;
+        padding: clamp(18px, 3vw, 42px);
+      }
+
+      .mock-topbar,
+      .mock-card,
+      .control-panel {
+        border: 1px solid var(--panel-border);
+        background: var(--panel-bg);
+        box-shadow: 0 24px 80px rgba(2, 7, 12, 0.26);
+        backdrop-filter: blur(14px);
+      }
+
+      .mock-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        min-height: 70px;
+        padding: 16px 18px;
+        border-radius: 18px;
+      }
+
+      .mock-title {
+        display: grid;
+        gap: 4px;
+      }
+
+      .eyebrow,
+      .mock-title p,
+      .mock-card p,
+      .control-panel p {
+        margin: 0;
+        color: rgba(222, 234, 250, 0.66);
+      }
+
+      .eyebrow {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        font-size: clamp(1.25rem, 2.4vw, 2rem);
+      }
+
+      .phase-pill {
+        min-width: 136px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(124, 184, 255, 0.18);
+        background: rgba(5, 12, 22, 0.5);
+        color: #e8eef8;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .mock-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 18px;
+        align-content: center;
+        max-width: 1120px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .mock-card {
+        min-height: 220px;
+        padding: 24px;
+        border-radius: 22px;
+      }
+
+      .mock-card h2 {
+        font-size: clamp(1.4rem, 3vw, 2.4rem);
+      }
+
+      .mock-card--main {
+        display: grid;
+        align-content: end;
+        gap: 12px;
+      }
+
+      .mock-metric-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .mock-metric {
+        padding: 16px;
+        border: 1px solid rgba(124, 184, 255, 0.12);
+        border-radius: 16px;
+        background: rgba(8, 17, 29, 0.46);
+      }
+
+      .mock-metric strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.35rem;
+      }
+
+      .control-panel {
+        display: grid;
+        gap: 14px;
+        width: min(980px, 100%);
+        margin: 0 auto;
+        padding: 16px;
+        border-radius: 20px;
+      }
+
+      .control-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .time-readout {
+        font-variant-numeric: tabular-nums;
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        font-weight: 800;
+      }
+
+      .slider-row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 12px;
+        align-items: center;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: #ffd27a;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      button {
+        min-height: 36px;
+        padding: 0 14px;
+        border: 1px solid rgba(124, 184, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(8, 17, 29, 0.72);
+        color: #e8eef8;
+        font: inherit;
+        cursor: pointer;
+        transition:
+          transform 140ms ease,
+          border-color 140ms ease,
+          background 140ms ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 210, 122, 0.36);
+        background: rgba(14, 27, 42, 0.9);
+      }
+
+      @media (max-width: 760px) {
+        body {
+          overflow: auto;
+        }
+
+        .mock-shell {
+          min-height: 100dvh;
+        }
+
+        .mock-topbar,
+        .control-header,
+        .slider-row {
+          grid-template-columns: 1fr;
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .mock-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .sun,
+        .solar-simulation,
+        .app-blue-overlay,
+        button {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="solar-simulation" id="simulation">
+      <div class="sun" aria-hidden="true"></div>
+      <div class="app-blue-overlay" aria-hidden="true"></div>
+      <div class="mock-shell">
+        <header class="mock-topbar">
+          <div class="mock-title">
+            <span class="eyebrow">Simulazione sfondo app</span>
+            <h1>Sole ambientale non invasivo</h1>
+            <p>Il movimento e il colore restano dietro la UI.</p>
+          </div>
+          <div class="phase-pill" id="phaseLabel">Notte</div>
+        </header>
+
+        <section class="mock-grid" aria-label="Anteprima dashboard">
+          <article class="mock-card mock-card--main">
+            <span class="eyebrow">Dashboard impianto</span>
+            <h2>Produzione e stato live</h2>
+            <p>
+              Le card rimangono leggibili: cambia solo il fondo, con sole e cielo legati
+              alla fase del giorno.
+            </p>
+          </article>
+          <div class="mock-metric-grid">
+            <article class="mock-metric">
+              <p>Potenza</p>
+              <strong>-- kW</strong>
+            </article>
+            <article class="mock-metric">
+              <p>Stato</p>
+              <strong>Online</strong>
+            </article>
+            <article class="mock-metric">
+              <p>Fase</p>
+              <strong id="phaseMetric">Notte</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="control-panel" aria-label="Controlli simulazione">
+          <div class="control-header">
+            <div>
+              <span class="eyebrow">Ora simulata</span>
+              <div class="time-readout" id="timeReadout">00:00</div>
+            </div>
+            <p id="positionReadout">Sole nascosto sotto l'orizzonte.</p>
+          </div>
+          <div class="slider-row">
+            <span>00:00</span>
+            <input
+              id="timeSlider"
+              type="range"
+              min="0"
+              max="1439"
+              step="5"
+              value="720"
+              aria-label="Ora simulata"
+            />
+            <span>24:00</span>
+          </div>
+          <div class="button-row">
+            <button type="button" data-time="390">Alba</button>
+            <button type="button" data-time="720">Mezzogiorno</button>
+            <button type="button" data-time="1170">Tramonto</button>
+            <button type="button" id="nowButton">Ora locale</button>
+            <button type="button" id="playButton">Play 24h</button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const slider = document.querySelector("#timeSlider");
+      const root = document.querySelector("#simulation");
+      const timeReadout = document.querySelector("#timeReadout");
+      const phaseLabel = document.querySelector("#phaseLabel");
+      const phaseMetric = document.querySelector("#phaseMetric");
+      const positionReadout = document.querySelector("#positionReadout");
+      const nowButton = document.querySelector("#nowButton");
+      const playButton = document.querySelector("#playButton");
+
+      const keyframes = [
+        {
+          minute: 0,
+          phase: "Notte",
+          top: "#040915",
+          mid: "#07111f",
+          bottom: "#101928",
+          glow: "rgba(92, 168, 255, 0.04)",
+          sunColor: "#ffd27a",
+        },
+        {
+          minute: 360,
+          phase: "Alba",
+          top: "#10233a",
+          mid: "#365274",
+          bottom: "#d48a6a",
+          glow: "rgba(255, 154, 96, 0.22)",
+          sunColor: "#ffbf73",
+        },
+        {
+          minute: 540,
+          phase: "Mattina",
+          top: "#2f75b7",
+          mid: "#74aad5",
+          bottom: "#b8d8ef",
+          glow: "rgba(255, 211, 140, 0.2)",
+          sunColor: "#ffd67c",
+        },
+        {
+          minute: 720,
+          phase: "Mezzogiorno",
+          top: "#5aa4df",
+          mid: "#9ed2ef",
+          bottom: "#d8eefb",
+          glow: "rgba(255, 228, 156, 0.18)",
+          sunColor: "#ffe08a",
+        },
+        {
+          minute: 960,
+          phase: "Pomeriggio",
+          top: "#2f75b7",
+          mid: "#72a8ce",
+          bottom: "#d5b887",
+          glow: "rgba(255, 184, 96, 0.18)",
+          sunColor: "#ffd071",
+        },
+        {
+          minute: 1170,
+          phase: "Tramonto",
+          top: "#111d34",
+          mid: "#4b3b6e",
+          bottom: "#d77759",
+          glow: "rgba(255, 126, 84, 0.24)",
+          sunColor: "#ffac62",
+        },
+        {
+          minute: 1440,
+          phase: "Notte",
+          top: "#040915",
+          mid: "#07111f",
+          bottom: "#101928",
+          glow: "rgba(92, 168, 255, 0.04)",
+          sunColor: "#ffd27a",
+        },
+      ];
+
+      let playTimer = null;
+
+      function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+      }
+
+      function hexToRgb(hex) {
+        const normalized = hex.replace("#", "");
+        return {
+          r: parseInt(normalized.slice(0, 2), 16),
+          g: parseInt(normalized.slice(2, 4), 16),
+          b: parseInt(normalized.slice(4, 6), 16),
+        };
+      }
+
+      function mixColor(left, right, ratio) {
+        const a = hexToRgb(left);
+        const b = hexToRgb(right);
+        const r = Math.round(a.r + (b.r - a.r) * ratio);
+        const g = Math.round(a.g + (b.g - a.g) * ratio);
+        const blue = Math.round(a.b + (b.b - a.b) * ratio);
+        return `rgb(${r}, ${g}, ${blue})`;
+      }
+
+      function getFrame(minute) {
+        const rightIndex = keyframes.findIndex((frame) => minute <= frame.minute);
+        const next = keyframes[Math.max(1, rightIndex)];
+        const previous = keyframes[Math.max(0, Math.max(1, rightIndex) - 1)];
+        const span = Math.max(1, next.minute - previous.minute);
+        const ratio = clamp((minute - previous.minute) / span, 0, 1);
+
+        return {
+          phase: ratio < 0.55 ? previous.phase : next.phase,
+          top: mixColor(previous.top, next.top, ratio),
+          mid: mixColor(previous.mid, next.mid, ratio),
+          bottom: mixColor(previous.bottom, next.bottom, ratio),
+          glow: ratio < 0.5 ? previous.glow : next.glow,
+          sunColor: mixColor(previous.sunColor, next.sunColor, ratio),
+        };
+      }
+
+      function getSunPosition(minute) {
+        const sunrise = 390;
+        const sunset = 1170;
+        const daylight = sunset - sunrise;
+        const progress = clamp((minute - sunrise) / daylight, 0, 1);
+        const visible = minute >= sunrise - 30 && minute <= sunset + 30;
+        const arc = Math.sin(progress * Math.PI);
+        const edgeFade = visible
+          ? clamp((minute - (sunrise - 30)) / 60, 0, 1) *
+            clamp(((sunset + 30) - minute) / 60, 0, 1)
+          : 0;
+
+        return {
+          x: 8 + progress * 84,
+          y: 86 - arc * 64,
+          opacity: clamp(edgeFade, 0, 0.52),
+          altitude: arc,
+          progress,
+        };
+      }
+
+      function formatMinute(minute) {
+        const hours = Math.floor(minute / 60) % 24;
+        const minutes = minute % 60;
+        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+      }
+
+      function updateScene(minute) {
+        const frame = getFrame(minute);
+        const sun = getSunPosition(minute);
+
+        root.style.setProperty("--sky-top", frame.top);
+        root.style.setProperty("--sky-mid", frame.mid);
+        root.style.setProperty("--sky-bottom", frame.bottom);
+        root.style.setProperty("--horizon-glow", frame.glow);
+        root.style.setProperty("--sun-color", frame.sunColor);
+        root.style.setProperty("--sun-glow", frame.glow);
+        root.style.setProperty("--sun-x", `${sun.x}%`);
+        root.style.setProperty("--sun-y", `${sun.y}%`);
+        root.style.setProperty("--sun-opacity", String(sun.opacity));
+
+        timeReadout.textContent = formatMinute(minute);
+        phaseLabel.textContent = frame.phase;
+        phaseMetric.textContent = frame.phase;
+        positionReadout.textContent =
+          sun.opacity > 0
+            ? `Posizione sole: ${Math.round(sun.x)}% orizzontale, quota ${Math.round(
+                sun.altitude * 100,
+              )}%.`
+            : "Sole nascosto sotto l'orizzonte.";
+      }
+
+      function setMinute(minute) {
+        const normalizedMinute = clamp(Number(minute), 0, 1439);
+        slider.value = String(normalizedMinute);
+        updateScene(normalizedMinute);
+      }
+
+      slider.addEventListener("input", (event) => {
+        setMinute(event.target.value);
+      });
+
+      document.querySelectorAll("[data-time]").forEach((button) => {
+        button.addEventListener("click", () => {
+          setMinute(Number(button.dataset.time));
+        });
+      });
+
+      nowButton.addEventListener("click", () => {
+        const now = new Date();
+        setMinute(now.getHours() * 60 + now.getMinutes());
+      });
+
+      playButton.addEventListener("click", () => {
+        if (playTimer !== null) {
+          window.clearInterval(playTimer);
+          playTimer = null;
+          playButton.textContent = "Play 24h";
+          return;
+        }
+
+        playButton.textContent = "Stop";
+        playTimer = window.setInterval(() => {
+          const nextMinute = (Number(slider.value) + 10) % 1440;
+          setMinute(nextMinute);
+        }, 120);
+      });
+
+      nowButton.click();
+    </script>
+  </body>
+</html>
