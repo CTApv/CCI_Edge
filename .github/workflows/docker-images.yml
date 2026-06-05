@@ -14,6 +14,7 @@ permissions:
   packages: write
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   BACKEND_IMAGE: ghcr.io/ctapv/pv-guardian-edge-backend
   WEB_IMAGE: ghcr.io/ctapv/pv-guardian-edge-web
 
