@@ -92,7 +92,8 @@ http://DEVICE:18000/api/system/health
 
 ## Switch produzione
 
-Lo switch produzione non viene fatto in questa fase. Quando il pilot sara validato:
+Il muletto ufficio `192.168.2.116` e stato validato in Docker production su porte reali.
+Per altri device, usare comunque finestra di intervento, backup e rollback:
 
 1. stop servizio legacy `pv-edge-manager-backend`;
 2. stop nginx legacy;

@@ -1,0 +1,112 @@
+# Codex Handoff
+
+Ultimo aggiornamento: 2026-06-05.
+
+## Obiettivo
+
+PV_GUARDIAN deve diventare un ecosistema gestibile a flotta:
+
+- edge device IOT2050 con app Docker nativa;
+- immagini private su GHCR;
+- provisioning standard per nuovi device;
+- admin centrale per inventario, health, potenza totale, provisioning e rollout;
+- aggiornamenti controllati per gruppi, con Watchtower predisposto ma non attivo di default.
+
+## Stato repository
+
+- Repo: `CTApv/CCI_Edge`
+- Branch attiva: `docker-pilot`
+- Commit validato sul muletto: `09305feceb40`
+- Baseline legacy taggata: `v1.0.0-systemd`
+- Versione app: `v1.0.0`
+
+GitHub Actions pubblica immagini `linux/arm64` su GHCR:
+
+```text
+ghcr.io/ctapv/pv-guardian-edge-backend:docker-pilot
+ghcr.io/ctapv/pv-guardian-edge-web:docker-pilot
+```
+
+Le immagini sono private. I device devono fare login GHCR con token locale `read:packages`.
+
+## Muletto ufficio
+
+Device: `192.168.2.116`
+
+Stato validato:
+
+- Docker production attivo.
+- Frontend: `http://192.168.2.116/`
+- API: `http://192.168.2.116:8000/api/health`
+- Modbus TCP slave: `192.168.2.116:15020`
+- Container backend/web: healthy.
+- Legacy `pv-edge-manager-backend.service`: inactive + disabled.
+- Legacy `nginx`: inactive + disabled.
+- Docker: active + enabled.
+- Release attiva: `/opt/pv-edge-manager-docker/current -> releases/09305feceb40`
+- Runtime: `v1.0.0-docker-production`
+- Edge ID rilevato: `PV4CE70586D7F2`
+
+Backup pre-switch:
+
+```text
+/opt/pv-edge-manager/backups/codex-20260605-121318-pre-docker-production-switch.tar.gz
+```
+
+Rollback manuale:
+
+```text
+/root/pv-guardian-production-rollback-20260605-121318.sh
+```
+
+## Device in campo
+
+Device noto in campo: `100.119.142.49`.
+
+Non assumere che sia Docker. Prima di agire:
+
+1. verificare stato;
+2. fare backup;
+3. non applicare flussi pensati per il muletto senza conferma.
+
+## Admin/control room
+
+URL: `http://100.120.132.11:8000/`
+
+Host noto:
+
+```text
+100.120.132.11
+Windows host
+Path app noto: C:\Users\iot-2050\Desktop\tailscale-control-center
+Service noto: TailscaleControlCenter
+```
+
+Credenziali non nel repository. Recuperarle dal proprietario o da canale sicuro.
+
+L'admin deve evolvere da dashboard verso control plane di flotta. Vedere:
+
+```text
+docs/ADMIN_FLEET_DIRECTIVES.md
+```
+
+## Decisioni tecniche prese
+
+- Nuovi device: provisioning Docker nativo.
+- Niente migrazione legacy prevista per nuovi device.
+- GHCR privato con token locale `read:packages`.
+- Deploy controllato con `deploy-compose-release.sh`.
+- Healthcheck API/web obbligatorio.
+- Rollback automatico se healthcheck fallisce.
+- Watchtower previsto ma disabilitato/non operativo di default.
+- Rollout futuro per canali: `canary`, `pilot`, `stable`, `manual`.
+
+## Cose da non fare
+
+- Non committare segreti.
+- Non mettere token GHCR nell'admin frontend.
+- Non abilitare Watchtower globalmente.
+- Non aggiornare tutti i device insieme.
+- Non cancellare backup o database senza richiesta esplicita.
+- Non toccare device in campo senza backup e finestra di intervento.
+

@@ -92,4 +92,12 @@ Non versionare:
 - backup locali;
 - archivi di release generati.
 
-La dockerizzazione e l'aggiornamento OTA verranno sviluppati su branch pilota, partendo dal device muletto `192.168.2.116`.
+La dockerizzazione e l'aggiornamento OTA sono stati validati sul device muletto `192.168.2.116`
+nel branch `docker-pilot`.
+
+Documenti operativi:
+
+- `AGENTS.md`
+- `docs/CODEX_HANDOFF.md`
+- `docs/DEPLOY_RUNBOOK.md`
+- `docs/ADMIN_FLEET_DIRECTIVES.md`
