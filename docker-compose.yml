@@ -1,0 +1,47 @@
+name: ${PV_EDGE_MANAGER_COMPOSE_PROJECT:-pv-guardian-edge}
+
+services:
+  backend:
+    image: ${PV_EDGE_MANAGER_BACKEND_IMAGE:-pv-guardian-edge-backend:local}
+    container_name: ${PV_EDGE_MANAGER_BACKEND_CONTAINER:-pv-guardian-backend}
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        PV_EDGE_MANAGER_VERSION: ${PV_EDGE_MANAGER_VERSION:-v1.0.0}
+        PV_EDGE_MANAGER_BUILD_LABEL: ${PV_EDGE_MANAGER_BUILD_LABEL:-v1.0.0-docker}
+        PV_EDGE_MANAGER_BUILD_COMMIT: ${PV_EDGE_MANAGER_BUILD_COMMIT:-}
+        PV_EDGE_MANAGER_BUILD_TIME: ${PV_EDGE_MANAGER_BUILD_TIME:-}
+    restart: unless-stopped
+    privileged: true
+    env_file:
+      - ${PV_EDGE_MANAGER_ENV_FILE:-./deployment/docker/app.env.example}
+    environment:
+      PV_EDGE_MANAGER_DATABASE_PATH: /var/lib/pv-edge-manager/pv_edge_manager.db
+      PV_EDGE_MANAGER_HISTORY_DATABASE_PATH: /var/lib/pv-edge-manager/pv_edge_manager_history.db
+      PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_HOST: 0.0.0.0
+      PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_PORT: ${PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_PORT:-15020}
+    volumes:
+      - ${PV_EDGE_MANAGER_DATA_DIR:-/var/lib/pv-edge-manager}:/var/lib/pv-edge-manager
+      - ${PV_EDGE_MANAGER_LOG_DIR:-/var/log/pv-edge-manager}:/var/log/pv-edge-manager
+      - /dev:/dev
+      - /sys:/sys:ro
+      - /run/udev:/run/udev:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro
+    ports:
+      - "${PV_EDGE_MANAGER_API_BIND:-8000}:8000"
+      - "${PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_BIND:-15020}:${PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_PORT:-15020}"
+
+  web:
+    image: ${PV_EDGE_MANAGER_WEB_IMAGE:-pv-guardian-edge-web:local}
+    container_name: ${PV_EDGE_MANAGER_WEB_CONTAINER:-pv-guardian-web}
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${PV_EDGE_MANAGER_WEB_BIND:-80}:80"
