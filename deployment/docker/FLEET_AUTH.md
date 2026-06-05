@@ -12,6 +12,12 @@ read:packages
 ```
 
 Il token non deve avere `write:packages` o accesso al repository se non serve ad altri flussi.
+Riferimenti GitHub: working with Container registry e package access control.
+
+```text
+https://docs.github.com/packages/working-with-a-github-packages-registry/working-with-the-container-registry
+https://docs.github.com/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility
+```
 
 ## File sul device
 
