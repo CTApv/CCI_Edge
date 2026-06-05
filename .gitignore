@@ -32,6 +32,7 @@ backend/app/*.sqlite3-*
 backend/data/
 logs/
 tmp/
+tmp-*/
 
 # Generated releases and local backups
 .codex-backups/

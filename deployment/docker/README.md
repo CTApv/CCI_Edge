@@ -35,6 +35,15 @@ docker compose --env-file /etc/pv-edge-manager-pilot/compose.env up -d --build
 docker compose --env-file /etc/pv-edge-manager-pilot/compose.env ps
 ```
 
+## Installazione Docker statica
+
+Per dispositivi con APT non affidabile si puo installare Docker dai binari statici ufficiali.
+Scaricare `docker-29.5.2.tgz` e `docker-compose-linux-aarch64`, copiarli sul device e lanciare:
+
+```sh
+sh deployment/docker/install-static-docker.sh /percorso/pacchetti
+```
+
 Verifiche:
 
 ```text
