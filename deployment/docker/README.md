@@ -35,6 +35,31 @@ docker compose --env-file /etc/pv-edge-manager-pilot/compose.env up -d --build
 docker compose --env-file /etc/pv-edge-manager-pilot/compose.env ps
 ```
 
+Per usare le immagini pubblicate da GitHub Container Registry invece della build locale:
+
+```sh
+cp deployment/docker/pilot-ghcr.compose.env.example /etc/pv-edge-manager-pilot/compose.env
+docker compose --env-file /etc/pv-edge-manager-pilot/compose.env pull
+docker compose --env-file /etc/pv-edge-manager-pilot/compose.env up -d --no-build
+```
+
+## Deploy controllato
+
+Lo script `deploy-compose-release.sh` estrae una release, aggiorna il symlink `current`,
+scarica le immagini configurate in `compose.env`, avvia lo stack e fa rollback se API o web
+non superano l'healthcheck.
+
+```sh
+PV_EDGE_MANAGER_BASE_DIR=/opt/pv-edge-manager-docker \
+PV_EDGE_MANAGER_ENV_DIR=/etc/pv-edge-manager \
+PV_EDGE_MANAGER_RELEASE_COMMIT=8b399a764f71 \
+sh deployment/docker/deploy-compose-release.sh /tmp/pv-guardian-release.tar
+```
+
+Il valore `PV_EDGE_MANAGER_RELEASE_COMMIT` viene riportato in `/api/system/health`,
+insieme al timestamp del deploy. Se non viene passato, lo script usa il nome archivio
+come identificativo release.
+
 ## Installazione Docker statica
 
 Per dispositivi con APT non affidabile si puo installare Docker dai binari statici ufficiali.
