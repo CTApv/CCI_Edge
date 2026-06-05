@@ -5,6 +5,7 @@ BASE_DIR="${PV_EDGE_MANAGER_BASE_DIR:-/opt/pv-edge-manager-docker}"
 ENV_DIR="${PV_EDGE_MANAGER_ENV_DIR:-/etc/pv-edge-manager}"
 COMPOSE_ENV="${PV_EDGE_MANAGER_COMPOSE_ENV:-$ENV_DIR/compose.env}"
 APP_ENV="${PV_EDGE_MANAGER_APP_ENV:-$ENV_DIR/app.env}"
+REGISTRY_ENV="${PV_EDGE_MANAGER_REGISTRY_ENV:-$ENV_DIR/registry.env}"
 RELEASE_ARCHIVE="${1:-${PV_EDGE_MANAGER_RELEASE_ARCHIVE:-}}"
 RELEASE_ID="${PV_EDGE_MANAGER_RELEASE_ID:-}"
 
@@ -78,6 +79,29 @@ http_ok() {
   fi
 }
 
+registry_login() {
+  if [ "${PV_EDGE_MANAGER_SKIP_REGISTRY_LOGIN:-false}" = "true" ]; then
+    return 0
+  fi
+
+  if [ ! -f "$REGISTRY_ENV" ]; then
+    echo "Registry env file not found: $REGISTRY_ENV" >&2
+    echo "Private GHCR packages require PV_EDGE_MANAGER_GHCR_USERNAME and PV_EDGE_MANAGER_GHCR_TOKEN." >&2
+    return 1
+  fi
+
+  # shellcheck disable=SC1090
+  . "$REGISTRY_ENV"
+
+  if [ -z "${PV_EDGE_MANAGER_GHCR_USERNAME:-}" ] || [ -z "${PV_EDGE_MANAGER_GHCR_TOKEN:-}" ]; then
+    echo "PV_EDGE_MANAGER_GHCR_USERNAME and PV_EDGE_MANAGER_GHCR_TOKEN are required in $REGISTRY_ENV." >&2
+    return 1
+  fi
+
+  printf '%s' "$PV_EDGE_MANAGER_GHCR_TOKEN" \
+    | docker login ghcr.io -u "$PV_EDGE_MANAGER_GHCR_USERNAME" --password-stdin >/dev/null
+}
+
 compose_file() {
   compose_path="$1"
   shift
@@ -124,7 +148,11 @@ mkdir -p "${DATA_DIR:-/var/lib/pv-edge-manager}" "${LOG_DIR:-/var/log/pv-edge-ma
 compose_release config >/tmp/pv-guardian-compose-config.yml
 
 if [ "${PV_EDGE_MANAGER_SKIP_PULL:-false}" != "true" ]; then
-  compose_release pull
+  registry_login
+  if ! compose_release pull; then
+    echo "Image pull failed. Check GHCR package permissions and $REGISTRY_ENV." >&2
+    exit 1
+  fi
 fi
 
 if [ "${PV_EDGE_MANAGER_WRITE_BUILD_METADATA:-true}" != "false" ]; then

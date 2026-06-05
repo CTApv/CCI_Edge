@@ -46,9 +46,9 @@ docker compose --env-file /etc/pv-edge-manager-pilot/compose.env up -d --no-buil
 Se i package GHCR sono privati, il device deve fare login prima del pull:
 
 ```sh
-install -m 0600 deployment/docker/ghcr-login.env.example /etc/pv-edge-manager/registry.env
-# compilare /etc/pv-edge-manager/registry.env con utente GitHub e token read:packages
-sh deployment/docker/login-ghcr.sh /etc/pv-edge-manager/registry.env
+install -m 0600 deployment/docker/ghcr-login.env.example /etc/pv-edge-manager-pilot/registry.env
+# compilare /etc/pv-edge-manager-pilot/registry.env con utente GitHub e token read:packages
+sh deployment/docker/login-ghcr.sh /etc/pv-edge-manager-pilot/registry.env
 ```
 
 ## Deploy controllato
@@ -57,12 +57,17 @@ Lo script `deploy-compose-release.sh` estrae una release, aggiorna il symlink `c
 scarica le immagini configurate in `compose.env`, avvia lo stack e fa rollback se API o web
 non superano l'healthcheck.
 
+Per la gestione dei package privati GHCR sui device vedere `FLEET_AUTH.md`.
+
 ```sh
 PV_EDGE_MANAGER_BASE_DIR=/opt/pv-edge-manager-docker \
 PV_EDGE_MANAGER_ENV_DIR=/etc/pv-edge-manager \
 PV_EDGE_MANAGER_RELEASE_COMMIT=8b399a764f71 \
 sh deployment/docker/deploy-compose-release.sh /tmp/pv-guardian-release.tar
 ```
+
+Per default lo script cerca le credenziali GHCR in `$PV_EDGE_MANAGER_ENV_DIR/registry.env`
+ed esegue il login prima del pull. Il file non deve essere committato nel repository.
 
 Il valore `PV_EDGE_MANAGER_RELEASE_COMMIT` viene riportato in `/api/system/health`,
 insieme al timestamp del deploy. Se non viene passato, lo script usa il nome archivio
