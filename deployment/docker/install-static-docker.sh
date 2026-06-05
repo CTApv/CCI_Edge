@@ -42,5 +42,16 @@ install -m 0644 "$SCRIPT_DIR/docker-static.service" /etc/systemd/system/docker.s
 systemctl daemon-reload
 systemctl enable --now docker.service
 
+i=0
+until docker info >/dev/null 2>&1; do
+  i=$((i + 1))
+  if [ "$i" -ge 30 ]; then
+    systemctl status docker.service --no-pager -l || true
+    echo "Docker daemon did not become ready in time." >&2
+    exit 1
+  fi
+  sleep 2
+done
+
 docker version
 docker compose version
