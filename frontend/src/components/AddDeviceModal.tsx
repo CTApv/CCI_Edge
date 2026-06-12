@@ -51,6 +51,9 @@ type WizardStage = "source" | "profile" | "verify" | "review" | "result";
 
 type CommissioningOutcome = {
   monitoringState: "verified" | "pending";
+  dataQualityState: "valid" | "warning" | "unknown";
+  invalidPointCount: number;
+  warningPointCount: number;
   note: string;
   responseTimeMs: number | null;
   lastPollStatus: string | null;
@@ -246,10 +249,22 @@ async function verifyCommissionedDevice(deviceId: string): Promise<Commissioning
         telemetryCount > 0 || lastPollStatus.toLowerCase().includes("stub_mode=false");
 
       if (hasConcretePolling) {
+        const invalidPointCount = overview.telemetry.filter(
+          (point) => point.quality === "invalid",
+        ).length;
+        const warningPointCount = overview.telemetry.filter(
+          (point) => point.quality === "warning" || point.quality === "unavailable",
+        ).length;
+        const hasQualityIssues = invalidPointCount > 0 || warningPointCount > 0;
         return {
           monitoringState: "verified",
+          dataQualityState: hasQualityIssues ? "warning" : "valid",
+          invalidPointCount,
+          warningPointCount,
           note:
-            telemetryCount > 0
+            hasQualityIssues
+              ? `Il dispositivo comunica, ma ${invalidPointCount} punti risultano invalidi e ${warningPointCount} richiedono verifica.`
+              : telemetryCount > 0
               ? "Il dispositivo risponde e la telemetria e disponibile in dashboard."
               : "Il backend ha confermato il polling del device, ma la telemetria deve ancora stabilizzarsi.",
           responseTimeMs: overview.diagnostics.response_time_ms,
@@ -267,6 +282,9 @@ async function verifyCommissionedDevice(deviceId: string): Promise<Commissioning
 
   return {
     monitoringState: "pending",
+    dataQualityState: "unknown",
+    invalidPointCount: 0,
+    warningPointCount: 0,
     note:
       "Il dispositivo e stato creato correttamente, ma la verifica di monitoraggio non ha ancora restituito un ciclo valido. Controlla la dashboard tra qualche secondo.",
     responseTimeMs: null,
@@ -962,6 +980,22 @@ export function AddDeviceModal({ onClose, onCreated, prefill }: AddDeviceModalPr
                         <strong>{selectedCatalogEntry.alarm_count}</strong>
                         <span>Definizioni allarme mappate</span>
                       </article>
+                      <article className="capability-meta-card">
+                        <p>Verifica catalogo</p>
+                        <strong>
+                          {selectedCatalogEntry.verification.field_tested
+                            ? "Collaudato in campo"
+                            : selectedCatalogEntry.verification.status === "manual_verified"
+                              ? "Verificato da manuale"
+                              : "Da classificare"}
+                        </strong>
+                        <span>
+                          {selectedCatalogEntry.verification.source_document ?? "Fonte non dichiarata"}
+                          {selectedCatalogEntry.verification.source_version
+                            ? ` | v${selectedCatalogEntry.verification.source_version}`
+                            : ""}
+                        </span>
+                      </article>
                     </div>
 
                     <div className="capability-feature-list">
@@ -975,6 +1009,9 @@ export function AddDeviceModal({ onClose, onCreated, prefill }: AddDeviceModalPr
                         <span className="capability-feature-chip">Nessuna feature aggiuntiva dichiarata</span>
                       )}
                     </div>
+                    {selectedCatalogEntry.verification.notes ? (
+                      <p className="wizard-review-note">{selectedCatalogEntry.verification.notes}</p>
+                    ) : null}
                   </section>
                 </>
               ) : (
@@ -1267,6 +1304,16 @@ export function AddDeviceModal({ onClose, onCreated, prefill }: AddDeviceModalPr
                       <div>
                         <span>Ultimo polling</span>
                         <strong>{commissioningOutcome?.lastPollStatus ?? "--"}</strong>
+                      </div>
+                      <div>
+                        <span>Qualita dati</span>
+                        <strong>
+                          {commissioningOutcome?.dataQualityState === "valid"
+                            ? "Valori plausibili"
+                            : commissioningOutcome?.dataQualityState === "warning"
+                              ? `${commissioningOutcome.invalidPointCount} invalidi | ${commissioningOutcome.warningPointCount} da verificare`
+                              : "Da misurare"}
+                        </strong>
                       </div>
                     </div>
                   </article>

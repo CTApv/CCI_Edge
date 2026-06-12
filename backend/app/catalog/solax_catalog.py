@@ -68,6 +68,22 @@ SOLAX_VPP_CONTROL_MAP = {
 }
 
 
+def build_catalog_meta(
+    source_document: str,
+    source_version: str,
+    *,
+    notes: str,
+) -> dict[str, object]:
+    return {
+        "verification_status": "manual_verified",
+        "source_document": source_document,
+        "source_version": source_version,
+        "last_reviewed_at": "2026-06-12",
+        "field_tested": False,
+        "notes": notes,
+    }
+
+
 def telemetry_point(
     key: str,
     label: str,
@@ -466,6 +482,11 @@ def build_solax_models(protocol: str, transport: str) -> list[InverterModel]:
             build_mic_pro_telemetry(),
             build_mic_pro_commands(),
             ["telemetria trifase", "controllo potenza attiva", "energia e stato inverter"],
+            build_catalog_meta(
+                "X3-MIC-G2 X3-PRO-G2 4.0",
+                "4.0",
+                notes="Registri verificati da manuale; collaudo su inverter reale ancora da registrare.",
+            ),
         ),
         (
             SOLAX_MEGA_FORTH_MODEL,
@@ -473,6 +494,11 @@ def build_solax_models(protocol: str, transport: str) -> list[InverterModel]:
             build_mega_forth_telemetry(),
             build_large_inverter_commands(),
             ["telemetria inverter utility scale", "controllo potenza attiva", "readback setpoint"],
+            build_catalog_meta(
+                "X3-MEGA-G2 X3-FORTH V2.1",
+                "2.1",
+                notes="Registri verificati da manuale; collaudo su inverter reale ancora da registrare.",
+            ),
         ),
         (
             SOLAX_GRAND_MODEL,
@@ -480,6 +506,11 @@ def build_solax_models(protocol: str, transport: str) -> list[InverterModel]:
             build_grand_telemetry(),
             build_grand_commands(),
             ["telemetria inverter utility scale", "sei mppt", "controllo potenza attiva e reattiva"],
+            build_catalog_meta(
+                "X3-GRAND 320KW V0.00 20250814",
+                "0.00",
+                notes="Registri verificati da manuale; collaudo su inverter reale ancora da registrare.",
+            ),
         ),
         (
             SOLAX_ULTRA_MODEL,
@@ -487,6 +518,11 @@ def build_solax_models(protocol: str, transport: str) -> list[InverterModel]:
             build_hybrid_common_telemetry(True, True, True),
             build_hybrid_vpp_commands(),
             ["telemetria ibrida trifase", "tre ingressi fv", "due batterie", "controllo vpp assoluto"],
+            build_catalog_meta(
+                "X3-ULTRA V1.00",
+                "1.00",
+                notes="Registri verificati da manuale; comandi VPP da validare sul firmware installato.",
+            ),
         ),
         (
             SOLAX_AELIO_MODEL,
@@ -494,6 +530,11 @@ def build_solax_models(protocol: str, transport: str) -> list[InverterModel]:
             build_hybrid_common_telemetry(False, False, False),
             build_hybrid_vpp_commands(),
             ["telemetria ibrida", "batteria", "controllo vpp assoluto"],
+            build_catalog_meta(
+                "X3-AELIO V1.00",
+                "1.00",
+                notes="Registri verificati da manuale; comandi VPP da validare sul firmware installato.",
+            ),
         ),
     ]
     models = [
@@ -506,8 +547,9 @@ def build_solax_models(protocol: str, transport: str) -> list[InverterModel]:
             features=["manuale SOLAX POWER verificato", *features],
             telemetry_points=telemetry,
             command_points=commands,
+            catalog_meta=catalog_meta,
         )
-        for model, test_register, telemetry, commands, features in direct_profiles
+        for model, test_register, telemetry, commands, features, catalog_meta in direct_profiles
     ]
 
     if protocol == "modbus_tcp":
@@ -526,6 +568,11 @@ def build_solax_models(protocol: str, transport: str) -> list[InverterModel]:
                 ],
                 telemetry_points=build_datahub_telemetry(),
                 command_points=build_datahub_commands(),
+                catalog_meta=build_catalog_meta(
+                    "DATAHUB TCP_V1.3",
+                    "1.3",
+                    notes="Profilo aggregatore verificato da manuale; test di campo da registrare.",
+                ),
             ),
             InverterModel(
                 brand=SOLAX_BRAND,
@@ -541,6 +588,11 @@ def build_solax_models(protocol: str, transport: str) -> list[InverterModel]:
                 ],
                 telemetry_points=build_ems1000_telemetry(),
                 command_points=build_ems1000_commands(),
+                catalog_meta=build_catalog_meta(
+                    "EMS1000 TCP V1.14",
+                    "1.14",
+                    notes="Profilo EMS verificato da manuale; setpoint percentuale generico non dichiarato.",
+                ),
             ),
         ])
     return models

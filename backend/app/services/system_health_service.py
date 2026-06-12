@@ -18,6 +18,11 @@ from app.services.power_history_service import power_history_service
 from app.services.system_identity_service import system_identity_service
 
 
+ACTIVE_POWER_SLO_TARGET_SECONDS = 30.0
+FULL_TELEMETRY_SLO_TARGET_SECONDS = 300.0
+COMMAND_SLO_TARGET_SECONDS = 2.0
+
+
 class SystemHealthService:
     def get_snapshot(self) -> dict[str, object]:
         devices = device_service.list_devices()
@@ -56,6 +61,8 @@ class SystemHealthService:
             )
             for runtime in endpoint_runtimes
         ]
+        data_quality = self._build_data_quality_snapshot(devices)
+        service_levels = self._build_service_levels_snapshot(devices, endpoint_runtimes)
         slave_config = modbus_tcp_slave_config_service.get_config()
 
         return {
@@ -76,6 +83,8 @@ class SystemHealthService:
             "broadcast_groups": self._build_broadcast_groups(devices),
             "endpoint_hotspots": endpoint_hotspots,
             "endpoint_runtimes": endpoint_runtimes,
+            "data_quality": data_quality,
+            "service_levels": service_levels,
         }
 
     def _build_status_counts(self, devices: list[object]) -> dict[str, int]:
@@ -162,6 +171,7 @@ class SystemHealthService:
         polling_profile = "standard"
         adaptive_mode = "standard"
         expected_active_power_cycle_seconds = None
+        estimated_full_telemetry_cycle_seconds = None
         if endpoint_type == "tcp" and shared:
             polling_profile = "gateway_tcp_light"
             adaptive_mode = "fast_active_power"
@@ -171,8 +181,13 @@ class SystemHealthService:
                     (reference_ms * device_count) / 1000.0,
                     1,
                 )
+                estimated_full_telemetry_cycle_seconds = round(
+                    max(reference_ms / 1000.0, 1.0) * device_count,
+                    1,
+                )
             if average_operation_ms is not None and average_operation_ms >= 750.0:
                 adaptive_mode = "slow_gateway"
+                estimated_full_telemetry_cycle_seconds = round(45.0 * device_count, 1)
                 recommendations.append(
                     "Gateway lento: la dashboard privilegia letture potenza attiva e diluisce la telemetria completa."
                 )
@@ -187,6 +202,40 @@ class SystemHealthService:
         elif endpoint_type == "serial" and shared:
             polling_profile = "serial_scheduler"
             adaptive_mode = "heartbeat_plus_full"
+            reference_ms = average_operation_ms or average_round_trip_ms
+            if reference_ms is not None and device_count > 0:
+                expected_active_power_cycle_seconds = round(
+                    max(reference_ms / 1000.0, 0.05) * device_count,
+                    1,
+                )
+                estimated_full_telemetry_cycle_seconds = expected_active_power_cycle_seconds
+
+        reference_ms = average_round_trip_ms or average_operation_ms
+        if reference_ms is not None and device_count > 0:
+            if expected_active_power_cycle_seconds is None:
+                expected_active_power_cycle_seconds = round(
+                    max(reference_ms / 1000.0, 0.05) * device_count,
+                    1,
+                )
+            if estimated_full_telemetry_cycle_seconds is None:
+                estimated_full_telemetry_cycle_seconds = expected_active_power_cycle_seconds
+
+        active_power_slo_state = self._classify_slo(
+            expected_active_power_cycle_seconds,
+            ACTIVE_POWER_SLO_TARGET_SECONDS,
+        )
+        full_telemetry_slo_state = self._classify_slo(
+            estimated_full_telemetry_cycle_seconds,
+            FULL_TELEMETRY_SLO_TARGET_SECONDS,
+        )
+        if active_power_slo_state == "fail":
+            recommendations.append(
+                "Il giro potenza stimato supera l'obiettivo operativo: verificare latenza o dividere l'endpoint."
+            )
+        if full_telemetry_slo_state == "fail":
+            recommendations.append(
+                "La telemetria completa stimata supera 5 minuti: ridurre slave per linea o ottimizzare il gateway."
+            )
 
         if runtime.get("last_error"):
             recommendations.append(
@@ -198,7 +247,125 @@ class SystemHealthService:
             "polling_profile": polling_profile,
             "adaptive_mode": adaptive_mode,
             "expected_active_power_cycle_seconds": expected_active_power_cycle_seconds,
+            "active_power_slo_target_seconds": ACTIVE_POWER_SLO_TARGET_SECONDS,
+            "active_power_slo_state": active_power_slo_state,
+            "estimated_full_telemetry_cycle_seconds": estimated_full_telemetry_cycle_seconds,
+            "full_telemetry_slo_target_seconds": FULL_TELEMETRY_SLO_TARGET_SECONDS,
+            "full_telemetry_slo_state": full_telemetry_slo_state,
             "recommendations": recommendations[:4],
+        }
+
+    def _classify_slo(
+        self,
+        estimated_seconds: float | None,
+        target_seconds: float,
+    ) -> str:
+        if estimated_seconds is None:
+            return "unknown"
+        if estimated_seconds <= target_seconds:
+            return "pass"
+        if estimated_seconds <= target_seconds * 1.5:
+            return "warning"
+        return "fail"
+
+    def _build_data_quality_snapshot(self, devices: list[object]) -> dict[str, object]:
+        counts = Counter({"valid": 0, "warning": 0, "invalid": 0, "unavailable": 0})
+        issue_devices: list[dict[str, object]] = []
+        for device in devices:
+            entry = live_cache.get(str(device.device_id))
+            if entry is None:
+                continue
+
+            device_counts = Counter(
+                str(getattr(point, "quality", "valid"))
+                for point in entry.telemetry
+            )
+            counts.update(device_counts)
+            if not any(device_counts.get(state, 0) for state in ("warning", "invalid", "unavailable")):
+                continue
+
+            examples = [
+                f"{point.label}: {point.quality_reason or point.quality}"
+                for point in entry.telemetry
+                if point.quality in {"warning", "invalid", "unavailable"}
+            ][:4]
+            issue_devices.append(
+                {
+                    "device_id": str(device.device_id),
+                    "name": str(device.name),
+                    "invalid_count": device_counts.get("invalid", 0),
+                    "warning_count": device_counts.get("warning", 0),
+                    "unavailable_count": device_counts.get("unavailable", 0),
+                    "examples": examples,
+                }
+            )
+
+        issue_devices.sort(
+            key=lambda item: (
+                -int(item["invalid_count"]),
+                -int(item["warning_count"]),
+                str(item["name"]).lower(),
+            )
+        )
+        return {
+            "total_points": sum(counts.values()),
+            "valid_points": counts["valid"],
+            "warning_points": counts["warning"],
+            "invalid_points": counts["invalid"],
+            "unavailable_points": counts["unavailable"],
+            "devices_with_issues": len(issue_devices),
+            "issue_devices": issue_devices[:20],
+        }
+
+    def _build_service_levels_snapshot(
+        self,
+        devices: list[object],
+        endpoint_runtimes: list[dict[str, object]],
+    ) -> dict[str, object]:
+        active_power_within_target = 0
+        active_power_over_target = 0
+        active_power_unknown = 0
+        full_telemetry_within_target = 0
+        full_telemetry_over_target = 0
+        full_telemetry_unknown = 0
+
+        endpoint_device_counts = {
+            (str(runtime.get("endpoint_type")), str(runtime.get("endpoint_label"))): self._int_value(
+                runtime.get("device_count")
+            )
+            for runtime in endpoint_runtimes
+        }
+        for runtime in endpoint_runtimes:
+            device_count = self._int_value(runtime.get("device_count"))
+            active_state = str(runtime.get("active_power_slo_state", "unknown"))
+            full_state = str(runtime.get("full_telemetry_slo_state", "unknown"))
+            if active_state == "pass":
+                active_power_within_target += device_count
+            elif active_state in {"warning", "fail"}:
+                active_power_over_target += device_count
+            else:
+                active_power_unknown += device_count
+
+            if full_state == "pass":
+                full_telemetry_within_target += device_count
+            elif full_state in {"warning", "fail"}:
+                full_telemetry_over_target += device_count
+            else:
+                full_telemetry_unknown += device_count
+
+        covered_devices = sum(endpoint_device_counts.values())
+        active_power_unknown += max(0, len(devices) - covered_devices)
+        full_telemetry_unknown += max(0, len(devices) - covered_devices)
+        return {
+            "active_power_target_seconds": ACTIVE_POWER_SLO_TARGET_SECONDS,
+            "full_telemetry_target_seconds": FULL_TELEMETRY_SLO_TARGET_SECONDS,
+            "command_target_seconds": COMMAND_SLO_TARGET_SECONDS,
+            "active_power_within_target": active_power_within_target,
+            "active_power_over_target": active_power_over_target,
+            "active_power_unknown": active_power_unknown,
+            "full_telemetry_within_target": full_telemetry_within_target,
+            "full_telemetry_over_target": full_telemetry_over_target,
+            "full_telemetry_unknown": full_telemetry_unknown,
         }
 
     def _float_value(self, value: object) -> float | None:

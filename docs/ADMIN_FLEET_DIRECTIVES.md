@@ -31,6 +31,13 @@ Endpoint edge utili:
 /api/dashboard/active-power
 ```
 
+`/api/system/health` espone anche:
+
+- `data_quality`: conteggio punti validi, warning, invalidi e device interessati;
+- `service_levels`: rispetto degli obiettivi temporali per potenza e telemetria completa;
+- SLO e stime per ogni `endpoint_runtime`;
+- metadati build, topologia broadcast e diagnostica comunicazione.
+
 ## Obiettivo
 
 Trasformare l'admin in control plane di flotta:
@@ -123,6 +130,8 @@ Mostrare:
 - online/pending/offline inverter;
 - potenza attiva;
 - ultimo errore;
+- qualita dati e punti invalidi;
+- rispetto SLO di lettura;
 - eventi recenti.
 
 ## Provisioning nuovi device
@@ -202,4 +211,3 @@ Implementare:
 5. Aggiungere dashboard flotta.
 6. Aggiungere scheda device.
 7. Solo dopo, progettare provisioning e update.
-

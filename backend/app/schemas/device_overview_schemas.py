@@ -39,6 +39,8 @@ class DeviceTelemetryPoint(BaseModel):
     section: str = "General"
     visible: bool = True
     writable: bool = False
+    quality: Literal["valid", "warning", "invalid", "unavailable"] = "valid"
+    quality_reason: str | None = None
 
 
 class DeviceCommandPoint(BaseModel):

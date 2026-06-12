@@ -154,6 +154,13 @@ class SolaxCatalogTests(unittest.TestCase):
         assert resolved is not None
         self.assertEqual(resolved.transport, "serial")
 
+    def test_catalog_profiles_expose_manual_verification_metadata(self) -> None:
+        model = self._find_build_model(SOLAX_DATAHUB_MODEL, "modbus_tcp", "tcp")
+
+        self.assertEqual(model.catalog_meta["verification_status"], "manual_verified")
+        self.assertEqual(model.catalog_meta["source_document"], "DATAHUB TCP_V1.3")
+        self.assertFalse(model.catalog_meta["field_tested"])
+
     def _find_build_model(self, model_name: str, protocol: str, transport: str):
         matches = [
             model

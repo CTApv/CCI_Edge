@@ -60,6 +60,19 @@ function formatDurationSeconds(value: number | null): string {
   return `${metricFormatter.format(value)} s`;
 }
 
+function formatSloState(state: SystemHealthEndpointRuntime["active_power_slo_state"]): string {
+  switch (state) {
+    case "pass":
+      return "Entro obiettivo";
+    case "warning":
+      return "Vicino al limite";
+    case "fail":
+      return "Fuori obiettivo";
+    default:
+      return "Da misurare";
+  }
+}
+
 function buildHealthTone(health: SystemHealthResponse | null): "positive" | "warning" | "neutral" {
   if (!health) {
     return "neutral";
@@ -390,6 +403,100 @@ export function SystemHealthDrawer({
               <section className="system-health-section">
                 <div className="rail-section-header">
                   <div>
+                    <p className="panel-kicker">Qualita e tempi</p>
+                    <h2>Garanzie operative</h2>
+                  </div>
+                  <span className="panel-meta">
+                    Valida i dati prima dei riepiloghi e misura i tempi attesi di aggiornamento.
+                  </span>
+                </div>
+
+                <div className="system-health-meta-grid">
+                  <article
+                    className={`system-health-meta-card ${
+                      health.data_quality.invalid_points > 0 ? "system-health-card--warning" : ""
+                    }`}
+                  >
+                    <p>Qualita telemetria</p>
+                    <strong>
+                      {health.data_quality.valid_points}/{health.data_quality.total_points}
+                    </strong>
+                    <span>punti validi nell'ultimo dato completo</span>
+                    <small>
+                      Invalidi {health.data_quality.invalid_points} | warning{" "}
+                      {health.data_quality.warning_points} | assenti{" "}
+                      {health.data_quality.unavailable_points}
+                    </small>
+                  </article>
+                  <article className="system-health-meta-card">
+                    <p>SLO potenza attiva</p>
+                    <strong>{health.service_levels.active_power_within_target}</strong>
+                    <span>
+                      device entro {formatDurationSeconds(health.service_levels.active_power_target_seconds)}
+                    </span>
+                    <small>
+                      Fuori obiettivo {health.service_levels.active_power_over_target} | da misurare{" "}
+                      {health.service_levels.active_power_unknown}
+                    </small>
+                  </article>
+                  <article className="system-health-meta-card">
+                    <p>SLO telemetria completa</p>
+                    <strong>{health.service_levels.full_telemetry_within_target}</strong>
+                    <span>
+                      device entro {formatDurationSeconds(health.service_levels.full_telemetry_target_seconds)}
+                    </span>
+                    <small>
+                      Fuori obiettivo {health.service_levels.full_telemetry_over_target} | da misurare{" "}
+                      {health.service_levels.full_telemetry_unknown}
+                    </small>
+                  </article>
+                  <article className="system-health-meta-card">
+                    <p>Obiettivo comando</p>
+                    <strong>{formatDurationSeconds(health.service_levels.command_target_seconds)}</strong>
+                    <span>tempo massimo operativo desiderato</span>
+                    <small>Comandi diretti in audit; dispatch flotta registrati in forma aggregata</small>
+                  </article>
+                </div>
+
+                {health.data_quality.issue_devices.length > 0 ? (
+                  <div className="system-health-runtime-list">
+                    {health.data_quality.issue_devices.slice(0, 8).map((device) => (
+                      <article
+                        key={device.device_id}
+                        className="system-health-runtime-card system-health-runtime-card--warning"
+                      >
+                        <div className="system-health-runtime-head">
+                          <div>
+                            <p className="system-health-runtime-kicker">Qualita dati</p>
+                            <strong>{device.name}</strong>
+                          </div>
+                          <span className="system-health-runtime-badge system-health-runtime-badge--warning">
+                            {device.invalid_count} invalidi
+                          </span>
+                        </div>
+                        <p className="system-health-runtime-note">
+                          Warning {device.warning_count} | non disponibili {device.unavailable_count}
+                        </p>
+                        <div className="system-health-runtime-devices">
+                          {device.examples.map((example) => (
+                            <span key={example} className="system-health-chip system-health-chip--warning">
+                              {example}
+                            </span>
+                          ))}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="detail-empty">
+                    Nessuna anomalia rilevata nei punti di telemetria disponibili.
+                  </div>
+                )}
+              </section>
+
+              <section className="system-health-section">
+                <div className="rail-section-header">
+                  <div>
                     <p className="panel-kicker">Servizi runtime</p>
                     <h2>Diagnostica operativa</h2>
                   </div>
@@ -611,6 +718,20 @@ export function SystemHealthDrawer({
                                 </strong>
                               </div>
                             ) : null}
+                            <div className="system-health-runtime-metric">
+                              <span>SLO potenza</span>
+                              <strong>{formatSloState(runtime.active_power_slo_state)}</strong>
+                            </div>
+                            <div className="system-health-runtime-metric">
+                              <span>Full telemetry stimata</span>
+                              <strong>
+                                {formatDurationSeconds(runtime.estimated_full_telemetry_cycle_seconds)}
+                              </strong>
+                            </div>
+                            <div className="system-health-runtime-metric">
+                              <span>SLO full telemetry</span>
+                              <strong>{formatSloState(runtime.full_telemetry_slo_state)}</strong>
+                            </div>
                             <div className="system-health-runtime-metric">
                               <span>Pianificate</span>
                               <strong>

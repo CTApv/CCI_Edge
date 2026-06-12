@@ -3,6 +3,12 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from app.schemas.device_schemas import DeviceResponse
+from app.schemas.device_overview_schemas import (
+    DeviceOverviewDiagnostics,
+    DeviceOverviewMetrics,
+    DeviceTelemetryPoint,
+)
+from app.services.live_cache import LiveCacheEntry
 from app.services.system_health_service import SystemHealthService
 
 
@@ -32,6 +38,58 @@ def _build_device() -> DeviceResponse:
 
 
 class SystemHealthServiceTests(unittest.TestCase):
+    def test_endpoint_slo_and_data_quality_are_exposed(self) -> None:
+        service = SystemHealthService()
+        device = _build_device()
+        entry = LiveCacheEntry(
+            metrics=DeviceOverviewMetrics(
+                power_kw=0,
+                daily_energy_kwh=0,
+                total_energy_kwh=0,
+                temperature_c=25,
+            ),
+            diagnostics=DeviceOverviewDiagnostics(
+                last_poll_status="stub_mode=false",
+                response_time_ms=10,
+                retries=0,
+                last_error=None,
+            ),
+            telemetry=[
+                DeviceTelemetryPoint(
+                    key="frequency_hz",
+                    label="Frequenza",
+                    value=4995,
+                    raw_value=4995,
+                    display_value="4995",
+                    unit="Hz",
+                    quality="invalid",
+                    quality_reason="Frequenza fuori intervallo plausibile",
+                )
+            ],
+            timestamp="2026-06-12T10:00:00+00:00",
+        )
+        runtime = service._enrich_endpoint_runtime(
+            {
+                "endpoint_type": "tcp",
+                "endpoint_label": "192.168.1.10:502",
+                "device_count": 50,
+                "shared": True,
+                "average_operation_duration_ms": 1000.0,
+                "average_round_trip_duration_ms": 1000.0,
+                "priority_pending": False,
+                "last_error": None,
+            }
+        )
+
+        with patch("app.services.system_health_service.live_cache.get", return_value=entry):
+            quality = service._build_data_quality_snapshot([device])
+
+        self.assertEqual(runtime["active_power_slo_state"], "fail")
+        self.assertEqual(runtime["full_telemetry_slo_state"], "fail")
+        self.assertEqual(runtime["estimated_full_telemetry_cycle_seconds"], 2250.0)
+        self.assertEqual(quality["invalid_points"], 1)
+        self.assertEqual(quality["devices_with_issues"], 1)
+
     def test_health_snapshot_merges_serial_scheduler_metrics_into_endpoint_runtimes(self) -> None:
         service = SystemHealthService()
         device = _build_device()

@@ -1,6 +1,6 @@
 # Codex Handoff
 
-Ultimo aggiornamento: 2026-06-05.
+Ultimo aggiornamento: 2026-06-12.
 
 ## Obiettivo
 
@@ -19,6 +19,14 @@ PV_GUARDIAN deve diventare un ecosistema gestibile a flotta:
 - Commit validato sul muletto: `09305feceb40`
 - Baseline legacy taggata: `v1.0.0-systemd`
 - Versione app: `v1.0.0`
+
+Punto di ripristino precedente al quality jump:
+
+```text
+Commit: 41b4709a0d786152118222e6645e4263b022d237
+Tag: backup/pre-quality-jump-20260612-120846
+Backup locale: .codex-backups/pre-quality-jump-20260612-120846
+```
 
 GitHub Actions pubblica immagini `linux/arm64` su GHCR:
 
@@ -100,6 +108,11 @@ docs/ADMIN_FLEET_DIRECTIVES.md
 - Rollback automatico se healthcheck fallisce.
 - Watchtower previsto ma disabilitato/non operativo di default.
 - Rollout futuro per canali: `canary`, `pilot`, `stable`, `manual`.
+- Qualita telemetria centralizzata con raw value preservato.
+- SLO di lettura esposti in `/api/system/health`.
+- Audit dei comandi diretti e audit aggregato dei comandi flotta.
+- Catalogo predisposto per fonte manuale e stato di collaudo.
+- Simulatore Modbus TCP multi-slave disponibile per test commissioning.
 
 ## Cose da non fare
 
@@ -109,4 +122,3 @@ docs/ADMIN_FLEET_DIRECTIVES.md
 - Non aggiornare tutti i device insieme.
 - Non cancellare backup o database senza richiesta esplicita.
 - Non toccare device in campo senza backup e finestra di intervento.
-

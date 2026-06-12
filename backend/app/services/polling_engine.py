@@ -31,6 +31,7 @@ from app.services.inverter_profile_resolver import inverter_profile_resolver
 from app.services.live_cache import LiveCacheEntry, live_cache
 from app.services.power_history_service import power_history_service
 from app.services.power_value_sanitizer import sanitize_device_power_kw
+from app.services.telemetry_quality_service import telemetry_quality_service
 
 SUPPORTED_POLL_PROTOCOLS = {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485"}
 MAX_PARALLEL_POLL_WORKERS = 8
@@ -152,6 +153,8 @@ def poll_device(
                     canonical_key="daily_energy_kwh",
                     summary_metric="daily_energy_kwh",
                     default=0.0,
+                    device=device,
+                    validate_quality=True,
                 ),
                 total_energy_kwh=_metric_value(
                     values=values,
@@ -159,6 +162,8 @@ def poll_device(
                     canonical_key="total_energy_kwh",
                     summary_metric="total_energy_kwh",
                     default=0.0,
+                    device=device,
+                    validate_quality=True,
                 ),
                 temperature_c=_metric_value(
                     values=values,
@@ -166,6 +171,8 @@ def poll_device(
                     canonical_key="temperature_c",
                     summary_metric="temperature_c",
                     default=25.0,
+                    device=device,
+                    validate_quality=True,
                 ),
             ),
             diagnostics=DeviceOverviewDiagnostics(
@@ -180,7 +187,7 @@ def poll_device(
                 last_error=None,
                 poll_kind=poll_kind,
             ),
-            telemetry=_build_telemetry_points(inverter_model, values),
+            telemetry=_build_telemetry_points(inverter_model, values, device=device),
         )
     except ConnectionError:
         return _build_fallback_entry(
@@ -2207,17 +2214,34 @@ def _metric_value(
     canonical_key: str,
     summary_metric: str,
     default: float,
+    device: object | None = None,
+    validate_quality: bool = False,
 ) -> float:
     raw_value = values.get(canonical_key)
     if isinstance(raw_value, (int, float)):
-        return float(raw_value)
+        point = next((item for item in points if item.key == canonical_key), None)
+        if not validate_quality or point is None or telemetry_quality_service.is_usable_metric(
+            point,
+            raw_value,
+            device=device,
+            values=values,
+            telemetry_points=points,
+        ):
+            return float(raw_value)
 
     for point in points:
         if point.protocol_meta.get("summary_metric") != summary_metric:
             continue
         candidate = values.get(point.key)
         if isinstance(candidate, (int, float)):
-            return float(candidate)
+            if not validate_quality or telemetry_quality_service.is_usable_metric(
+                point,
+                candidate,
+                device=device,
+                values=values,
+                telemetry_points=points,
+            ):
+                return float(candidate)
 
     return default
 
@@ -2240,6 +2264,8 @@ def _status_value(values: dict[str, float | int], inverter_model: InverterModel)
 def _build_telemetry_points(
     inverter_model: InverterModel,
     values: dict[str, float | int],
+    *,
+    device: object | None = None,
 ) -> list[DeviceTelemetryPoint]:
     telemetry_items: list[DeviceTelemetryPoint] = []
     for point in inverter_model.telemetry_points:
@@ -2247,6 +2273,13 @@ def _build_telemetry_points(
             continue
 
         value = values[point.key]
+        quality = telemetry_quality_service.evaluate(
+            point,
+            value,
+            device=device,
+            values=values,
+            telemetry_points=inverter_model.telemetry_points,
+        )
         telemetry_items.append(
             DeviceTelemetryPoint(
                 key=point.key,
@@ -2258,6 +2291,8 @@ def _build_telemetry_points(
                 section=str(point.protocol_meta.get("section", "General")),
                 visible=point.visible,
                 writable=point.writable,
+                quality=quality.state,
+                quality_reason=quality.reason,
             )
         )
     return telemetry_items

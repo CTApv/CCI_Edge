@@ -5,6 +5,7 @@ from app.services.device_command_state_service import device_command_state_servi
 from app.services.device_service import device_service
 from app.services.inverter_io_service import inverter_io_service
 from app.services.inverter_profile_resolver import inverter_profile_resolver
+from app.services.runtime_event_service import runtime_event_service
 
 ACTIVE_POWER_LIMIT_COMMAND = "active_power_limit"
 logger = get_logger("pv_edge_manager.commands")
@@ -131,6 +132,8 @@ class CommandService:
         self,
         device_id: str,
         value: float,
+        *,
+        audit_event: bool = True,
     ) -> CommandResponse | None:
         device = device_service.get_device(device_id)
         if device is None:
@@ -144,6 +147,7 @@ class CommandService:
                 device_id=device_id,
                 command_key=ACTIVE_POWER_LIMIT_COMMAND,
                 diagnostics={"stub_mode": True},
+                record_audit=audit_event,
             )
 
         resolution = active_power_limit_resolver.resolve_for_write(inverter_model, value)
@@ -154,6 +158,7 @@ class CommandService:
                 device_id=device_id,
                 command_key=ACTIVE_POWER_LIMIT_COMMAND,
                 diagnostics={"stub_mode": False, "stage": "profile"},
+                record_audit=audit_event,
             )
 
         try:
@@ -177,6 +182,7 @@ class CommandService:
                     "requested_percent": value,
                     "error": str(exc),
                 },
+                record_audit=audit_event,
             )
         except (ValueError, NotImplementedError) as exc:
             return self._build_response(
@@ -193,6 +199,7 @@ class CommandService:
                     "requested_percent": value,
                     "error": str(exc),
                 },
+                record_audit=audit_event,
             )
         except Exception as exc:
             logger.warning("Active power command exception for device %s: %s", device_id, exc)
@@ -210,6 +217,7 @@ class CommandService:
                     "requested_percent": value,
                     "error": str(exc),
                 },
+                record_audit=audit_event,
             )
 
         if write_result.success:
@@ -236,6 +244,7 @@ class CommandService:
                 "conversion_mode": resolution.conversion_mode,
             }
             | ({"error": write_result.error} if write_result.error else {}),
+            record_audit=audit_event,
         )
 
     def _build_response(
@@ -245,7 +254,16 @@ class CommandService:
         device_id: str,
         command_key: str,
         diagnostics: dict[str, str | int | float | bool],
+        record_audit: bool = True,
     ) -> CommandResponse:
+        if record_audit:
+            self._record_command_event(
+                success=success,
+                device_id=device_id,
+                command_key=command_key,
+                message=message,
+                diagnostics=diagnostics,
+            )
         return CommandResponse(
             success=success,
             message=message,
@@ -253,6 +271,38 @@ class CommandService:
             command=command_key,
             diagnostics=diagnostics,
         )
+
+    def _record_command_event(
+        self,
+        *,
+        success: bool,
+        device_id: str,
+        command_key: str,
+        message: str,
+        diagnostics: dict[str, str | int | float | bool],
+    ) -> None:
+        try:
+            device = device_service.get_device(device_id)
+            runtime_event_service.record_event(
+                category="command",
+                level="info" if success else "error",
+                title="Comando inviato" if success else "Comando non riuscito",
+                message=message,
+                details={
+                    "device_id": device_id,
+                    "device_name": getattr(device, "name", device_id),
+                    "command": command_key,
+                    "success": success,
+                    **diagnostics,
+                },
+            )
+        except Exception as exc:
+            logger.warning(
+                "Unable to record command audit event for device %s command %s: %s",
+                device_id,
+                command_key,
+                exc,
+            )
 
     def _build_command_message(self, protocol: str, success: bool) -> str:
         if protocol in {"modbus_tcp", "sunspec"}:
