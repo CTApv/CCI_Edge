@@ -458,6 +458,14 @@ export type SystemHealthEndpointRuntime = {
   last_command_age_ms: number | null;
   polling_profile: string;
   adaptive_mode: string;
+  adaptive_policy_mode: string;
+  adaptive_timeout_seconds: number | null;
+  adaptive_poll_retries: number | null;
+  adaptive_inter_request_delay_ms: number | null;
+  adaptive_sample_count: number;
+  recent_success_rate: number | null;
+  adaptive_request_p95_ms: number | null;
+  quarantined_device_count: number;
   expected_active_power_cycle_seconds: number | null;
   active_power_slo_target_seconds: number;
   active_power_slo_state: "pass" | "warning" | "fail" | "unknown";

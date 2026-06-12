@@ -57,6 +57,24 @@ La pagina Controllo mostra gli SLO iniziali:
 Gli SLO sono obiettivi operativi, non garanzie del protocollo. La stima usa tempi runtime e
 numero di slave per endpoint.
 
+## Comunicazione adattiva
+
+Il polling apprende il comportamento di ogni COM, gateway o endpoint TCP senza modificare i
+parametri salvati dall'utente:
+
+- parte dai timeout, retry e pause configurati;
+- riduce lentamente timeout, retry e pausa tra richieste solo quando almeno il 98% dei cicli e
+  delle singole richieste riesce e la latenza P95 resta con margine sotto il timeout;
+- ripristina subito i valori prudenziali quando compaiono errori;
+- isola temporaneamente il singolo slave che fallisce ripetutamente, lasciando proseguire gli
+  altri dispositivi sullo stesso endpoint.
+
+La policy runtime e visibile in `Impostazioni > Diagnostica impianto > Collegamenti da seguire`.
+La diagnostica espone anche timeout, retry e pausa effettivi, affidabilita recente, latenza P95
+della singola richiesta e numero di slave temporaneamente isolati.
+Per disabilitarla su un collegamento impostare `adaptive_communication=false` nella configurazione
+del device. Baud rate, parita, framing e Unit ID non vengono mai modificati automaticamente.
+
 ## Audit comandi
 
 I comandi diretti registrano esito, device, comando, stage ed eventuale errore nella timeline.

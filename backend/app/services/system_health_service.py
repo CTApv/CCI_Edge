@@ -4,6 +4,7 @@ from collections import Counter, defaultdict
 from datetime import UTC, datetime
 
 from app.services.active_power_limit_resolver import active_power_limit_resolver
+from app.services.adaptive_communication_service import adaptive_communication_service
 from app.services.connection_manager import connection_manager
 from app.services.device_runtime import build_poll_endpoint_key
 from app.services.endpoint_runtime_service import endpoint_runtime_service
@@ -41,6 +42,10 @@ class SystemHealthService:
             (item["endpoint_type"], item["endpoint_label"]): item
             for item in connection_manager.get_modbus_tcp_runtime_snapshots()
         }
+        adaptive_snapshots = {
+            (item["endpoint_type"], item["endpoint_label"]): item
+            for item in adaptive_communication_service.get_endpoint_snapshots(devices)
+        }
         endpoint_runtimes = [
             self._enrich_endpoint_runtime(
                 {
@@ -54,6 +59,10 @@ class SystemHealthService:
                         {},
                     ),
                     **tcp_connection_snapshots.get(
+                        (runtime["endpoint_type"], runtime["endpoint_label"]),
+                        {},
+                    ),
+                    **adaptive_snapshots.get(
                         (runtime["endpoint_type"], runtime["endpoint_label"]),
                         {},
                     ),
@@ -240,6 +249,10 @@ class SystemHealthService:
         if runtime.get("last_error"):
             recommendations.append(
                 "Ultimo errore presente: controllare cablaggio, unit id e tempi di risposta dello slave indicato."
+            )
+        if self._int_value(runtime.get("quarantined_device_count")) > 0:
+            recommendations.append(
+                "Uno o piu slave sono isolati temporaneamente per non rallentare il resto della linea."
             )
 
         return {

@@ -175,6 +175,10 @@ function buildRuntimeNote(runtime: SystemHealthEndpointRuntime): string {
     return errorMessage ?? "L'endpoint ha avuto letture recenti non riuscite e richiede verifica.";
   }
 
+  if (runtime.quarantined_device_count > 0) {
+    return `${runtime.quarantined_device_count} slave isolati temporaneamente; gli altri continuano il ciclo.`;
+  }
+
   if (runtime.adaptive_mode === "slow_gateway") {
     return "Gateway condiviso lento: priorita alla potenza attiva e full telemetry diluita.";
   }
@@ -703,6 +707,46 @@ export function SystemHealthDrawer({
                             <div className="system-health-runtime-metric">
                               <span>Media operazione</span>
                               <strong>{formatDurationMs(runtime.average_operation_duration_ms)}</strong>
+                            </div>
+                            <div className="system-health-runtime-metric">
+                              <span>Policy comunicazione</span>
+                              <strong>{runtime.adaptive_policy_mode}</strong>
+                            </div>
+                            <div className="system-health-runtime-metric">
+                              <span>Timeout / retry effettivi</span>
+                              <strong>
+                                {runtime.adaptive_timeout_seconds != null
+                                  ? `${runtime.adaptive_timeout_seconds} s`
+                                  : "--"}
+                                {" | "}
+                                {runtime.adaptive_poll_retries ?? "--"}
+                              </strong>
+                            </div>
+                            <div className="system-health-runtime-metric">
+                              <span>Pausa tra richieste</span>
+                              <strong>
+                                {runtime.adaptive_inter_request_delay_ms != null
+                                  ? `${runtime.adaptive_inter_request_delay_ms} ms`
+                                  : "--"}
+                              </strong>
+                            </div>
+                            <div className="system-health-runtime-metric">
+                              <span>Affidabilita recente</span>
+                              <strong>
+                                {runtime.recent_success_rate != null
+                                  ? `${Math.round(runtime.recent_success_rate * 100)}%`
+                                  : "--"}
+                                {" | "}
+                                {runtime.adaptive_sample_count} campioni
+                              </strong>
+                            </div>
+                            <div className="system-health-runtime-metric">
+                              <span>Latenza richiesta P95</span>
+                              <strong>{formatDurationMs(runtime.adaptive_request_p95_ms)}</strong>
+                            </div>
+                            <div className="system-health-runtime-metric">
+                              <span>Slave isolati</span>
+                              <strong>{runtime.quarantined_device_count}</strong>
                             </div>
                             {runtime.endpoint_type === "tcp" ? (
                               <div className="system-health-runtime-metric">

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from struct import pack, unpack
-from time import sleep
+from time import perf_counter, sleep
 
 from pymodbus import FramerType
 
@@ -17,6 +17,7 @@ from app.services.aurora_service import (
     aurora_service,
     extract_aurora_exception_diagnostics,
 )
+from app.services.adaptive_communication_service import adaptive_communication_service
 from app.services.bonfiglioli_modbus_service import (
     BONFIGLIOLI_DRIVER,
     bonfiglioli_modbus_service,
@@ -143,6 +144,9 @@ class InverterIoService:
         if not points:
             return self.read_heartbeat(device, inverter_model)
         return self._read_telemetry_points(device, inverter_model, points)
+
+    def supports_active_power_fast_poll(self, inverter_model: InverterModel) -> bool:
+        return bool(self._select_active_power_points(inverter_model.telemetry_points))
 
     def _read_telemetry_points(
         self,
@@ -373,6 +377,13 @@ class InverterIoService:
             device.connection_settings,
             transport=device.transport,
         )
+        adaptive_policy = adaptive_communication_service.resolve_poll_policy(
+            device,
+            configured_timeout_seconds=timeout_seconds,
+            configured_retries=retries,
+        )
+        timeout_seconds = adaptive_policy.timeout_seconds
+        retries = adaptive_policy.retries
         if not host or port is None or unit_id is None:
             raise ValueError("Missing Modbus TCP connection settings.")
 
@@ -407,7 +418,8 @@ class InverterIoService:
                 )
             )
             for block_index, (register_type, grouped_points) in enumerate(grouped_blocks):
-                response, unit_argument_style = self._read_modbus_point_block_with_retry(
+                response, unit_argument_style = self._read_modbus_point_block_observed(
+                    device=device,
                     client=client,
                     register_type=register_type,
                     unit_value=int(unit_id),
@@ -429,7 +441,10 @@ class InverterIoService:
                         point=point,
                     )
                 if block_index < len(grouped_blocks) - 1:
-                    self._wait_between_requests(device.connection_settings)
+                    self._wait_between_requests(
+                        device.connection_settings,
+                        delay_override_ms=adaptive_policy.inter_request_delay_ms,
+                    )
             return self._apply_point_scaling(points, raw_values), unit_argument_style
 
         values, unit_argument_style = connection_manager.execute_modbus_tcp(
@@ -463,6 +478,13 @@ class InverterIoService:
                 transport=device.transport,
                 serial_gateway=True,
             )
+            adaptive_policy = adaptive_communication_service.resolve_poll_policy(
+                device,
+                configured_timeout_seconds=timeout_seconds,
+                configured_retries=retries,
+            )
+            timeout_seconds = adaptive_policy.timeout_seconds
+            retries = adaptive_policy.retries
             if not host or port is None or unit_id is None:
                 raise ValueError("Missing Modbus RTU over TCP connection settings.")
 
@@ -478,7 +500,8 @@ class InverterIoService:
                     )
                 )
                 for block_index, (register_type, grouped_points) in enumerate(grouped_blocks):
-                    response, unit_argument_style = self._read_modbus_point_block_with_retry(
+                    response, unit_argument_style = self._read_modbus_point_block_observed(
+                        device=device,
                         client=client,
                         register_type=register_type,
                         unit_value=int(unit_id),
@@ -500,7 +523,10 @@ class InverterIoService:
                             point=point,
                         )
                     if block_index < len(grouped_blocks) - 1:
-                        self._wait_between_requests(device.connection_settings)
+                        self._wait_between_requests(
+                            device.connection_settings,
+                            delay_override_ms=adaptive_policy.inter_request_delay_ms,
+                        )
                 return self._apply_point_scaling(points, raw_values), unit_argument_style
 
             values, unit_argument_style = connection_manager.execute_modbus_tcp(
@@ -528,6 +554,13 @@ class InverterIoService:
             device.connection_settings,
             transport=device.transport,
         )
+        adaptive_policy = adaptive_communication_service.resolve_poll_policy(
+            device,
+            configured_timeout_seconds=timeout_seconds,
+            configured_retries=retries,
+        )
+        timeout_seconds = adaptive_policy.timeout_seconds
+        retries = adaptive_policy.retries
         if (
             not port
             or slave_id is None
@@ -569,7 +602,8 @@ class InverterIoService:
                 )
             )
             for block_index, (register_type, grouped_points) in enumerate(grouped_blocks):
-                response, unit_argument_style = self._read_modbus_point_block_with_retry(
+                response, unit_argument_style = self._read_modbus_point_block_observed(
+                    device=device,
                     client=client,
                     register_type=register_type,
                     unit_value=int(slave_id),
@@ -591,7 +625,10 @@ class InverterIoService:
                         point=point,
                     )
                 if block_index < len(grouped_blocks) - 1:
-                    self._wait_between_requests(device.connection_settings)
+                    self._wait_between_requests(
+                        device.connection_settings,
+                        delay_override_ms=adaptive_policy.inter_request_delay_ms,
+                    )
             return self._apply_point_scaling(points, raw_values), unit_argument_style
 
         values, unit_argument_style = connection_manager.execute_modbus_rtu(
@@ -1354,7 +1391,7 @@ class InverterIoService:
         )
         if active_power_point is not None:
             return self._with_scale_factor_dependencies([active_power_point], readable_points)
-        return self._select_heartbeat_points(points)
+        return []
 
 
     def _best_essential_point_for_category(
@@ -1711,6 +1748,40 @@ class InverterIoService:
             attempt += 1
             self._wait_for_device_busy_retry(settings)
 
+    def _read_modbus_point_block_observed(
+        self,
+        *,
+        device: DeviceResponse,
+        client: object,
+        register_type: str,
+        unit_value: int,
+        points: list[InverterPoint],
+        settings: dict[str, object],
+    ) -> tuple[object, str]:
+        started_at = perf_counter()
+        try:
+            response, unit_argument_style = self._read_modbus_point_block_with_retry(
+                client=client,
+                register_type=register_type,
+                unit_value=unit_value,
+                points=points,
+                settings=settings,
+            )
+        except Exception:
+            adaptive_communication_service.record_request_result(
+                device,
+                duration_ms=(perf_counter() - started_at) * 1000.0,
+                success=False,
+            )
+            raise
+
+        adaptive_communication_service.record_request_result(
+            device,
+            duration_ms=(perf_counter() - started_at) * 1000.0,
+            success=not response.isError(),
+        )
+        return response, unit_argument_style
+
     def _write_modbus_point(
         self,
         *,
@@ -1928,7 +1999,18 @@ class InverterIoService:
         parsed_value = int(value)
         return parsed_value if parsed_value > 0 else None
 
-    def _wait_between_requests(self, settings: dict[str, object]) -> None:
+    def _wait_between_requests(
+        self,
+        settings: dict[str, object],
+        *,
+        delay_override_ms: float | None = None,
+    ) -> None:
+        if delay_override_ms is not None:
+            delay_seconds = max(0.0, float(delay_override_ms)) / 1000.0
+            if delay_seconds > 0:
+                sleep(delay_seconds)
+            return
+
         delay_ms = settings.get("inter_request_delay_ms")
         if delay_ms not in {None, ""}:
             delay_seconds = float(delay_ms) / 1000.0

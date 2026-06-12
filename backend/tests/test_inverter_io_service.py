@@ -113,6 +113,30 @@ class InverterIoServiceTests(unittest.TestCase):
 
         self.assertIsNone(service._select_heartbeat_probe_point(inverter_model))
 
+    def test_fast_power_poll_is_not_claimed_when_model_exposes_only_status(self) -> None:
+        service = InverterIoService()
+        inverter_model = InverterModel(
+            brand="SOLAX POWER",
+            model="X3-ULTRA",
+            protocol="modbus_tcp",
+            transport="tcp",
+            telemetry_points=[
+                InverterPoint(
+                    key="status",
+                    label="Stato operativo",
+                    kind="telemetry",
+                    register_type="input",
+                    address=9,
+                    length=1,
+                    datatype="uint16",
+                    protocol_meta={"heartbeat": True, "summary_metric": "status"},
+                )
+            ],
+        )
+
+        self.assertFalse(service.supports_active_power_fast_poll(inverter_model))
+        self.assertEqual(service._select_active_power_points(inverter_model.telemetry_points), [])
+
     def test_rtu_read_prefers_poll_timeout_and_retries(self) -> None:
         service = InverterIoService()
         device = DeviceResponse(

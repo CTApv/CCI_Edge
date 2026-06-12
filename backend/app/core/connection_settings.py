@@ -160,6 +160,7 @@ _BOOLEAN_KEYS = {
     "rs485_rts_level_for_rx",
     "rs485_loopback",
     "retry_on_device_busy",
+    "adaptive_communication",
 }
 
 _INT_RANGES: dict[str, tuple[int, int | None]] = {
@@ -585,6 +586,7 @@ def _translate_setting_key(key: str) -> str:
         "inter_request_delay_ms": "attesa tra richieste",
         "inter_request_delay_seconds": "attesa tra richieste",
         "max_registers_per_request": "registri per richiesta",
+        "adaptive_communication": "ottimizzazione comunicazione automatica",
         "handle_local_echo": "local echo",
         "use_rs485_mode": "modalita RS485",
         "rs485_rts_level_for_tx": "RTS TX",

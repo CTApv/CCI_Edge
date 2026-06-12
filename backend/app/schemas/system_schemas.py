@@ -198,6 +198,14 @@ class SystemHealthEndpointRuntime(BaseModel):
     last_command_age_ms: float | None = None
     polling_profile: str = "standard"
     adaptive_mode: str = "standard"
+    adaptive_policy_mode: str = "warming"
+    adaptive_timeout_seconds: float | None = None
+    adaptive_poll_retries: int | None = None
+    adaptive_inter_request_delay_ms: float | None = None
+    adaptive_sample_count: int = 0
+    recent_success_rate: float | None = None
+    adaptive_request_p95_ms: float | None = None
+    quarantined_device_count: int = 0
     expected_active_power_cycle_seconds: float | None = None
     active_power_slo_target_seconds: float = 30.0
     active_power_slo_state: Literal["pass", "warning", "fail", "unknown"] = "unknown"
