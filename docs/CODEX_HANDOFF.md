@@ -1,6 +1,6 @@
 # Codex Handoff
 
-Ultimo aggiornamento: 2026-06-12.
+Ultimo aggiornamento: 2026-06-15.
 
 ## Obiettivo
 
@@ -96,7 +96,23 @@ L'admin deve evolvere da dashboard verso control plane di flotta. Vedere:
 
 ```text
 docs/ADMIN_FLEET_DIRECTIVES.md
+docs/ADMIN_ROLLOUT_BACKEND_MILESTONE.md
 ```
+
+Punto rollout recuperato il 2026-06-15:
+
+- UI, release, gruppi, canali e anteprima sono pronti;
+- `Conferma ed esegui` non esegue ancora comandi reali;
+- l'OpenAPI admin non espone ancora campagne rollout;
+- il primitivo singolo device esistente non sostituisce il deploy Compose con rollback;
+- la prossima milestone e il worker/backend campagne descritto in
+  `docs/ADMIN_ROLLOUT_BACKEND_MILESTONE.md`.
+
+Verifica tailnet del 2026-06-15:
+
+- muletto ufficio `iot2050-foggia2-4gb` / `100.107.10.127`: raggiungibile via API,
+  runtime `v1.0.0` / commit `09305feceb40`; backup/preflight SSH ancora da eseguire;
+- device campo `100.119.142.49`: online, da non toccare senza backup e finestra.
 
 ## Decisioni tecniche prese
 
@@ -104,6 +120,9 @@ docs/ADMIN_FLEET_DIRECTIVES.md
 - Niente migrazione legacy prevista per nuovi device.
 - GHCR privato con token locale `read:packages`.
 - Deploy controllato con `deploy-compose-release.sh`.
+- Il cambio release immagini deve passare `PV_EDGE_MANAGER_RELEASE_TAG`.
+- Il valore mostrato come versione app deve passare `PV_EDGE_MANAGER_RELEASE_VERSION`;
+  per tag semantici `v*` viene derivato automaticamente dal release tag.
 - Healthcheck API/web obbligatorio.
 - Rollback automatico se healthcheck fallisce.
 - Watchtower previsto ma disabilitato/non operativo di default.

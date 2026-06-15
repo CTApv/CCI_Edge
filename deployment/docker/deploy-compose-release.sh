@@ -8,6 +8,8 @@ APP_ENV="${PV_EDGE_MANAGER_APP_ENV:-$ENV_DIR/app.env}"
 REGISTRY_ENV="${PV_EDGE_MANAGER_REGISTRY_ENV:-$ENV_DIR/registry.env}"
 RELEASE_ARCHIVE="${1:-${PV_EDGE_MANAGER_RELEASE_ARCHIVE:-}}"
 RELEASE_ID="${PV_EDGE_MANAGER_RELEASE_ID:-}"
+RELEASE_TAG="${PV_EDGE_MANAGER_RELEASE_TAG:-}"
+RELEASE_VERSION="${PV_EDGE_MANAGER_RELEASE_VERSION:-}"
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Run as root." >&2
@@ -52,6 +54,44 @@ upsert_env_value() {
   else
     printf '\n%s=%s\n' "$key" "$value" >> "$COMPOSE_ENV"
   fi
+}
+
+validate_release_tag() {
+  tag="$1"
+  case "$tag" in
+    [A-Za-z0-9_]*)
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+  case "$tag" in
+    *[!A-Za-z0-9_.-]*)
+      return 1
+      ;;
+  esac
+  [ "${#tag}" -le 128 ]
+}
+
+if [ -z "$RELEASE_VERSION" ]; then
+  case "$RELEASE_TAG" in
+    v[0-9]*)
+      RELEASE_VERSION="$RELEASE_TAG"
+      ;;
+  esac
+fi
+
+retag_image() {
+  image_ref="$1"
+  tag="$2"
+  image_base="${image_ref%@*}"
+  image_name="${image_base##*/}"
+  case "$image_name" in
+    *:*)
+      image_base="${image_base%:*}"
+      ;;
+  esac
+  printf '%s:%s\n' "$image_base" "$tag"
 }
 
 backup_compose_env() {
@@ -128,6 +168,17 @@ rollback() {
   fi
 }
 
+restore_compose_env_on_error() {
+  exit_status="$?"
+  if [ "$exit_status" -ne 0 ]; then
+    restore_compose_env || true
+  fi
+  trap - EXIT
+  exit "$exit_status"
+}
+
+trap restore_compose_env_on_error EXIT
+
 mkdir -p "$BASE_DIR/releases" "$ENV_DIR" "$RELEASE_DIR"
 tar -xf "$RELEASE_ARCHIVE" -C "$RELEASE_DIR"
 
@@ -145,11 +196,45 @@ DATA_DIR="$(read_env_value PV_EDGE_MANAGER_DATA_DIR || true)"
 LOG_DIR="$(read_env_value PV_EDGE_MANAGER_LOG_DIR || true)"
 mkdir -p "${DATA_DIR:-/var/lib/pv-edge-manager}" "${LOG_DIR:-/var/log/pv-edge-manager}"
 
-compose_release config >/tmp/pv-guardian-compose-config.yml
+if [ -n "$RELEASE_TAG" ]; then
+  if ! validate_release_tag "$RELEASE_TAG"; then
+    echo "Invalid PV_EDGE_MANAGER_RELEASE_TAG: $RELEASE_TAG" >&2
+    exit 1
+  fi
+
+  CURRENT_BACKEND_IMAGE="$(read_env_value PV_EDGE_MANAGER_BACKEND_IMAGE || true)"
+  CURRENT_WEB_IMAGE="$(read_env_value PV_EDGE_MANAGER_WEB_IMAGE || true)"
+  if [ -z "$CURRENT_BACKEND_IMAGE" ] || [ -z "$CURRENT_WEB_IMAGE" ]; then
+    echo "PV_EDGE_MANAGER_BACKEND_IMAGE and PV_EDGE_MANAGER_WEB_IMAGE are required in $COMPOSE_ENV." >&2
+    exit 1
+  fi
+
+  backup_compose_env
+  upsert_env_value PV_EDGE_MANAGER_BACKEND_IMAGE "$(retag_image "$CURRENT_BACKEND_IMAGE" "$RELEASE_TAG")"
+  upsert_env_value PV_EDGE_MANAGER_WEB_IMAGE "$(retag_image "$CURRENT_WEB_IMAGE" "$RELEASE_TAG")"
+fi
+
+if [ -n "$RELEASE_VERSION" ]; then
+  if ! validate_release_tag "$RELEASE_VERSION"; then
+    echo "Invalid PV_EDGE_MANAGER_RELEASE_VERSION: $RELEASE_VERSION" >&2
+    exit 1
+  fi
+  backup_compose_env
+  upsert_env_value PV_EDGE_MANAGER_VERSION "$RELEASE_VERSION"
+fi
+
+if ! compose_release config >/tmp/pv-guardian-compose-config.yml; then
+  restore_compose_env
+  exit 1
+fi
 
 if [ "${PV_EDGE_MANAGER_SKIP_PULL:-false}" != "true" ]; then
-  registry_login
+  if ! registry_login; then
+    restore_compose_env
+    exit 1
+  fi
   if ! compose_release pull; then
+    restore_compose_env
     echo "Image pull failed. Check GHCR package permissions and $REGISTRY_ENV." >&2
     exit 1
   fi
@@ -188,4 +273,10 @@ until http_ok "$HEALTH_URL" && http_ok "$WEB_URL"; do
 done
 
 compose_current ps
+if [ -n "$RELEASE_TAG" ]; then
+  echo "PV_GUARDIAN image tag $RELEASE_TAG is active."
+fi
+if [ -n "$RELEASE_VERSION" ]; then
+  echo "PV_GUARDIAN app version $RELEASE_VERSION is active."
+fi
 echo "PV_GUARDIAN release $RELEASE_ID is healthy."

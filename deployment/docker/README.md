@@ -62,12 +62,21 @@ Per la gestione dei package privati GHCR sui device vedere `FLEET_AUTH.md`.
 ```sh
 PV_EDGE_MANAGER_BASE_DIR=/opt/pv-edge-manager-docker \
 PV_EDGE_MANAGER_ENV_DIR=/etc/pv-edge-manager \
+PV_EDGE_MANAGER_RELEASE_TAG=v1.1.0-rc3 \
+PV_EDGE_MANAGER_RELEASE_VERSION=v1.1.0-rc3 \
 PV_EDGE_MANAGER_RELEASE_COMMIT=8b399a764f71 \
 sh deployment/docker/deploy-compose-release.sh /tmp/pv-guardian-release.tar
 ```
 
 Per default lo script cerca le credenziali GHCR in `$PV_EDGE_MANAGER_ENV_DIR/registry.env`
 ed esegue il login prima del pull. Il file non deve essere committato nel repository.
+
+`PV_EDGE_MANAGER_RELEASE_TAG` aggiorna entrambe le immagini backend/web configurate nel
+`compose.env`. Se config, login, pull o healthcheck falliscono, il file viene ripristinato.
+
+`PV_EDGE_MANAGER_RELEASE_VERSION` aggiorna il valore mostrato nel footer e in
+`/api/system/health`. Se non viene impostato e il tag immagine inizia con `v`, lo script usa
+automaticamente il tag come versione.
 
 Il valore `PV_EDGE_MANAGER_RELEASE_COMMIT` viene riportato in `/api/system/health`,
 insieme al timestamp del deploy. Se non viene passato, lo script usa il nome archivio

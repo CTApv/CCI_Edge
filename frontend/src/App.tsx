@@ -4750,7 +4750,7 @@ function formatFooterTimestamp(value: Date): string {
 
 function buildFooterVersionLabel(health: SystemHealthResponse | null): string {
   if (health === null) {
-    return "v1.0.0";
+    return "In lettura";
   }
   return health.identity.app_version;
 }

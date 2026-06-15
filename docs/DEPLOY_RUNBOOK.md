@@ -71,20 +71,32 @@ Caricare sul device e lanciare:
 PV_EDGE_MANAGER_BASE_DIR=/opt/pv-edge-manager-docker \
 PV_EDGE_MANAGER_ENV_DIR=/etc/pv-edge-manager \
 PV_EDGE_MANAGER_RELEASE_ID=<commit> \
+PV_EDGE_MANAGER_RELEASE_TAG=v1.1.0-rc3 \
+PV_EDGE_MANAGER_RELEASE_VERSION=v1.1.0-rc3 \
 PV_EDGE_MANAGER_RELEASE_COMMIT=<commit> \
-PV_EDGE_MANAGER_RELEASE_LABEL=v1.0.0-docker-production \
+PV_EDGE_MANAGER_RELEASE_LABEL=v1.1.0-rc3-docker-production \
 sh /path/to/release/deployment/docker/deploy-compose-release.sh /tmp/pv-guardian-release.tar
 ```
 
 Lo script:
 
 1. estrae la release;
-2. valida compose;
-3. fa login GHCR da `registry.env`;
-4. esegue pull immagini;
-5. avvia/recrea container;
-6. verifica API e web;
-7. ripristina la release precedente se l'healthcheck fallisce.
+2. se indicato, applica `PV_EDGE_MANAGER_RELEASE_TAG` alle immagini backend/web;
+3. aggiorna `PV_EDGE_MANAGER_VERSION` usando `PV_EDGE_MANAGER_RELEASE_VERSION`;
+4. valida compose;
+5. fa login GHCR da `registry.env`;
+6. esegue pull immagini;
+7. avvia/recrea container;
+8. verifica API e web;
+9. ripristina `compose.env` e release precedente se il deploy fallisce.
+
+Non omettere `PV_EDGE_MANAGER_RELEASE_TAG` quando la release deve cambiare le immagini
+attive. L'archivio aggiorna gli script e il file Compose, ma senza tag esplicito il device
+continua a usare le immagini gia configurate in `/etc/pv-edge-manager/compose.env`.
+
+Per tag semantici che iniziano con `v`, lo script usa automaticamente
+`PV_EDGE_MANAGER_RELEASE_TAG` anche come versione applicativa. Per tag mobili come
+`docker-pilot` o `sha-*`, passare esplicitamente `PV_EDGE_MANAGER_RELEASE_VERSION`.
 
 ## Rollback manuale muletto
 
@@ -128,3 +140,8 @@ Regole:
 - rollout iniziale manuale via admin/script;
 - canali previsti: `canary`, `pilot`, `stable`, `manual`.
 
+Per il contratto della prossima milestone backend admin vedere:
+
+```text
+docs/ADMIN_ROLLOUT_BACKEND_MILESTONE.md
+```
