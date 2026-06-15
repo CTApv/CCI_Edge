@@ -62,6 +62,7 @@ Il backend admin deve verificare dopo il deploy:
 - frontend HTTP;
 - `identity.build_commit` uguale al commit target;
 - `identity.build_label` uguale alla label target;
+- `identity.release_tag` uguale al tag target;
 - container backend/web healthy;
 - porta Modbus TCP slave prevista raggiungibile.
 
@@ -141,17 +142,22 @@ registrate nei log. Il worker backend deve usare riferimenti a credenziali serve
 
 Verifica del 2026-06-15:
 
-- release candidata edge: `v1.1.0-rc3`, con la correzione dei metadati versione e del
-  deploy controllato;
-- test locali edge: 205 backend passati, compileall passato, frontend build passato,
+- release candidata edge: `v1.1.0-rc4`, con metadati immutabili, `identity.release_tag` e
+  compatibilita con gli alias runtime usati dal Control Center;
+- `v1.1.0-rc3` corregge il deploy Compose ma non garantisce build metadata corretti quando
+  il rollout SSH conserva vecchie env del container;
+- test locali edge: 207 backend passati, compileall passato, frontend build passato,
   compose production/pilot validi;
-- tag Git remoto precedente `v1.1.0-rc2` presente;
+- tag Git remoti precedenti `v1.1.0-rc2` e `v1.1.0-rc3` presenti;
 - manifest GHCR non verificabile dalla workstation senza login privato;
 - muletto ufficio/Tailscale `iot2050-foggia2-4gb` (`100.107.10.127`) raggiungibile via API,
   runtime ancora `v1.0.0` / commit `09305feceb40`;
 - accesso SSH al muletto non disponibile dalla workstation, quindi backup e preflight
   remoto non ancora eseguiti;
 - device campo `100.119.142.49` online ma escluso dal rollout senza backup e finestra.
+
+Watchtower non deve essere usato sul muletto finche il Docker Engine espone API 1.25.
+Preferire rollout SSH/Compose con rollback.
 
 Il primo rollout reale resta bloccato finche non vengono eseguiti preflight e backup sul
 muletto.

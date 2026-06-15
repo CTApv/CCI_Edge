@@ -482,6 +482,7 @@ export type SystemHealthIdentitySnapshot = {
   hostname: string;
   platform: string;
   app_version: string;
+  release_tag: string | null;
   build_label: string;
   build_commit: string | null;
   build_time: string | null;

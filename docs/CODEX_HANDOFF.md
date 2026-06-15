@@ -123,6 +123,8 @@ Verifica tailnet del 2026-06-15:
 - Il cambio release immagini deve passare `PV_EDGE_MANAGER_RELEASE_TAG`.
 - Il valore mostrato come versione app deve passare `PV_EDGE_MANAGER_RELEASE_VERSION`;
   per tag semantici `v*` viene derivato automaticamente dal release tag.
+- L'health espone `identity.release_tag` e legge build label/commit/time dai metadati
+  immutabili dell'immagine per non conservare valori vecchi dopo rollout SSH.
 - Healthcheck API/web obbligatorio.
 - Rollback automatico se healthcheck fallisce.
 - Watchtower previsto ma disabilitato/non operativo di default.

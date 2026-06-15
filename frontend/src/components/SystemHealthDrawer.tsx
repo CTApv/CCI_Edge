@@ -393,7 +393,10 @@ export function SystemHealthDrawer({
                   <p className="system-health-card-label">Backend</p>
                   <strong>{health.identity.app_version}</strong>
                   <span>Avvio {formatTimestamp(health.identity.backend_started_at)}</span>
-                  <small>{health.identity.backend_path}</small>
+                  <small>
+                    Release {health.identity.release_tag ?? "non impostata"} |{" "}
+                    {health.identity.backend_path}
+                  </small>
                 </article>
 
                 <article className="system-health-card">

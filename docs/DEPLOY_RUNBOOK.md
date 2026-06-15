@@ -71,10 +71,10 @@ Caricare sul device e lanciare:
 PV_EDGE_MANAGER_BASE_DIR=/opt/pv-edge-manager-docker \
 PV_EDGE_MANAGER_ENV_DIR=/etc/pv-edge-manager \
 PV_EDGE_MANAGER_RELEASE_ID=<commit> \
-PV_EDGE_MANAGER_RELEASE_TAG=v1.1.0-rc3 \
-PV_EDGE_MANAGER_RELEASE_VERSION=v1.1.0-rc3 \
+PV_EDGE_MANAGER_RELEASE_TAG=v1.1.0-rc4 \
+PV_EDGE_MANAGER_RELEASE_VERSION=v1.1.0-rc4 \
 PV_EDGE_MANAGER_RELEASE_COMMIT=<commit> \
-PV_EDGE_MANAGER_RELEASE_LABEL=v1.1.0-rc3-docker-production \
+PV_EDGE_MANAGER_RELEASE_LABEL=v1.1.0-rc4-docker-production \
 sh /path/to/release/deployment/docker/deploy-compose-release.sh /tmp/pv-guardian-release.tar
 ```
 
@@ -97,6 +97,11 @@ continua a usare le immagini gia configurate in `/etc/pv-edge-manager/compose.en
 Per tag semantici che iniziano con `v`, lo script usa automaticamente
 `PV_EDGE_MANAGER_RELEASE_TAG` anche come versione applicativa. Per tag mobili come
 `docker-pilot` o `sha-*`, passare esplicitamente `PV_EDGE_MANAGER_RELEASE_VERSION`.
+
+`/api/system/health` espone anche `identity.release_tag`. Nelle immagini recenti,
+`build_label`, `build_commit` e `build_time` provengono dai metadati immutabili inclusi
+nell'immagine, quindi non vengono falsati da vecchie variabili preservate durante una
+ricreazione container via SSH.
 
 ## Rollback manuale muletto
 
@@ -136,6 +141,7 @@ Regole:
 
 - installabile durante provisioning;
 - nessun aggiornamento automatico globale;
+- non considerarlo affidabile sui device con Docker API 1.25;
 - usare in futuro solo con label o canali controllati;
 - rollout iniziale manuale via admin/script;
 - canali previsti: `canary`, `pilot`, `stable`, `manual`.

@@ -85,6 +85,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             PV_EDGE_MANAGER_VERSION=${{ steps.build_meta.outputs.version }}
+            PV_EDGE_MANAGER_RELEASE_TAG=${{ steps.build_meta.outputs.version }}
             PV_EDGE_MANAGER_BUILD_LABEL=${{ steps.build_meta.outputs.label }}
             PV_EDGE_MANAGER_BUILD_COMMIT=${{ steps.build_meta.outputs.commit }}
             PV_EDGE_MANAGER_BUILD_TIME=${{ steps.build_meta.outputs.time }}

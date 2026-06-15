@@ -222,6 +222,7 @@ class SystemHealthIdentitySnapshot(BaseModel):
     hostname: str
     platform: str
     app_version: str
+    release_tag: str | None
     build_label: str
     build_commit: str | None
     build_time: str | None

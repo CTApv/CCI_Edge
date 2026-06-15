@@ -212,6 +212,7 @@ if [ -n "$RELEASE_TAG" ]; then
   backup_compose_env
   upsert_env_value PV_EDGE_MANAGER_BACKEND_IMAGE "$(retag_image "$CURRENT_BACKEND_IMAGE" "$RELEASE_TAG")"
   upsert_env_value PV_EDGE_MANAGER_WEB_IMAGE "$(retag_image "$CURRENT_WEB_IMAGE" "$RELEASE_TAG")"
+  upsert_env_value PV_EDGE_MANAGER_RELEASE_TAG "$RELEASE_TAG"
 fi
 
 if [ -n "$RELEASE_VERSION" ]; then

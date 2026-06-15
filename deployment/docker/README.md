@@ -62,8 +62,8 @@ Per la gestione dei package privati GHCR sui device vedere `FLEET_AUTH.md`.
 ```sh
 PV_EDGE_MANAGER_BASE_DIR=/opt/pv-edge-manager-docker \
 PV_EDGE_MANAGER_ENV_DIR=/etc/pv-edge-manager \
-PV_EDGE_MANAGER_RELEASE_TAG=v1.1.0-rc3 \
-PV_EDGE_MANAGER_RELEASE_VERSION=v1.1.0-rc3 \
+PV_EDGE_MANAGER_RELEASE_TAG=v1.1.0-rc4 \
+PV_EDGE_MANAGER_RELEASE_VERSION=v1.1.0-rc4 \
 PV_EDGE_MANAGER_RELEASE_COMMIT=8b399a764f71 \
 sh deployment/docker/deploy-compose-release.sh /tmp/pv-guardian-release.tar
 ```
@@ -77,6 +77,10 @@ ed esegue il login prima del pull. Il file non deve essere committato nel reposi
 `PV_EDGE_MANAGER_RELEASE_VERSION` aggiorna il valore mostrato nel footer e in
 `/api/system/health`. Se non viene impostato e il tag immagine inizia con `v`, lo script usa
 automaticamente il tag come versione.
+
+Le immagini recenti includono inoltre metadati build immutabili. `/api/system/health`
+preferisce questi valori per `build_label`, `build_commit` e `build_time`, evitando che una
+ricreazione SSH che conserva vecchie env mostri una build precedente.
 
 Il valore `PV_EDGE_MANAGER_RELEASE_COMMIT` viene riportato in `/api/system/health`,
 insieme al timestamp del deploy. Se non viene passato, lo script usa il nome archivio
