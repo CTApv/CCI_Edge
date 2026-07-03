@@ -124,6 +124,41 @@ class NetworkConfigServiceTests(unittest.TestCase):
         self.assertFalse(eth1["use_default_route"])
         self.assertEqual(eth1["configured_addresses"], [])
 
+    def test_linux_snapshot_reports_unreachable_networkmanager_as_read_only(self) -> None:
+        service = NetworkConfigService()
+
+        with (
+            patch("app.services.network_config_service.platform.system", return_value="Linux"),
+            patch("app.services.network_config_service.shutil.which", return_value="/usr/bin/nmcli"),
+            patch.object(service, "_run_nmcli", side_effect=RuntimeError("Could not connect")),
+        ):
+            snapshot = service.get_snapshot()
+
+        self.assertFalse(snapshot["supported"])
+        self.assertFalse(snapshot["apply_supported"])
+        self.assertEqual(snapshot["manager"], "unreachable")
+        self.assertIn("NetworkManager", str(snapshot["message"]))
+
+    def test_apply_reports_unreachable_networkmanager(self) -> None:
+        service = NetworkConfigService()
+
+        with (
+            patch("app.services.network_config_service.platform.system", return_value="Linux"),
+            patch("app.services.network_config_service.shutil.which", return_value="/usr/bin/nmcli"),
+            patch.object(service, "_run_nmcli", side_effect=RuntimeError("Could not connect")),
+        ):
+            with self.assertRaisesRegex(ValueError, "NetworkManager non e raggiungibile"):
+                service.apply_configuration(
+                    interface_name="eth0",
+                    ipv4_method="auto",
+                    address=None,
+                    prefix_length=None,
+                    gateway=None,
+                    dns_servers=[],
+                    autoconnect=True,
+                    use_default_route=True,
+                )
+
     def test_linux_snapshot_falls_back_when_nmcli_does_not_support_connection_interface_field(self) -> None:
         service = NetworkConfigService()
 

@@ -119,13 +119,14 @@ Usarlo solo se serve tornare alla situazione pre-Docker del muletto.
 I nuovi device non devono partire da legacy. Flusso previsto:
 
 1. installare Docker statico;
-2. creare `/etc/pv-edge-manager`, `/var/lib/pv-edge-manager`, `/var/log/pv-edge-manager`;
-3. creare `registry.env` locale con token `read:packages`;
-4. creare `compose.env` production;
-5. creare `app.env`;
-6. deploy da GHCR;
-7. verificare health/API/web/porta `15020`;
-8. registrare Edge ID e IP Tailscale nell'admin.
+2. verificare NetworkManager attivo sull'host per abilitare LAN Config da dashboard;
+3. creare `/etc/pv-edge-manager`, `/var/lib/pv-edge-manager`, `/var/log/pv-edge-manager`;
+4. creare `registry.env` locale con token `read:packages`;
+5. creare `compose.env` production;
+6. creare `app.env`;
+7. deploy da GHCR;
+8. verificare health/API/web/porta `15020` e `/api/system/network-config`;
+9. registrare Edge ID, MAC LAN e IP Tailscale nell'admin.
 
 Script da creare come prossimo lavoro:
 

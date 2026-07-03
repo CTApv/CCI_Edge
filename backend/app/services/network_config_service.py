@@ -72,7 +72,25 @@ class NetworkConfigService:
             }
 
         pending_change = self._serialize_pending_change()
-        interfaces = self._list_linux_interfaces()
+        try:
+            interfaces = self._list_linux_interfaces()
+        except RuntimeError as exc:
+            logger.warning("NetworkManager is not reachable: %s", exc)
+            return {
+                "supported": False,
+                "apply_supported": False,
+                "platform": "linux",
+                "manager": "unreachable",
+                "message": (
+                    "NetworkManager e installato ma non e raggiungibile dal backend. "
+                    "Nel deploy Docker verificare che /run/dbus dell'host sia montato nel container "
+                    "e che NetworkManager sia attivo sull'host."
+                ),
+                "confirmation_timeout_seconds": NETWORK_CONFIRMATION_TIMEOUT_SECONDS,
+                "pending_change": pending_change,
+                "interfaces": self._build_read_only_interfaces(),
+            }
+
         return {
             "supported": True,
             "apply_supported": True,
@@ -127,7 +145,14 @@ class NetworkConfigService:
             prefix_length = None
             normalized_addresses = []
 
-        interfaces = self._list_linux_interfaces()
+        try:
+            interfaces = self._list_linux_interfaces()
+        except RuntimeError as exc:
+            raise ValueError(
+                "NetworkManager non e raggiungibile dal backend. "
+                "Verifica che /run/dbus dell'host sia montato nel container Docker "
+                "e che NetworkManager sia attivo sull'host.",
+            ) from exc
         selected_interface = next(
             (item for item in interfaces if item["interface_name"] == normalized_interface),
             None,

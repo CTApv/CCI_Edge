@@ -103,6 +103,29 @@ http://DEVICE:18000/api/health
 http://DEVICE:18000/api/system/health
 ```
 
+## LAN Config in Docker
+
+La dashboard puo modificare le interfacce LAN anche con app in Docker se l'host espone
+NetworkManager al backend container:
+
+- l'host deve avere NetworkManager attivo e le LAN reali gestite da `nmcli`;
+- l'immagine backend include `nmcli`;
+- il Compose monta `/run/dbus` dell'host nel backend, cosi `nmcli` parla con
+  NetworkManager host via D-Bus;
+- se NetworkManager non e raggiungibile, `/api/system/network-config` degrada in sola
+  lettura e mostra un messaggio operativo invece di fallire.
+
+Verifica sul device:
+
+```sh
+systemctl is-active NetworkManager || systemctl is-active network-manager
+docker exec pv-guardian-backend nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status
+curl -fsS http://127.0.0.1:8000/api/system/network-config
+```
+
+La modifica resta protetta dal rollback automatico: dopo `Applica configurazione`,
+l'operatore deve confermare entro 30 secondi dalla dashboard.
+
 ## Switch produzione
 
 Il muletto ufficio `192.168.2.116` e stato validato in Docker production su porte reali.
