@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from app.schemas.device_schemas import ProtocolValue, TransportValue
 
 DeviceStatusValue = Literal["pending", "degraded", "offline", "online", "warning", "fault"]
+NetworkInterfaceRoleValue = Literal["unassigned", "cci", "internet_inverter"]
 
 PROTOCOL_OPTIONS = get_args(ProtocolValue)
 TRANSPORT_OPTIONS = get_args(TransportValue)
@@ -38,6 +39,7 @@ class NetworkConfigApplyAddress(BaseModel):
 
 class NetworkConfigInterface(BaseModel):
     interface_name: str
+    network_role: NetworkInterfaceRoleValue = "unassigned"
     device_type: str
     state: str
     connection_name: str | None
@@ -82,6 +84,11 @@ class NetworkConfigApplyRequest(BaseModel):
     dns_servers: list[str] = Field(default_factory=list)
     autoconnect: bool = True
     use_default_route: bool = True
+
+
+class NetworkInterfaceRoleRequest(BaseModel):
+    interface_name: str
+    network_role: NetworkInterfaceRoleValue
 
 
 class SystemHealthStatusCounts(BaseModel):

@@ -296,8 +296,11 @@ export type NetworkConfigAddress = {
   prefix_length: number;
 };
 
+export type NetworkInterfaceRole = "unassigned" | "cci" | "internet_inverter";
+
 export type NetworkConfigInterface = {
   interface_name: string;
+  network_role: NetworkInterfaceRole;
   device_type: string;
   state: string;
   connection_name: string | null;
@@ -342,6 +345,11 @@ export type NetworkConfigApplyPayload = {
   dns_servers: string[];
   autoconnect: boolean;
   use_default_route: boolean;
+};
+
+export type NetworkInterfaceRolePayload = {
+  interface_name: string;
+  network_role: NetworkInterfaceRole;
 };
 
 export type SystemHealthStatusCounts = {
@@ -1010,6 +1018,12 @@ export const getNetworkConfiguration = () =>
   request<NetworkConfigSnapshot>("/system/network-config");
 export const applyNetworkConfiguration = (payload: NetworkConfigApplyPayload) =>
   request<NetworkConfigSnapshot>("/system/network-config/apply", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+export const updateNetworkInterfaceRole = (payload: NetworkInterfaceRolePayload) =>
+  request<NetworkConfigSnapshot>("/system/network-config/interface-role", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

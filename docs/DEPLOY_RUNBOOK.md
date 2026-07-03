@@ -126,7 +126,19 @@ I nuovi device non devono partire da legacy. Flusso previsto:
 6. creare `app.env`;
 7. deploy da GHCR;
 8. verificare health/API/web/porta `15020` e `/api/system/network-config`;
-9. registrare Edge ID, MAC LAN e IP Tailscale nell'admin.
+9. assegnare dalla dashboard i ruoli LAN `cci` e `internet_inverter`;
+10. registrare Edge ID, MAC LAN e IP Tailscale nell'admin.
+
+I ruoli LAN sono persistiti nel data dir, di default:
+
+```text
+/var/lib/pv-edge-manager/network_interface_roles.json
+```
+
+Regola commissioning:
+
+- ruolo `cci`: IP statico `10.56.69.100/24`, nessun gateway/default route;
+- ruolo `internet_inverter`: gateway dell'impianto, DNS e fino a due IP sulla LAN internet/inverter.
 
 Script da creare come prossimo lavoro:
 

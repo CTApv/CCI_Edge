@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import platform
 import shutil
 import subprocess
@@ -8,6 +9,7 @@ from datetime import UTC, datetime, timedelta
 from ipaddress import IPv4Address, ip_address
 from threading import Lock, Timer
 
+from app.config import settings
 from app.logger import get_logger
 from app.services.network_interface_service import network_interface_service
 
@@ -15,6 +17,9 @@ logger = get_logger("pv_edge_manager.network_config")
 
 NETWORK_CONFIRMATION_TIMEOUT_SECONDS = 30
 IGNORED_INTERFACE_PREFIXES = ("veth", "br-", "docker", "virbr", "tap", "tun")
+NETWORK_INTERFACE_ROLES = {"unassigned", "cci", "internet_inverter"}
+PERSISTED_NETWORK_INTERFACE_ROLES = {"cci", "internet_inverter"}
+CCI_STATIC_ADDRESS = "10.56.69.100/24"
 
 
 @dataclass(slots=True, frozen=True)
@@ -56,7 +61,7 @@ class NetworkConfigService:
                 "message": "Configurazione IP modificabile dall'app disponibile solo su Linux con NetworkManager.",
                 "confirmation_timeout_seconds": NETWORK_CONFIRMATION_TIMEOUT_SECONDS,
                 "pending_change": None,
-                "interfaces": self._build_read_only_interfaces(),
+                "interfaces": self._apply_interface_roles(self._build_read_only_interfaces()),
             }
 
         if not self._has_nmcli():
@@ -68,7 +73,7 @@ class NetworkConfigService:
                 "message": "NetworkManager o nmcli non sono disponibili su questo sistema.",
                 "confirmation_timeout_seconds": NETWORK_CONFIRMATION_TIMEOUT_SECONDS,
                 "pending_change": None,
-                "interfaces": self._build_read_only_interfaces(),
+                "interfaces": self._apply_interface_roles(self._build_read_only_interfaces()),
             }
 
         pending_change = self._serialize_pending_change()
@@ -88,7 +93,7 @@ class NetworkConfigService:
                 ),
                 "confirmation_timeout_seconds": NETWORK_CONFIRMATION_TIMEOUT_SECONDS,
                 "pending_change": pending_change,
-                "interfaces": self._build_read_only_interfaces(),
+                "interfaces": self._apply_interface_roles(self._build_read_only_interfaces()),
             }
 
         return {
@@ -101,8 +106,38 @@ class NetworkConfigService:
             ),
             "confirmation_timeout_seconds": NETWORK_CONFIRMATION_TIMEOUT_SECONDS,
             "pending_change": pending_change,
-            "interfaces": interfaces,
+            "interfaces": self._apply_interface_roles(interfaces),
         }
+
+    def set_interface_role(self, *, interface_name: str, network_role: str) -> dict[str, object]:
+        normalized_interface = interface_name.strip()
+        if normalized_interface == "":
+            raise ValueError("Seleziona una scheda di rete valida.")
+
+        normalized_role = network_role.strip().lower()
+        if normalized_role not in NETWORK_INTERFACE_ROLES:
+            raise ValueError("Ruolo interfaccia non supportato.")
+
+        candidate_interfaces = self._current_interfaces_for_role_assignment()
+        selected_interface = next(
+            (
+                item
+                for item in candidate_interfaces
+                if str(item.get("interface_name")) == normalized_interface
+            ),
+            None,
+        )
+        if selected_interface is None:
+            raise ValueError("La scheda di rete selezionata non e disponibile.")
+
+        self._save_interface_role(selected_interface, normalized_role)
+        logger.info(
+            "Saved network role %s for interface %s (%s).",
+            normalized_role,
+            normalized_interface,
+            selected_interface.get("mac_address") or "no-mac",
+        )
+        return self.get_snapshot()
 
     def apply_configuration(
         self,
@@ -161,6 +196,17 @@ class NetworkConfigService:
             raise ValueError("La scheda di rete selezionata non e disponibile.")
         if not bool(selected_interface.get("editable", False)):
             raise ValueError("La scheda di rete selezionata non e modificabile dall'app.")
+        selected_role = self._resolve_interface_role(
+            selected_interface,
+            self._read_interface_role_records(),
+        )
+        self._validate_role_configuration(
+            network_role=selected_role,
+            ipv4_method=method,
+            addresses=normalized_addresses,
+            gateway=normalized_gateway,
+            use_default_route=use_default_route,
+        )
 
         with self._lock:
             if self._pending_change is not None:
@@ -256,6 +302,7 @@ class NetworkConfigService:
                     "device_type": "unknown",
                     "state": "available",
                     "connection_name": None,
+                    "network_role": "unassigned",
                     "mac_address": None,
                     "live_addresses": [parsed_address] if parsed_address is not None else [],
                     "live_gateway": None,
@@ -324,6 +371,7 @@ class NetworkConfigService:
                     "device_type": row["device_type"],
                     "state": row["state"],
                     "connection_name": connection_name,
+                    "network_role": "unassigned",
                     "mac_address": live_info["mac_address"],
                     "live_addresses": live_info["addresses"],
                     "live_gateway": live_info["gateway"],
@@ -578,6 +626,154 @@ class NetworkConfigService:
         if value is None:
             return default
         return "yes" if value else "no"
+
+    def _current_interfaces_for_role_assignment(self) -> list[dict[str, object]]:
+        if not self._is_linux() or not self._has_nmcli():
+            return self._build_read_only_interfaces()
+
+        try:
+            return self._list_linux_interfaces()
+        except RuntimeError:
+            return self._build_read_only_interfaces()
+
+    def _apply_interface_roles(
+        self,
+        interfaces: list[dict[str, object]],
+    ) -> list[dict[str, object]]:
+        role_records = self._read_interface_role_records()
+        return [
+            {
+                **interface,
+                "network_role": self._resolve_interface_role(interface, role_records),
+            }
+            for interface in interfaces
+        ]
+
+    def _resolve_interface_role(
+        self,
+        interface: dict[str, object],
+        role_records: list[dict[str, str]],
+    ) -> str:
+        normalized_mac = self._normalize_mac_address(interface.get("mac_address"))
+        interface_name = str(interface.get("interface_name") or "").strip()
+
+        if normalized_mac:
+            for record in role_records:
+                if self._normalize_mac_address(record.get("mac_address")) == normalized_mac:
+                    return record["role"]
+
+        for record in role_records:
+            if str(record.get("interface_name") or "").strip() == interface_name:
+                return record["role"]
+
+        return "unassigned"
+
+    def _save_interface_role(self, interface: dict[str, object], role: str) -> None:
+        records = self._read_interface_role_records()
+        interface_name = str(interface.get("interface_name") or "").strip()
+        normalized_mac = self._normalize_mac_address(interface.get("mac_address"))
+        now = datetime.now(UTC).isoformat()
+
+        def same_interface(record: dict[str, str]) -> bool:
+            record_mac = self._normalize_mac_address(record.get("mac_address"))
+            if normalized_mac and record_mac == normalized_mac:
+                return True
+            return str(record.get("interface_name") or "").strip() == interface_name
+
+        next_records = [
+            record
+            for record in records
+            if not same_interface(record)
+            and not (role in PERSISTED_NETWORK_INTERFACE_ROLES and record.get("role") == role)
+        ]
+
+        if role in PERSISTED_NETWORK_INTERFACE_ROLES:
+            next_records.append(
+                {
+                    "interface_name": interface_name,
+                    "mac_address": str(interface.get("mac_address") or ""),
+                    "role": role,
+                    "updated_at": now,
+                }
+            )
+
+        self._write_interface_role_records(next_records)
+
+    def _read_interface_role_records(self) -> list[dict[str, str]]:
+        path = settings.network_interface_roles_path
+        try:
+            raw_payload = json.loads(path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            return []
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.warning("Unable to read network interface roles from %s: %s", path, exc)
+            return []
+
+        raw_records = raw_payload.get("interfaces") if isinstance(raw_payload, dict) else None
+        if not isinstance(raw_records, list):
+            return []
+
+        records: list[dict[str, str]] = []
+        for raw_record in raw_records:
+            if not isinstance(raw_record, dict):
+                continue
+            role = str(raw_record.get("role") or "").strip().lower()
+            if role not in PERSISTED_NETWORK_INTERFACE_ROLES:
+                continue
+            interface_name = str(raw_record.get("interface_name") or "").strip()
+            mac_address = str(raw_record.get("mac_address") or "").strip()
+            if interface_name == "" and mac_address == "":
+                continue
+            records.append(
+                {
+                    "interface_name": interface_name,
+                    "mac_address": mac_address,
+                    "role": role,
+                    "updated_at": str(raw_record.get("updated_at") or ""),
+                }
+            )
+        return records
+
+    def _write_interface_role_records(self, records: list[dict[str, str]]) -> None:
+        path = settings.network_interface_roles_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "version": 1,
+            "interfaces": records,
+        }
+        path.write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
+    def _normalize_mac_address(self, value: object) -> str:
+        normalized = "".join(
+            character
+            for character in str(value or "").lower()
+            if character in "0123456789abcdef"
+        )
+        return normalized if len(normalized) == 12 else ""
+
+    def _validate_role_configuration(
+        self,
+        *,
+        network_role: str,
+        ipv4_method: str,
+        addresses: list[str],
+        gateway: str | None,
+        use_default_route: bool,
+    ) -> None:
+        if network_role != "cci":
+            return
+
+        if ipv4_method != "manual" or addresses != [CCI_STATIC_ADDRESS]:
+            raise ValueError(
+                "La LAN CCI deve essere configurata come IP statico 10.56.69.100/24.",
+            )
+        if gateway is not None or use_default_route:
+            raise ValueError(
+                "La LAN CCI non deve avere gateway o route predefinita.",
+            )
 
     def _run_nmcli(self, args: list[str]) -> str:
         command = ["nmcli", *args]

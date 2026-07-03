@@ -126,6 +126,20 @@ curl -fsS http://127.0.0.1:8000/api/system/network-config
 La modifica resta protetta dal rollback automatico: dopo `Applica configurazione`,
 l'operatore deve confermare entro 30 secondi dalla dashboard.
 
+La dashboard salva inoltre il ruolo stabile di ogni interfaccia, preferendo il MAC address
+come chiave:
+
+```text
+/var/lib/pv-edge-manager/network_interface_roles.json
+```
+
+Ruoli previsti:
+
+- `cci`: LAN dedicata al CCI, vincolata a `10.56.69.100/24` senza gateway;
+- `internet_inverter`: LAN con gateway dell'impianto e, se serve, secondo IP per rete inverter.
+
+Il ruolo evita che la UI scambi LAN 1/LAN 2 se l'ordine delle interfacce cambia.
+
 ## Switch produzione
 
 Il muletto ufficio `192.168.2.116` e stato validato in Docker production su porte reali.

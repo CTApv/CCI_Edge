@@ -1,4 +1,6 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from app.services.network_config_service import NetworkConfigService
@@ -123,6 +125,144 @@ class NetworkConfigServiceTests(unittest.TestCase):
         self.assertEqual(eth1["ipv4_method"], "auto")
         self.assertFalse(eth1["use_default_route"])
         self.assertEqual(eth1["configured_addresses"], [])
+        self.assertEqual(eth0["network_role"], "unassigned")
+        self.assertEqual(eth1["network_role"], "unassigned")
+
+    def test_interface_roles_are_persisted_by_mac_and_unique(self) -> None:
+        service = NetworkConfigService()
+
+        interfaces = [
+            {
+                "interface_name": "eno1",
+                "device_type": "ethernet",
+                "state": "connected",
+                "connection_name": "Field LAN",
+                "mac_address": "10:D6:57:CD:3D:0B",
+                "live_addresses": [],
+                "live_gateway": None,
+                "live_dns_servers": [],
+                "ipv4_method": "manual",
+                "configured_addresses": [],
+                "gateway": None,
+                "dns_servers": [],
+                "autoconnect": True,
+                "use_default_route": False,
+                "editable": True,
+            },
+            {
+                "interface_name": "eno2",
+                "device_type": "ethernet",
+                "state": "connected",
+                "connection_name": "Internet LAN",
+                "mac_address": "10:D6:57:CD:3D:0C",
+                "live_addresses": [],
+                "live_gateway": None,
+                "live_dns_servers": [],
+                "ipv4_method": "auto",
+                "configured_addresses": [],
+                "gateway": None,
+                "dns_servers": [],
+                "autoconnect": True,
+                "use_default_route": True,
+                "editable": True,
+            },
+        ]
+
+        with TemporaryDirectory() as tmp_dir:
+            role_path = Path(tmp_dir) / "network_interface_roles.json"
+            with (
+                patch.object(service, "_is_linux", return_value=True),
+                patch.object(service, "_has_nmcli", return_value=True),
+                patch.object(service, "_list_linux_interfaces", return_value=interfaces),
+                patch(
+                    "app.services.network_config_service.settings.network_interface_roles_path",
+                    role_path,
+                ),
+            ):
+                snapshot = service.set_interface_role(
+                    interface_name="eno1",
+                    network_role="cci",
+                )
+                eno1 = next(item for item in snapshot["interfaces"] if item["interface_name"] == "eno1")
+                self.assertEqual(eno1["network_role"], "cci")
+
+                snapshot = service.set_interface_role(
+                    interface_name="eno2",
+                    network_role="cci",
+                )
+                eno1 = next(item for item in snapshot["interfaces"] if item["interface_name"] == "eno1")
+                eno2 = next(item for item in snapshot["interfaces"] if item["interface_name"] == "eno2")
+                self.assertEqual(eno1["network_role"], "unassigned")
+                self.assertEqual(eno2["network_role"], "cci")
+
+                snapshot = service.set_interface_role(
+                    interface_name="eno2",
+                    network_role="unassigned",
+                )
+                eno2 = next(item for item in snapshot["interfaces"] if item["interface_name"] == "eno2")
+                self.assertEqual(eno2["network_role"], "unassigned")
+
+    def test_cci_role_requires_fixed_static_address_without_gateway(self) -> None:
+        service = NetworkConfigService()
+
+        interfaces = [
+            {
+                "interface_name": "eno1",
+                "device_type": "ethernet",
+                "state": "connected",
+                "connection_name": "CCI LAN",
+                "mac_address": "10:D6:57:CD:3D:0B",
+                "live_addresses": [],
+                "live_gateway": None,
+                "live_dns_servers": [],
+                "ipv4_method": "manual",
+                "configured_addresses": [],
+                "gateway": None,
+                "dns_servers": [],
+                "autoconnect": True,
+                "use_default_route": False,
+                "editable": True,
+            },
+        ]
+
+        with TemporaryDirectory() as tmp_dir:
+            role_path = Path(tmp_dir) / "network_interface_roles.json"
+            with (
+                patch.object(service, "_is_linux", return_value=True),
+                patch.object(service, "_has_nmcli", return_value=True),
+                patch.object(service, "_list_linux_interfaces", return_value=interfaces),
+                patch(
+                    "app.services.network_config_service.settings.network_interface_roles_path",
+                    role_path,
+                ),
+            ):
+                service.set_interface_role(interface_name="eno1", network_role="cci")
+
+                with self.assertRaisesRegex(ValueError, "10.56.69.100/24"):
+                    service.apply_configuration(
+                        interface_name="eno1",
+                        ipv4_method="manual",
+                        address=None,
+                        prefix_length=None,
+                        addresses=[{"address": "192.168.2.249", "prefix_length": 24}],
+                        gateway=None,
+                        dns_servers=[],
+                        autoconnect=True,
+                        use_default_route=False,
+                    )
+
+                with self.assertRaisesRegex(ValueError, "gateway"):
+                    service.apply_configuration(
+                        interface_name="eno1",
+                        ipv4_method="manual",
+                        address=None,
+                        prefix_length=None,
+                        addresses=[{"address": "10.56.69.100", "prefix_length": 24}],
+                        gateway="10.56.69.1",
+                        dns_servers=[],
+                        autoconnect=True,
+                        use_default_route=True,
+                    )
 
     def test_linux_snapshot_reports_unreachable_networkmanager_as_read_only(self) -> None:
         service = NetworkConfigService()
