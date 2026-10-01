@@ -1,7 +1,7 @@
 from app.models.inverter_model import InverterModel, InverterPoint
 
 
-CGS_SINVERT_BOX_BRAND = "CGS"
+CGS_SINVERT_BOX_BRAND = "SINVERT"
 CGS_SINVERT_BOX_MODELS = tuple(
     f"SINVERT BOX ({unit_count} INV U)" for unit_count in range(1, 6)
 )

@@ -10,6 +10,9 @@ from app.services.inverter_io_service import inverter_io_service
 
 
 class CgsSinvertBoxCatalogTests(unittest.TestCase):
+    def test_profiles_are_grouped_under_existing_sinvert_brand(self) -> None:
+        self.assertEqual(CGS_SINVERT_BOX_BRAND, "SINVERT")
+
     def test_all_one_to_five_unit_variants_are_exported(self) -> None:
         catalog_keys = {
             (model.brand, model.model, model.protocol, model.transport)
