@@ -13,6 +13,7 @@ from app.schemas.device_overview_schemas import (
     DeviceOverviewMetrics,
 )
 from app.schemas.device_schemas import DeviceResponse
+from app.services.adaptive_communication_service import adaptive_communication_service
 from app.services.device_runtime import (
     build_poll_endpoint_key,
     get_effective_full_poll_interval_seconds,
@@ -32,6 +33,7 @@ from app.services.live_cache import LiveCacheEntry, live_cache
 from app.services.power_history_service import power_history_service
 from app.services.power_value_sanitizer import sanitize_device_power_kw
 from app.services.sinvert_monitor import build_sinvert_monitor
+from app.services.telemetry_quality_service import telemetry_quality_service
 
 SUPPORTED_POLL_PROTOCOLS = {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485", "s7_tcp"}
 MAX_PARALLEL_POLL_WORKERS = 8
@@ -117,13 +119,19 @@ def poll_device(
             poll_kind=poll_kind,
         )
 
+    effective_poll_kind = (
+        "heartbeat"
+        if poll_kind == "active_power"
+        and not inverter_io_service.supports_active_power_fast_poll(inverter_model)
+        else poll_kind
+    )
     started_at = perf_counter()
     try:
         telemetry = (
             inverter_io_service.read_heartbeat(device, inverter_model)
-            if poll_kind == "heartbeat"
+            if effective_poll_kind == "heartbeat"
             else inverter_io_service.read_active_power_only(device, inverter_model)
-            if poll_kind == "active_power"
+            if effective_poll_kind == "active_power"
             else inverter_io_service.read_telemetry(
                 device,
                 inverter_model,
@@ -154,6 +162,8 @@ def poll_device(
                     canonical_key="daily_energy_kwh",
                     summary_metric="daily_energy_kwh",
                     default=0.0,
+                    device=device,
+                    validate_quality=True,
                 ),
                 total_energy_kwh=_metric_value(
                     values=values,
@@ -161,6 +171,8 @@ def poll_device(
                     canonical_key="total_energy_kwh",
                     summary_metric="total_energy_kwh",
                     default=0.0,
+                    device=device,
+                    validate_quality=True,
                 ),
                 temperature_c=_metric_value(
                     values=values,
@@ -168,6 +180,8 @@ def poll_device(
                     canonical_key="temperature_c",
                     summary_metric="temperature_c",
                     default=25.0,
+                    device=device,
+                    validate_quality=True,
                 ),
             ),
             diagnostics=DeviceOverviewDiagnostics(
@@ -176,58 +190,58 @@ def poll_device(
                 read_errors=telemetry.read_errors or {},
                 last_poll_status=(
                     f"status={_status_value(values, inverter_model)}; stage=read_register; "
-                    f"stub_mode=false; poll_kind={poll_kind}; "
+                    f"stub_mode=false; poll_kind={effective_poll_kind}; "
                     f"unit_argument_style={telemetry.unit_argument_style}; "
                     f"protocol={device.protocol}"
                 ),
                 response_time_ms=int((perf_counter() - started_at) * 1000),
                 retries=_get_retry_count(device),
                 last_error=None,
-                poll_kind=poll_kind,
+                poll_kind=effective_poll_kind,
             ),
-            telemetry=_build_telemetry_points(inverter_model, values),
+            telemetry=_build_telemetry_points(inverter_model, values, device=device),
         )
     except ConnectionError:
         return _build_fallback_entry(
             response_time_ms=int((perf_counter() - started_at) * 1000),
             last_poll_status=(
-                f"stub_mode=false; stage=connect; poll_kind={poll_kind}; protocol={device.protocol}"
+                f"stub_mode=false; stage=connect; poll_kind={effective_poll_kind}; protocol={device.protocol}"
             ),
             last_error=_connect_error_message(device.protocol),
             retries=_get_retry_count(device),
-            poll_kind=poll_kind,
+            poll_kind=effective_poll_kind,
         )
     except NotImplementedError as exc:
         return _build_fallback_entry(
             response_time_ms=int((perf_counter() - started_at) * 1000),
             last_poll_status=(
-                f"stub_mode=false; stage=driver; poll_kind={poll_kind}; protocol={device.protocol}"
+                f"stub_mode=false; stage=driver; poll_kind={effective_poll_kind}; protocol={device.protocol}"
             ),
             last_error=str(exc),
             retries=_get_retry_count(device),
-            poll_kind=poll_kind,
+            poll_kind=effective_poll_kind,
         )
     except ValueError as exc:
         stage = _classify_poll_stage(str(exc))
         return _build_fallback_entry(
             response_time_ms=int((perf_counter() - started_at) * 1000),
             last_poll_status=(
-                f"stub_mode=false; stage={stage}; poll_kind={poll_kind}; protocol={device.protocol}"
+                f"stub_mode=false; stage={stage}; poll_kind={effective_poll_kind}; protocol={device.protocol}"
             ),
             last_error=str(exc),
             retries=_get_retry_count(device),
-            poll_kind=poll_kind,
+            poll_kind=effective_poll_kind,
         )
     except Exception as exc:
         logger.warning("Polling exception for device %s: %s", device.device_id, str(exc))
         return _build_fallback_entry(
             response_time_ms=int((perf_counter() - started_at) * 1000),
             last_poll_status=(
-                f"stub_mode=false; stage=exception; poll_kind={poll_kind}; protocol={device.protocol}"
+                f"stub_mode=false; stage=exception; poll_kind={effective_poll_kind}; protocol={device.protocol}"
             ),
             last_error=str(exc),
             retries=_get_retry_count(device),
-            poll_kind=poll_kind,
+            poll_kind=effective_poll_kind,
         )
 
 
@@ -267,9 +281,22 @@ def poll_device_with_runtime(
         endpoint_runtime_service.record_backoff_skip(device, now=current_time)
         return _build_endpoint_backoff_entry(device, backoff_decision, poll_kind=poll_kind)
 
+    device_backoff_decision = adaptive_communication_service.get_device_backoff_decision(
+        device,
+        now=current_time,
+    )
+    if device_backoff_decision.active:
+        adaptive_communication_service.record_device_backoff_skip(device)
+        return _build_device_backoff_entry(
+            device,
+            device_backoff_decision,
+            poll_kind=poll_kind,
+        )
+
     entry = poll_device(device, poll_kind=poll_kind)
     if entry is not None:
         endpoint_runtime_service.record_poll_result(device, entry, now=current_time)
+        adaptive_communication_service.record_poll_result(device, entry, now=current_time)
     return entry
 
 
@@ -489,6 +516,7 @@ class PollingEngine:
         self._shared_non_serial_endpoint_counts = shared_non_serial_endpoint_counts
         live_cache.prune(active_device_ids)
         endpoint_runtime_service.prune(polled_devices)
+        adaptive_communication_service.prune(polled_devices)
         self._next_poll_at = {
             device_id: due_at
             for device_id, due_at in self._next_poll_at.items()
@@ -1593,6 +1621,13 @@ class PollingEngine:
         if backoff_decision.active:
             return completed_at + backoff_decision.remaining_backoff_seconds
 
+        device_backoff_decision = adaptive_communication_service.get_device_backoff_decision(
+            device,
+            now=completed_at,
+        )
+        if device_backoff_decision.active:
+            return completed_at + device_backoff_decision.remaining_backoff_seconds
+
         if shared_non_serial_endpoint:
             if poll_kind == "full":
                 return completed_at + self._shared_gateway_full_poll_interval_seconds(device)
@@ -1627,6 +1662,13 @@ class PollingEngine:
         completed_at: float,
         shared_non_serial_endpoint: bool = False,
     ) -> float | None:
+        device_backoff_decision = adaptive_communication_service.get_device_backoff_decision(
+            device,
+            now=completed_at,
+        )
+        if device_backoff_decision.active:
+            return completed_at + device_backoff_decision.remaining_backoff_seconds
+
         if shared_non_serial_endpoint:
             heartbeat_interval_seconds = min(
                 get_effective_heartbeat_interval_seconds(device),
@@ -1961,7 +2003,7 @@ class PollingEngine:
         cached_entry = _merge_poll_entry(previous_entry, entry)
         live_cache.set(device.device_id, cached_entry)
 
-        if _is_endpoint_backoff_entry(entry):
+        if _is_backoff_entry(entry):
             return 0, 1, 1
 
         if not is_successful_real_poll(cached_entry):
@@ -2106,8 +2148,42 @@ def _build_endpoint_backoff_entry(
     )
 
 
+def _build_device_backoff_entry(
+    device: DeviceResponse,
+    backoff_decision: object,
+    *,
+    poll_kind: str,
+) -> LiveCacheEntry:
+    remaining_seconds = max(
+        1,
+        int(round(float(getattr(backoff_decision, "remaining_backoff_seconds", 0.0)))),
+    )
+    consecutive_failures = int(getattr(backoff_decision, "consecutive_failures", 0))
+    return _build_fallback_entry(
+        response_time_ms=0,
+        last_poll_status=(
+            f"stub_mode=false; stage=device_backoff; poll_kind={poll_kind}; "
+            f"protocol={device.protocol}; device_id={device.device_id}"
+        ),
+        last_error=(
+            f"Polling paused only for device {device.name} after "
+            f"{consecutive_failures} failed read(s). Retrying in {remaining_seconds}s."
+        ),
+        retries=_get_retry_count(device),
+        poll_kind=poll_kind,
+    )
+
+
 def _is_endpoint_backoff_entry(entry: LiveCacheEntry) -> bool:
     return "stage=endpoint_backoff" in entry.diagnostics.last_poll_status
+
+
+def _is_device_backoff_entry(entry: LiveCacheEntry) -> bool:
+    return "stage=device_backoff" in entry.diagnostics.last_poll_status
+
+
+def _is_backoff_entry(entry: LiveCacheEntry) -> bool:
+    return _is_endpoint_backoff_entry(entry) or _is_device_backoff_entry(entry)
 
 
 def _merge_poll_entry(
@@ -2214,17 +2290,34 @@ def _metric_value(
     canonical_key: str,
     summary_metric: str,
     default: float,
+    device: object | None = None,
+    validate_quality: bool = False,
 ) -> float:
     raw_value = values.get(canonical_key)
     if isinstance(raw_value, (int, float)):
-        return float(raw_value)
+        point = next((item for item in points if item.key == canonical_key), None)
+        if not validate_quality or point is None or telemetry_quality_service.is_usable_metric(
+            point,
+            raw_value,
+            device=device,
+            values=values,
+            telemetry_points=points,
+        ):
+            return float(raw_value)
 
     for point in points:
         if point.protocol_meta.get("summary_metric") != summary_metric:
             continue
         candidate = values.get(point.key)
         if isinstance(candidate, (int, float)):
-            return float(candidate)
+            if not validate_quality or telemetry_quality_service.is_usable_metric(
+                point,
+                candidate,
+                device=device,
+                values=values,
+                telemetry_points=points,
+            ):
+                return float(candidate)
 
     return default
 
@@ -2247,6 +2340,8 @@ def _status_value(values: dict[str, float | int], inverter_model: InverterModel)
 def _build_telemetry_points(
     inverter_model: InverterModel,
     values: dict[str, float | int],
+    *,
+    device: object | None = None,
 ) -> list[DeviceTelemetryPoint]:
     telemetry_items: list[DeviceTelemetryPoint] = []
     sinvert_groups = build_sinvert_monitor(values)["groups"] if inverter_model.protocol == "s7_tcp" else []
@@ -2262,6 +2357,13 @@ def _build_telemetry_points(
                 index = int(point.key.split("_")[1]) - 1
                 if sinvert_groups[index]["measurement_quality"] != "plc_reported":
                     value = None
+        quality = telemetry_quality_service.evaluate(
+            point,
+            value,
+            device=device,
+            values=values,
+            telemetry_points=inverter_model.telemetry_points,
+        )
         telemetry_items.append(
             DeviceTelemetryPoint(
                 key=point.key,
@@ -2273,6 +2375,8 @@ def _build_telemetry_points(
                 section=str(point.protocol_meta.get("section", "General")),
                 visible=point.visible,
                 writable=point.writable,
+                quality=quality.state,
+                quality_reason=quality.reason,
             )
         )
     return telemetry_items

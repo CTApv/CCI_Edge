@@ -11,6 +11,13 @@ from pathlib import Path
 
 DEFAULT_APP_VERSION = "v1.0.0"
 _VIRTUAL_INTERFACE_PREFIXES = ("br-", "docker", "tailscale", "veth", "virbr", "zt")
+_BUILD_METADATA_NAMES = {
+    "PV_EDGE_MANAGER_VERSION",
+    "PV_EDGE_MANAGER_RELEASE_TAG",
+    "PV_EDGE_MANAGER_BUILD_LABEL",
+    "PV_EDGE_MANAGER_BUILD_COMMIT",
+    "PV_EDGE_MANAGER_BUILD_TIME",
+}
 
 
 class SystemIdentityService:
@@ -29,12 +36,28 @@ class SystemIdentityService:
     def _build_snapshot(self) -> dict[str, object]:
         raw_identifier, identifier_source = self._resolve_raw_identifier()
         edge_id = self._format_edge_id(raw_identifier, source=identifier_source)
-        commit = self._env_or_git("PV_EDGE_MANAGER_BUILD_COMMIT", "rev-parse", "--short=12", "HEAD")
-        app_version = os.getenv("PV_EDGE_MANAGER_VERSION", DEFAULT_APP_VERSION)
+        build_metadata = self._read_build_metadata()
+        app_version = (
+            self._first_env("PV_EDGE_MANAGER_VERSION", "PV_GUARDIAN_VERSION")
+            or build_metadata.get("PV_EDGE_MANAGER_VERSION")
+            or DEFAULT_APP_VERSION
+        )
+        release_tag = (
+            self._first_env("PV_EDGE_MANAGER_RELEASE_TAG", "PV_GUARDIAN_RELEASE_TAG")
+            or build_metadata.get("PV_EDGE_MANAGER_RELEASE_TAG")
+        )
         build_label = (
-            os.getenv("PV_EDGE_MANAGER_BUILD_LABEL")
+            build_metadata.get("PV_EDGE_MANAGER_BUILD_LABEL")
+            or self._first_env("PV_EDGE_MANAGER_BUILD_LABEL")
             or app_version
-            or commit
+        )
+        commit = (
+            build_metadata.get("PV_EDGE_MANAGER_BUILD_COMMIT")
+            or self._env_or_git("PV_EDGE_MANAGER_BUILD_COMMIT", "rev-parse", "--short=12", "HEAD")
+        )
+        build_time = (
+            build_metadata.get("PV_EDGE_MANAGER_BUILD_TIME")
+            or self._first_env("PV_EDGE_MANAGER_BUILD_TIME")
         )
 
         return {
@@ -43,11 +66,33 @@ class SystemIdentityService:
             "hostname": socket.gethostname(),
             "platform": platform.platform(),
             "app_version": app_version,
+            "release_tag": release_tag,
             "build_label": build_label,
             "build_commit": commit,
-            "build_time": os.getenv("PV_EDGE_MANAGER_BUILD_TIME"),
+            "build_time": build_time,
             "backend_path": str(Path(__file__).resolve().parents[2]),
         }
+
+    def _first_env(self, *names: str) -> str | None:
+        for name in names:
+            value = os.getenv(name)
+            if value and value.strip():
+                return value.strip()
+        return None
+
+    def _read_build_metadata(self) -> dict[str, str]:
+        metadata_path = Path(__file__).resolve().parents[2] / ".pv-guardian-build.env"
+        try:
+            lines = metadata_path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return {}
+
+        metadata: dict[str, str] = {}
+        for line in lines:
+            key, separator, value = line.partition("=")
+            if separator and key in _BUILD_METADATA_NAMES and value.strip():
+                metadata[key] = value.strip()
+        return metadata
 
     def _resolve_raw_identifier(self) -> tuple[str, str]:
         explicit_id = os.getenv("PV_EDGE_MANAGER_EDGE_ID")

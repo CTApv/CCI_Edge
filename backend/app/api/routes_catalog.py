@@ -16,6 +16,14 @@ def list_catalog_models() -> list[dict[str, object]]:
                 "transport": model.transport,
                 "defaults": model.defaults,
                 "features": model.features,
+                "verification": {
+                    "status": str(model.catalog_meta.get("verification_status", "unclassified")),
+                    "source_document": str(model.catalog_meta.get("source_document", "")) or None,
+                    "source_version": str(model.catalog_meta.get("source_version", "")) or None,
+                    "last_reviewed_at": str(model.catalog_meta.get("last_reviewed_at", "")) or None,
+                    "field_tested": bool(model.catalog_meta.get("field_tested", False)),
+                    "notes": str(model.catalog_meta.get("notes", "")) or None,
+                },
                 "telemetry_count": len(model.telemetry_points),
                 "visible_telemetry_count": len(
                     [point for point in model.telemetry_points if point.visible]
@@ -44,11 +52,22 @@ def list_catalog_models() -> list[dict[str, object]]:
                             "tan_phi_target",
                             "cos_phi_target",
                             "disable_reactive_targets",
+                            "power_factor_setting",
+                            "reactive_power_cosphi_pct",
+                            "remote_reactive_power_var",
                         }
                         for point in model.command_points
                     ),
                     "has_start_stop_control": any(
-                        point.key in {"start_inverter", "stop_inverter", "standby_inverter"}
+                        point.key
+                        in {
+                            "start_inverter",
+                            "stop_inverter",
+                            "standby_inverter",
+                            "start_stop",
+                            "remote_start_stop",
+                            "system_power_on_off",
+                        }
                         for point in model.command_points
                     ),
                     "supports_live_telemetry": any(

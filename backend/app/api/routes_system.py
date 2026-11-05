@@ -4,6 +4,7 @@ from app.schemas.system_schemas import (
     DEVICE_STATUS_OPTIONS,
     NetworkConfigApplyRequest,
     NetworkConfigSnapshotResponse,
+    NetworkInterfaceRoleRequest,
     NetworkInterfaceInfo,
     NetworkInterfacesResponse,
     PROTOCOL_OPTIONS,
@@ -55,6 +56,22 @@ def apply_network_config(payload: NetworkConfigApplyRequest) -> NetworkConfigSna
             dns_servers=payload.dns_servers,
             autoconnect=payload.autoconnect,
             use_default_route=payload.use_default_route,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return NetworkConfigSnapshotResponse.model_validate(snapshot)
+
+
+@router.post("/network-config/interface-role", response_model=NetworkConfigSnapshotResponse)
+def set_network_interface_role(
+    payload: NetworkInterfaceRoleRequest,
+) -> NetworkConfigSnapshotResponse:
+    try:
+        snapshot = network_config_service.set_interface_role(
+            interface_name=payload.interface_name,
+            network_role=payload.network_role,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

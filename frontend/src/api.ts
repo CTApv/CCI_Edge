@@ -243,6 +243,14 @@ export type CatalogModel = {
   transport: string;
   defaults: ConnectionSettings;
   features: string[];
+  verification: {
+    status: string;
+    source_document: string | null;
+    source_version: string | null;
+    last_reviewed_at: string | null;
+    field_tested: boolean;
+    notes: string | null;
+  };
   telemetry_count: number;
   visible_telemetry_count: number;
   command_count: number;
@@ -290,8 +298,11 @@ export type NetworkConfigAddress = {
   prefix_length: number;
 };
 
+export type NetworkInterfaceRole = "unassigned" | "cci" | "internet_inverter";
+
 export type NetworkConfigInterface = {
   interface_name: string;
+  network_role: NetworkInterfaceRole;
   device_type: string;
   state: string;
   connection_name: string | null;
@@ -336,6 +347,11 @@ export type NetworkConfigApplyPayload = {
   dns_servers: string[];
   autoconnect: boolean;
   use_default_route: boolean;
+};
+
+export type NetworkInterfaceRolePayload = {
+  interface_name: string;
+  network_role: NetworkInterfaceRole;
 };
 
 export type SystemHealthStatusCounts = {
@@ -452,7 +468,20 @@ export type SystemHealthEndpointRuntime = {
   last_command_age_ms: number | null;
   polling_profile: string;
   adaptive_mode: string;
+  adaptive_policy_mode: string;
+  adaptive_timeout_seconds: number | null;
+  adaptive_poll_retries: number | null;
+  adaptive_inter_request_delay_ms: number | null;
+  adaptive_sample_count: number;
+  recent_success_rate: number | null;
+  adaptive_request_p95_ms: number | null;
+  quarantined_device_count: number;
   expected_active_power_cycle_seconds: number | null;
+  active_power_slo_target_seconds: number;
+  active_power_slo_state: "pass" | "warning" | "fail" | "unknown";
+  estimated_full_telemetry_cycle_seconds: number | null;
+  full_telemetry_slo_target_seconds: number;
+  full_telemetry_slo_state: "pass" | "warning" | "fail" | "unknown";
   recommendations: string[];
   devices: string[];
 };
@@ -463,6 +492,7 @@ export type SystemHealthIdentitySnapshot = {
   hostname: string;
   platform: string;
   app_version: string;
+  release_tag: string | null;
   build_label: string;
   build_commit: string | null;
   build_time: string | null;
@@ -497,6 +527,37 @@ export type SystemHealthBroadcastGroup = {
   devices: SystemHealthBroadcastDevice[];
 };
 
+export type SystemHealthDataQualityIssueDevice = {
+  device_id: string;
+  name: string;
+  invalid_count: number;
+  warning_count: number;
+  unavailable_count: number;
+  examples: string[];
+};
+
+export type SystemHealthDataQualitySnapshot = {
+  total_points: number;
+  valid_points: number;
+  warning_points: number;
+  invalid_points: number;
+  unavailable_points: number;
+  devices_with_issues: number;
+  issue_devices: SystemHealthDataQualityIssueDevice[];
+};
+
+export type SystemHealthServiceLevelsSnapshot = {
+  active_power_target_seconds: number;
+  full_telemetry_target_seconds: number;
+  command_target_seconds: number;
+  active_power_within_target: number;
+  active_power_over_target: number;
+  active_power_unknown: number;
+  full_telemetry_within_target: number;
+  full_telemetry_over_target: number;
+  full_telemetry_unknown: number;
+};
+
 export type SystemHealthResponse = {
   generated_at: string;
   identity: SystemHealthIdentitySnapshot;
@@ -508,6 +569,8 @@ export type SystemHealthResponse = {
   broadcast_groups: SystemHealthBroadcastGroup[];
   endpoint_hotspots: SystemHealthEndpointHotspot[];
   endpoint_runtimes: SystemHealthEndpointRuntime[];
+  data_quality: SystemHealthDataQualitySnapshot;
+  service_levels: SystemHealthServiceLevelsSnapshot;
 };
 
 export type CreateDevicePayload = {
@@ -559,6 +622,8 @@ export type DeviceOverviewTelemetryPoint = {
   section: string;
   visible: boolean;
   writable: boolean;
+  quality: "valid" | "warning" | "invalid" | "unavailable";
+  quality_reason: string | null;
 };
 
 export type DeviceOverviewCommandPoint = {
@@ -986,6 +1051,12 @@ export const getNetworkConfiguration = () =>
   request<NetworkConfigSnapshot>("/system/network-config");
 export const applyNetworkConfiguration = (payload: NetworkConfigApplyPayload) =>
   request<NetworkConfigSnapshot>("/system/network-config/apply", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+export const updateNetworkInterfaceRole = (payload: NetworkInterfaceRolePayload) =>
+  request<NetworkConfigSnapshot>("/system/network-config/interface-role", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

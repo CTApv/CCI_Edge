@@ -1337,7 +1337,11 @@ class FleetDispatchService:
             )
             return control_state, self._build_dispatch_result(control_state)
 
-        response = command_service.send_active_power_limit_value(device.device_id, desired_percent)
+        response = command_service.send_active_power_limit_value(
+            device.device_id,
+            desired_percent,
+            audit_event=False,
+        )
         dispatch_at = self._utc_now()
         if response is None:
             retry_delay_seconds = self._record_command_retry_backoff(

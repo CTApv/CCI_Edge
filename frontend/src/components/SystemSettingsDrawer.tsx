@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import {
   applyNetworkConfiguration,
   getNetworkConfiguration,
+  updateNetworkInterfaceRole,
   type NetworkConfigInterface,
   type NetworkConfigSnapshot,
+  type NetworkInterfaceRole,
   type PendingNetworkChange,
 } from "../api";
 import { getSettingsAccentClass, SETTINGS_SECTION_CONTENT } from "../settingsSections";
@@ -41,6 +43,11 @@ type NetworkInterfacePurpose = {
 
 const CCI_STATIC_IP_SUGGESTION = "10.56.69.100";
 const DEFAULT_PREFIX_LENGTH = "24";
+const NETWORK_ROLE_OPTIONS: Array<{ value: NetworkInterfaceRole; label: string }> = [
+  { value: "unassigned", label: "Da assegnare" },
+  { value: "cci", label: "CCI communication" },
+  { value: "internet_inverter", label: "Internet + inverter" },
+];
 
 const GENERIC_INTERFACE_PURPOSE: NetworkInterfacePurpose = {
   cardKicker: "Scheda di rete",
@@ -51,8 +58,8 @@ const GENERIC_INTERFACE_PURPOSE: NetworkInterfacePurpose = {
   prefixLabel: "Prefisso",
 };
 
-function getInterfacePurpose(index: number): NetworkInterfacePurpose {
-  if (index === 0) {
+function getInterfacePurpose(role: NetworkInterfaceRole, index: number): NetworkInterfacePurpose {
+  if (role === "cci") {
     return {
       cardKicker: "LAN 1",
       title: "CCI communication",
@@ -63,7 +70,7 @@ function getInterfacePurpose(index: number): NetworkInterfacePurpose {
     };
   }
 
-  if (index === 1) {
+  if (role === "internet_inverter") {
     return {
       cardKicker: "LAN 2",
       title: "Internet + Inverter SLAVE communication",
@@ -80,8 +87,13 @@ function getInterfacePurpose(index: number): NetworkInterfacePurpose {
 
   return {
     ...GENERIC_INTERFACE_PURPOSE,
+    cardKicker: `LAN ${index + 1}`,
     title: `Interfaccia LAN ${index + 1}`,
   };
+}
+
+function formatNetworkRole(role: NetworkInterfaceRole): string {
+  return NETWORK_ROLE_OPTIONS.find((option) => option.value === role)?.label ?? "Da assegnare";
 }
 
 function buildFormState(item: NetworkConfigInterface): InterfaceFormState {
@@ -113,6 +125,32 @@ function buildFormStates(
   interfaces: NetworkConfigInterface[],
 ): Record<string, InterfaceFormState> {
   return Object.fromEntries(interfaces.map((item) => [item.interface_name, buildFormState(item)]));
+}
+
+function applyRolePreset(
+  form: InterfaceFormState,
+  networkRole: NetworkInterfaceRole,
+): InterfaceFormState {
+  if (networkRole === "cci") {
+    return {
+      ...form,
+      ipv4_method: "manual",
+      address: CCI_STATIC_IP_SUGGESTION,
+      prefix_length: DEFAULT_PREFIX_LENGTH,
+      secondary_address: "",
+      secondary_prefix_length: DEFAULT_PREFIX_LENGTH,
+      gateway: "",
+      dns_servers: "",
+      use_default_route: false,
+    };
+  }
+  if (networkRole === "internet_inverter") {
+    return {
+      ...form,
+      use_default_route: true,
+    };
+  }
+  return form;
 }
 
 function formatAddresses(addresses: Array<{ address: string; prefix_length: number }>): string {
@@ -306,6 +344,38 @@ export function SystemSettingsDrawer({
     }
   }
 
+  async function handleRoleChange(item: NetworkConfigInterface, networkRole: NetworkInterfaceRole) {
+    setBusyAction(`role:${item.interface_name}`);
+    setActionError(null);
+    try {
+      const response = await updateNetworkInterfaceRole({
+        interface_name: item.interface_name,
+        network_role: networkRole,
+      });
+      setSnapshot(response);
+      const nextForms = buildFormStates(response.interfaces);
+      const selectedInterface = response.interfaces.find(
+        (networkInterface) => networkInterface.interface_name === item.interface_name,
+      );
+      if (selectedInterface) {
+        nextForms[item.interface_name] = applyRolePreset(
+          nextForms[item.interface_name] ?? buildFormState(selectedInterface),
+          networkRole,
+        );
+      }
+      setForms(nextForms);
+      onPendingChange?.(response.pending_change);
+    } catch (roleError) {
+      setActionError(
+        roleError instanceof Error
+          ? roleError.message
+          : "Impossibile salvare il ruolo della scheda di rete.",
+      );
+    } finally {
+      setBusyAction(null);
+    }
+  }
+
   const pendingChange = snapshot?.pending_change ?? null;
   const section = SETTINGS_SECTION_CONTENT.lan;
 
@@ -389,10 +459,13 @@ export function SystemSettingsDrawer({
                   <div className="settings-network-list">
                     {snapshot.interfaces.map((item, index) => {
                       const form = forms[item.interface_name] ?? buildFormState(item);
-                      const purpose = getInterfacePurpose(index);
+                      const purpose = getInterfacePurpose(item.network_role, index);
                       const applyingThisInterface = busyAction === `apply:${item.interface_name}`;
+                      const assigningThisRole = busyAction === `role:${item.interface_name}`;
                       const disableInterfaceActions =
                         busyAction !== null || pendingChange !== null || !snapshot.apply_supported;
+                      const disableRoleAction =
+                        busyAction !== null || pendingChange !== null || !item.editable;
 
                       return (
                         <article key={item.interface_name} className="settings-network-card">
@@ -409,6 +482,9 @@ export function SystemSettingsDrawer({
                               <p className="settings-network-note">
                                 Interfaccia {item.interface_name} | Profilo{" "}
                                 {item.connection_name ?? "non associato"} | MAC {item.mac_address ?? "--"}
+                              </p>
+                              <p className="settings-network-note">
+                                Ruolo salvato: {formatNetworkRole(item.network_role)}
                               </p>
                             </div>
                             <span
@@ -459,6 +535,27 @@ export function SystemSettingsDrawer({
                             <div className="settings-network-form">
                               <div className="form-grid">
                                 <label className="field">
+                                  <span className="field-label">Ruolo interfaccia</span>
+                                  <select
+                                    className="field-control"
+                                    value={item.network_role}
+                                    onChange={(event) => {
+                                      void handleRoleChange(
+                                        item,
+                                        event.currentTarget.value as NetworkInterfaceRole,
+                                      );
+                                    }}
+                                    disabled={disableRoleAction}
+                                  >
+                                    {NETWORK_ROLE_OPTIONS.map((option) => (
+                                      <option key={option.value} value={option.value}>
+                                        {option.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </label>
+
+                                <label className="field">
                                   <span className="field-label">Modalita IPv4</span>
                                   <select
                                     className="field-control"
@@ -494,24 +591,19 @@ export function SystemSettingsDrawer({
                                   </button>
                                 </label>
 
-                                {index === 0 ? (
+                                {item.network_role === "cci" ? (
                                   <label className="field">
                                     <span className="field-label">Preset CCI</span>
                                     <button
                                       className="secondary-button settings-toggle-button"
-                                      type="button"
-                                      onClick={() =>
-                                        updateForm(item.interface_name, (current) => ({
-                                          ...current,
-                                          ipv4_method: "manual",
-                                          address: CCI_STATIC_IP_SUGGESTION,
-                                          prefix_length: DEFAULT_PREFIX_LENGTH,
-                                          gateway: "",
-                                          use_default_route: false,
-                                        }))
-                                      }
-                                      disabled={!item.editable || disableInterfaceActions}
-                                    >
+                                    type="button"
+                                    onClick={() =>
+                                      updateForm(item.interface_name, (current) =>
+                                        applyRolePreset(current, "cci"),
+                                      )
+                                    }
+                                    disabled={!item.editable || disableInterfaceActions}
+                                  >
                                       Usa {CCI_STATIC_IP_SUGGESTION}/24
                                     </button>
                                   </label>
@@ -675,7 +767,9 @@ export function SystemSettingsDrawer({
                                   onClick={() => void handleApply(item)}
                                   disabled={!item.editable || disableInterfaceActions}
                                 >
-                                  {applyingThisInterface ? "Applicazione..." : "Applica configurazione"}
+                                  {applyingThisInterface || assigningThisRole
+                                    ? "Salvataggio..."
+                                    : "Applica configurazione"}
                                 </button>
                               </div>
                             </div>

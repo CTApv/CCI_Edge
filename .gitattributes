@@ -16,6 +16,7 @@
 *.conf text eol=lf
 *.rules text eol=lf
 *.env.example text eol=lf
+Dockerfile text eol=lf
 
 *.png binary
 *.jpg binary

@@ -9120,6 +9120,32 @@ body::selection {
   border: 1px solid rgba(124, 182, 255, 0.1);
 }
 
+.detail-card--quality-warning {
+  border-color: rgba(245, 194, 88, 0.34);
+}
+
+.detail-card--quality-invalid,
+.detail-card--quality-unavailable {
+  border-color: rgba(242, 110, 91, 0.34);
+}
+
+.detail-card-quality {
+  display: block;
+  margin-top: 8px;
+  color: var(--text-soft);
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.detail-card-quality--warning {
+  color: #ffe0a0;
+}
+
+.detail-card-quality--invalid,
+.detail-card-quality--unavailable {
+  color: #ffd7d1;
+}
+
 .detail-card-label {
   margin: 0;
   color: var(--text-dim);

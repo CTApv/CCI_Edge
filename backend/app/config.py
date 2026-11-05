@@ -26,6 +26,12 @@ class Settings:
                 self.database_path.with_name(f"{self.database_path.stem}_history.db"),
             )
         ).expanduser()
+        self.network_interface_roles_path = Path(
+            os.getenv(
+                "PV_EDGE_MANAGER_NETWORK_INTERFACE_ROLES_PATH",
+                self.database_path.with_name("network_interface_roles.json"),
+            )
+        ).expanduser()
         self.modbus_tcp_slave_enabled = _env_bool("PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_ENABLED", True)
         self.modbus_tcp_slave_host = os.getenv("PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_HOST", "0.0.0.0")
         self.modbus_tcp_slave_port = int(os.getenv("PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_PORT", "15020"))

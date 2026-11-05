@@ -1,4 +1,5 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from app.schemas.device_overview_schemas import (
@@ -7,6 +8,7 @@ from app.schemas.device_overview_schemas import (
     DeviceTelemetryPoint,
 )
 from app.schemas.device_schemas import DeviceResponse
+from app.models.inverter_model import InverterModel, InverterPoint
 from app.services.endpoint_runtime_service import EndpointRuntimeService
 from app.services.connection_manager import connection_manager
 from app.services.live_cache import ConnectionLifecycle, LiveCacheEntry
@@ -18,6 +20,7 @@ from app.services.polling_engine import (
     PollingEngine,
     _NO_DUE_AT,
     _merge_poll_entry,
+    poll_device,
 )
 
 
@@ -118,6 +121,41 @@ def _build_success_entry() -> LiveCacheEntry:
 class PollingEngineTests(unittest.TestCase):
     def setUp(self) -> None:
         connection_manager.close_all_tcp_connections()
+
+    def test_requested_active_power_poll_becomes_heartbeat_without_power_point(self) -> None:
+        device = _build_device(device_id="solax-ultra", name="Solax Ultra")
+        inverter_model = InverterModel(
+            brand="SOLAX POWER",
+            model="X3-ULTRA",
+            protocol="modbus_tcp",
+            transport="tcp",
+            telemetry_points=[
+                InverterPoint(
+                    key="status",
+                    label="Stato operativo",
+                    kind="telemetry",
+                    register_type="input",
+                    address=9,
+                    length=1,
+                    datatype="uint16",
+                    protocol_meta={"heartbeat": True, "summary_metric": "status"},
+                )
+            ],
+        )
+
+        with patch(
+            "app.services.polling_engine.inverter_profile_resolver.resolve_for_device",
+            return_value=inverter_model,
+        ), patch(
+            "app.services.polling_engine.inverter_io_service.read_heartbeat",
+            return_value=SimpleNamespace(values={"status": 2}, unit_argument_style="device_id"),
+        ):
+            entry = poll_device(device, poll_kind="active_power")
+
+        self.assertIsNotNone(entry)
+        assert entry is not None
+        self.assertEqual(entry.diagnostics.poll_kind, "heartbeat")
+        self.assertIn("poll_kind=heartbeat", entry.diagnostics.last_poll_status)
 
     def test_run_keeps_polling_loop_alive_after_cycle_exception(self) -> None:
         engine = PollingEngine()

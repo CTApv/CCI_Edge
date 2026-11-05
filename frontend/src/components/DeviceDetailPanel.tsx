@@ -131,13 +131,25 @@ function DetailKpiCard({ label, value, note }: DetailKpiCardProps) {
 type DetailCardProps = {
   label: string;
   value: string;
+  quality?: DeviceOverviewTelemetryPoint["quality"];
+  qualityReason?: string | null;
 };
 
-function DetailCard({ label, value }: DetailCardProps) {
+function DetailCard({ label, value, quality = "valid", qualityReason = null }: DetailCardProps) {
   return (
-    <article className="detail-card">
+    <article className={`detail-card detail-card--quality-${quality}`}>
       <p className="detail-card-label">{label}</p>
       <strong className="detail-card-value">{value}</strong>
+      {quality !== "valid" ? (
+        <span className={`detail-card-quality detail-card-quality--${quality}`}>
+          {quality === "invalid"
+            ? "Dato non valido"
+            : quality === "warning"
+              ? "Da verificare"
+              : "Non disponibile"}
+          {qualityReason ? ` | ${qualityReason}` : ""}
+        </span>
+      ) : null}
     </article>
   );
 }
@@ -793,6 +805,8 @@ export function DeviceDetailPanel({
                                             key={point.key}
                                             label={translateTelemetryLabel(point.label)}
                                             value={formatTelemetryValue(point)}
+                                            quality={point.quality}
+                                            qualityReason={point.quality_reason}
                                           />
                                         ))}
                                       </div>

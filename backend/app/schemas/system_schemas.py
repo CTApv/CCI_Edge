@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from app.schemas.device_schemas import ProtocolValue, TransportValue
 
 DeviceStatusValue = Literal["pending", "degraded", "offline", "online", "warning", "fault"]
+NetworkInterfaceRoleValue = Literal["unassigned", "cci", "internet_inverter"]
 
 PROTOCOL_OPTIONS = get_args(ProtocolValue)
 TRANSPORT_OPTIONS = get_args(TransportValue)
@@ -38,6 +39,7 @@ class NetworkConfigApplyAddress(BaseModel):
 
 class NetworkConfigInterface(BaseModel):
     interface_name: str
+    network_role: NetworkInterfaceRoleValue = "unassigned"
     device_type: str
     state: str
     connection_name: str | None
@@ -82,6 +84,11 @@ class NetworkConfigApplyRequest(BaseModel):
     dns_servers: list[str] = Field(default_factory=list)
     autoconnect: bool = True
     use_default_route: bool = True
+
+
+class NetworkInterfaceRoleRequest(BaseModel):
+    interface_name: str
+    network_role: NetworkInterfaceRoleValue
 
 
 class SystemHealthStatusCounts(BaseModel):
@@ -198,7 +205,20 @@ class SystemHealthEndpointRuntime(BaseModel):
     last_command_age_ms: float | None = None
     polling_profile: str = "standard"
     adaptive_mode: str = "standard"
+    adaptive_policy_mode: str = "warming"
+    adaptive_timeout_seconds: float | None = None
+    adaptive_poll_retries: int | None = None
+    adaptive_inter_request_delay_ms: float | None = None
+    adaptive_sample_count: int = 0
+    recent_success_rate: float | None = None
+    adaptive_request_p95_ms: float | None = None
+    quarantined_device_count: int = 0
     expected_active_power_cycle_seconds: float | None = None
+    active_power_slo_target_seconds: float = 30.0
+    active_power_slo_state: Literal["pass", "warning", "fail", "unknown"] = "unknown"
+    estimated_full_telemetry_cycle_seconds: float | None = None
+    full_telemetry_slo_target_seconds: float = 300.0
+    full_telemetry_slo_state: Literal["pass", "warning", "fail", "unknown"] = "unknown"
     recommendations: list[str] = Field(default_factory=list)
     devices: list[str]
 
@@ -209,6 +229,7 @@ class SystemHealthIdentitySnapshot(BaseModel):
     hostname: str
     platform: str
     app_version: str
+    release_tag: str | None
     build_label: str
     build_commit: str | None
     build_time: str | None
@@ -243,6 +264,37 @@ class SystemHealthBroadcastGroup(BaseModel):
     devices: list[SystemHealthBroadcastDevice]
 
 
+class SystemHealthDataQualityIssueDevice(BaseModel):
+    device_id: str
+    name: str
+    invalid_count: int
+    warning_count: int
+    unavailable_count: int
+    examples: list[str]
+
+
+class SystemHealthDataQualitySnapshot(BaseModel):
+    total_points: int
+    valid_points: int
+    warning_points: int
+    invalid_points: int
+    unavailable_points: int
+    devices_with_issues: int
+    issue_devices: list[SystemHealthDataQualityIssueDevice]
+
+
+class SystemHealthServiceLevelsSnapshot(BaseModel):
+    active_power_target_seconds: float
+    full_telemetry_target_seconds: float
+    command_target_seconds: float
+    active_power_within_target: int
+    active_power_over_target: int
+    active_power_unknown: int
+    full_telemetry_within_target: int
+    full_telemetry_over_target: int
+    full_telemetry_unknown: int
+
+
 class SystemHealthResponse(BaseModel):
     generated_at: str
     identity: SystemHealthIdentitySnapshot
@@ -254,3 +306,5 @@ class SystemHealthResponse(BaseModel):
     broadcast_groups: list[SystemHealthBroadcastGroup]
     endpoint_hotspots: list[SystemHealthEndpointHotspot]
     endpoint_runtimes: list[SystemHealthEndpointRuntime]
+    data_quality: SystemHealthDataQualitySnapshot
+    service_levels: SystemHealthServiceLevelsSnapshot
