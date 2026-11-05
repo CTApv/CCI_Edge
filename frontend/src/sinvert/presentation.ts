@@ -9,7 +9,7 @@ export const commandNames: Record<string, string> = {
   sinvert_power_reference_raw: "Riferimento di potenza",
 };
 export const number = (value: number | null | undefined, digits = 1) =>
-  value == null || !Number.isFinite(value) ? "—" : new Intl.NumberFormat("it-IT", { maximumFractionDigits: digits }).format(value);
+  value == null || !Number.isFinite(value) ? "—" : new Intl.NumberFormat("it-IT", { maximumFractionDigits: digits, useGrouping: true }).format(value);
 export function timestamp(value?: string | null) {
   if (!value || Number.isNaN(new Date(value).getTime())) return "Non disponibile";
   return new Intl.DateTimeFormat("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date(value));

@@ -1,7 +1,7 @@
 {
   "name": "pv-edge-manager-frontend",
   "private": true,
-  "version": "1.2.0-test-sinvert.2",
+  "version": "1.2.0-test-sinvert.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
