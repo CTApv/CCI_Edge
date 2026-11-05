@@ -17,6 +17,7 @@ from app.catalog.sungrow_catalog import build_sungrow_models
 from app.catalog.xantrex_catalog import build_xantrex_gt_models
 from app.catalog.zcs_catalog import build_zcs_models
 from app.services.kaco_sunspec_service import KACO_SUNSPEC_DRIVER
+from app.catalog.sinvert_s7_catalog import build_sinvert_s7_models
 
 
 def telemetry_point(
@@ -3557,6 +3558,9 @@ INVERTER_CATALOG: list[InverterModel] = [
         command_points=build_active_power_limit_command("holding"),
     ),
 ] + build_aurora_models() + build_bonfiglioli_models("modbus_rtu", "serial") + build_bonfiglioli_models("modbus_tcp", "tcp") + build_delta_models() + build_trio_models() + build_fronius_models("modbus_rtu", "serial") + build_fronius_models("modbus_tcp", "tcp") + build_goodwe_models("modbus_rtu", "serial") + build_goodwe_models("modbus_tcp", "tcp") + build_huawei_models("modbus_rtu", "serial") + build_huawei_models("modbus_tcp", "tcp") + build_ingeteam_models("modbus_rtu", "serial") + build_ingeteam_models("modbus_tcp", "tcp") + build_kehua_models("modbus_rtu", "serial") + build_kehua_models("modbus_tcp", "tcp") + build_kostal_models("modbus_rtu", "serial") + build_kostal_models("modbus_tcp", "tcp") + build_kaco_models("modbus_rtu", "serial") + build_kaco_models("modbus_tcp", "tcp") + build_peimar_models("modbus_rtu", "serial") + build_peimar_models("modbus_tcp", "tcp") + build_santerno_models("modbus_rtu", "serial") + build_schneider_conext_cl_models("modbus_rtu", "serial") + build_schneider_conext_cl_models("modbus_tcp", "tcp") + build_schneider_conext_xc_models("modbus_rtu", "serial") + build_schneider_conext_xc_models("modbus_tcp", "tcp") + build_schneider_rl_models("modbus_rtu", "serial") + build_schneider_rl_models("modbus_tcp", "tcp") + build_siel_models("modbus_rtu", "serial") + build_siel_models("modbus_tcp", "tcp") + build_sungrow_models("modbus_rtu", "serial") + build_sungrow_models("modbus_tcp", "tcp") + build_xantrex_gt_models("modbus_rtu", "serial") + build_xantrex_gt_models("modbus_tcp", "tcp") + build_zcs_models("modbus_rtu", "serial") + build_zcs_models("modbus_tcp", "tcp")
+
+
+INVERTER_CATALOG += build_sinvert_s7_models()
 
 
 def get_inverter_catalog() -> list[InverterModel]:

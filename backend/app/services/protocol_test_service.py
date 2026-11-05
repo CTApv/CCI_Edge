@@ -108,6 +108,10 @@ class ProtocolOperationCancelledError(RuntimeError):
 
 
 PROTOCOL_RULES: dict[str, _ProtocolRule] = {
+    "s7_tcp": _ProtocolRule(
+        allowed_transports=("tcp",),
+        required_settings_by_transport={"tcp": ("host", "port", "rack", "slot", "timeout_seconds", "retries")},
+    ),
     "modbus_rtu": _ProtocolRule(
         allowed_transports=("serial", "tcp"),
         required_settings_by_transport={
@@ -567,6 +571,12 @@ class ProtocolTestService:
             return self._discover_tcp(payload)
 
     def _discover_tcp(self, payload: DeviceDiscoveryTcpRequest) -> DeviceDiscoveryTcpResponse:
+        if payload.gateway_protocol_mode == "tcp" and (
+            ((payload.preferred_brand or "").strip().lower() == "sinvert" and not payload.preferred_model)
+            or ((payload.preferred_model or "").startswith("M/TL S7-300"))
+            or (not payload.preferred_brand and payload.port_start == payload.port_end == 102)
+        ):
+            return self._discover_sinvert_tcp(payload)
         gateway_protocol_mode = payload.gateway_protocol_mode
         descriptors = self._preferred_discovery_descriptors(
             self._get_discovery_descriptors(
@@ -615,6 +625,41 @@ class ProtocolTestService:
             request_count=request_count,
             results=results,
         )
+
+    def _discover_sinvert_tcp(self, payload: DeviceDiscoveryTcpRequest) -> DeviceDiscoveryTcpResponse:
+        from app.services.sinvert_s7_discovery import probe_sinvert
+        from app.catalog.sinvert_s7_catalog import build_sinvert_s7_models
+        started=perf_counter();results=[];attempts=0;errors=[]
+        models=build_sinvert_s7_models()
+        model=next((m for m in models if m.model==payload.preferred_model),models[0])
+        endpoints=[(host,port) for host in self._expand_ipv4_range(payload.host_start,payload.host_end)
+                   for port in range(payload.port_start,payload.port_end+1)]
+        def probe(endpoint):
+            host,port=endpoint
+            count=0;error=None
+            for _ in range(min(3,payload.retries)+1):
+                if self._protocol_operation_cancel_requested():return None,count,error
+                count+=1
+                try:
+                    identity=probe_sinvert(host,port,min(5.0,payload.timeout_seconds))
+                    result=DeviceDiscoveryTcpResult(host=host,port=port,unit_id=0,register=135,function="s7",
+                        rack=identity['rack'],slot=identity['slot'],raw_values=identity['raw'],
+                        signature_label=f"{identity['cpu']} | {identity['serial']} | layout SINVERT compatibile",
+                        candidate_brands=['SINVERT'],candidate_profile_count=1,
+                        candidate_profiles=[DiscoveryCandidateProfile(brand=model.brand,model=model.model,protocol='s7_tcp',transport='tcp')])
+                    return result,count,None
+                except Exception as exc:error=f'{host}:{port}: {exc}'
+            return None,count,error
+        with ThreadPoolExecutor(max_workers=min(4,len(endpoints) or 1)) as executor:
+            futures=[executor.submit(probe,endpoint) for endpoint in endpoints]
+            for future in as_completed(futures):
+                try:
+                    result,count,error=future.result();attempts+=count
+                    if result is not None:results.append(result)
+                    elif error:errors.append(error)
+                except Exception as exc:errors.append(str(exc))
+        results.sort(key=lambda r:(int(ip_address(r.host)),r.port))
+        return DeviceDiscoveryTcpResponse(duration_ms=round((perf_counter()-started)*1000),request_count=attempts,results=results,errors=errors)
 
     def _read_rtu_common(self, payload: RtuReadRequest) -> RtuReadResponse:
         tx_trace: list[str] = []

@@ -55,7 +55,7 @@ class DeviceService:
         *,
         endpoint_device_count: int = 1,
     ) -> DeviceResponse:
-        if device.protocol not in {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485"}:
+        if device.protocol not in {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485", "s7_tcp"}:
             return device
 
         cache_entry = live_cache.get(device.device_id)

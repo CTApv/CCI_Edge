@@ -758,6 +758,27 @@ function formatCompactPowerKw(valueKw: number | null | undefined): string {
   return `${metricFormatter.format(valueKw)} kW`;
 }
 
+function formatElectricalMetric(
+  metrics: DeviceOverview["metrics"],
+  field: "power_kw" | "daily_energy_kwh" | "total_energy_kwh" | "temperature_c",
+  unit: string,
+): string {
+  return metrics.physical_measurements_available === false
+    ? "--"
+    : `${metricFormatter.format(metrics[field])} ${unit}`;
+}
+
+function formatFleetMetric(
+  summary: DashboardSummary,
+  field: "total_power_kw" | "daily_energy_kwh" | "total_energy_kwh",
+  unit: string,
+): string {
+  if (summary.physical_measurements_available === false) return "--";
+  return field === "total_power_kw"
+    ? formatCompactPowerKw(summary[field])
+    : `${metricFormatter.format(summary[field])} ${unit}`;
+}
+
 function formatStoredSetpointTimestamp(rawValue: string | null): string | null {
   if (!rawValue) {
     return null;
@@ -1524,7 +1545,7 @@ function buildPlantPowerComparison(summary: DashboardSummary | null): {
     };
   }
 
-  const comparison = `${formatCompactPowerKw(summary.total_power_kw)} su ${formatCompactPowerKw(summary.nominal_power_kw)} nominali`;
+  const comparison = `${formatFleetMetric(summary, "total_power_kw", "kW")} su ${formatCompactPowerKw(summary.nominal_power_kw)} nominali`;
   const coverage =
     summary.nominal_power_device_count >= summary.total_devices
       ? "Nominale AC installata completa."
@@ -1567,6 +1588,14 @@ function buildLiteHeroMessage(
     };
   }
 
+  if (summary.physical_measurements_available === false) {
+    return {
+      title: summary.online_devices > 0 ? "Diagnostica PLC attiva" : "Diagnostica PLC in attesa",
+      note: "Valori logici del PLC. Misure elettriche e comandi fisici degli inverter non validati.",
+      tone: summary.online_devices > 0 ? "positive" : "neutral",
+    };
+  }
+
   if (systemHealthHasAttention) {
     return {
       title: "Impianto operativo con elementi da verificare",
@@ -1586,6 +1615,14 @@ function buildLiteSelectedSummaryItems(
   device: Device,
   overview: DeviceOverview | null,
 ): SummaryItem[] {
+  if (device.protocol === "s7_tcp") {
+    return [
+      { label: "Comunicazione PLC", value: translateStatusLabel(device.status), caption: "Stato della connessione S7", tone: getStatusTone(device.status) },
+      { label: "Profilo", value: "Diagnostica", caption: "Valori logici del PLC in sola lettura", tone: "neutral" },
+      { label: "Misure elettriche", value: "Non disponibili", caption: "Potenza, energia e temperatura non validate", tone: "neutral" },
+      { label: "Comandi inverter", value: "Non disponibili", caption: "Esecuzione fisica non validata", tone: "neutral" },
+    ];
+  }
   return [
     {
       label: "Stato dispositivo",
@@ -1595,19 +1632,19 @@ function buildLiteSelectedSummaryItems(
     },
     {
       label: "Potenza attuale",
-      value: overview ? `${metricFormatter.format(overview.metrics.power_kw)} kW` : "--",
+      value: overview ? formatElectricalMetric(overview.metrics, "power_kw", "kW") : "--",
       caption: "Produzione attiva dell'inverter nell'ultimo polling utile",
       tone: "positive",
     },
     {
       label: "Energia oggi",
-      value: overview ? `${metricFormatter.format(overview.metrics.daily_energy_kwh)} kWh` : "--",
+      value: overview ? formatElectricalMetric(overview.metrics, "daily_energy_kwh", "kWh") : "--",
       caption: "Produzione giornaliera del dispositivo",
       tone: "neutral",
     },
     {
       label: "Energia totale",
-      value: overview ? `${metricFormatter.format(overview.metrics.total_energy_kwh)} kWh` : "--",
+      value: overview ? formatElectricalMetric(overview.metrics, "total_energy_kwh", "kWh") : "--",
       caption: "Contatore cumulato disponibile sul modello",
       tone: "neutral",
     },
@@ -2498,7 +2535,7 @@ function OperatorDeviceGridPanel({
             : error
               ? "--"
               : summary
-                ? formatCompactPowerKw(summary.total_power_kw)
+                ? formatFleetMetric(summary, "total_power_kw", "kW")
                 : "--"}
         </strong>
         <p className="operator-plant-tile__note">
@@ -4082,7 +4119,7 @@ function buildSummaryItems(
     {
       label: "Potenza totale",
       value: getDisplayValue(
-        summary ? `${metricFormatter.format(summary.total_power_kw)} kW` : "--",
+        summary ? formatFleetMetric(summary, "total_power_kw", "kW") : "--",
         loading,
         hasError,
       ),
@@ -4092,7 +4129,7 @@ function buildSummaryItems(
     {
       label: "Energia giornaliera",
       value: getDisplayValue(
-        summary ? `${metricFormatter.format(summary.daily_energy_kwh)} kWh` : "--",
+        summary ? formatFleetMetric(summary, "daily_energy_kwh", "kWh") : "--",
         loading,
         hasError,
       ),
@@ -4102,7 +4139,7 @@ function buildSummaryItems(
     {
       label: "Energia totale",
       value: getDisplayValue(
-        summary ? `${metricFormatter.format(summary.total_energy_kwh)} kWh` : "--",
+        summary ? formatFleetMetric(summary, "total_energy_kwh", "kWh") : "--",
         loading,
         hasError,
       ),
@@ -5662,7 +5699,7 @@ function buildFleetGroups(
   return [
     {
       title: "Produzione impianto",
-      value: summary ? `${metricFormatter.format(summary.total_power_kw)} kW` : "--",
+      value: summary ? formatFleetMetric(summary, "total_power_kw", "kW") : "--",
       note: "Sintesi della resa complessiva disponibile nell'ultimo ciclo utile.",
       rows: [
         {
@@ -5678,11 +5715,11 @@ function buildFleetGroups(
         },
         {
           label: "Energia giornaliera",
-          value: summary ? `${metricFormatter.format(summary.daily_energy_kwh)} kWh` : "--",
+          value: summary ? formatFleetMetric(summary, "daily_energy_kwh", "kWh") : "--",
         },
         {
           label: "Energia totale",
-          value: summary ? `${metricFormatter.format(summary.total_energy_kwh)} kWh` : "--",
+          value: summary ? formatFleetMetric(summary, "total_energy_kwh", "kWh") : "--",
         },
       ],
     },
@@ -5734,24 +5771,53 @@ function buildFleetGroups(
 }
 
 function buildDeviceGroups(device: Device, overview: DeviceOverview | null): DataGroup[] {
+  if (device.protocol === "s7_tcp" && overview) {
+    const values = new Map(overview.telemetry.map((point) => [point.key, point.raw_value]));
+    const flags = [1, 2, 3, 4].map((unit) => values.get(`unit_${unit}_flag_raw`));
+    const conditionsKnown = overview.diagnostics.data_freshness === "fresh"
+      && overview.diagnostics.last_error === null
+      && flags.every((value) => typeof value === "boolean")
+      && typeof values.get("mtl_mode_raw") === "boolean";
+    const noGroupsAvailable = conditionsKnown && values.get("mtl_mode_raw") === true
+      && flags.every((value) => value === false);
+    return [
+      { title: "Diagnostica PLC", value: translateStatusLabel(device.status),
+        note: noGroupsAvailable
+          ? "I consensi dei gruppi sono assenti: la logica PLC richiede l'arresto e impedisce l'avvio."
+          : "Valori logici in lettura. Misure elettriche e comandi fisici non validati.",
+        rows: [{ label: "Ultimo contatto", value: formatRuntimeTimestamp(overview.diagnostics.last_contact_at) ?? "non disponibile" },
+               { label: "Tempo di risposta", value: `${overview.diagnostics.response_time_ms} ms` },
+               { label: "Avvio", value: noGroupsAvailable ? "Bloccato dai consensi PLC"
+                   : conditionsKnown ? "Comandi da validare" : "Condizioni non confermate" },
+               { label: "Comandi di collaudo", value: device.connection_settings.sinvert_write_mode === "commissioning"
+                   ? "Abilitati manualmente; esecuzione fisica da verificare" : "Scritture disabilitate" },
+               { label: "Letture non riuscite", value: String(overview.diagnostics.failed_points ?? 0) }] },
+      ...(device.model.includes("Collaudo comandi") ? [{
+        title: "Collaudo SINVERT", value: "Comandi manuali",
+        note: "ON/OFF agiscono sulle posizioni gestite dall'intero PLC. Il riferimento di potenza usa valori PLC con scala fisica da confermare.",
+        rows: [{ label: "Massimo riferimento PLC configurato", value: String(device.connection_settings.sinvert_reference_max_raw ?? 0) }],
+      }] : []),
+      ...buildTelemetryGroups(overview),
+    ];
+  }
   if (overview && overview.telemetry.length > 0) {
     return [
       {
         title: "Produzione",
-        value: `${metricFormatter.format(overview.metrics.power_kw)} kW`,
+        value: formatElectricalMetric(overview.metrics, "power_kw", "kW"),
         note: "Sintesi operativa del dispositivo selezionato.",
         rows: [
           {
             label: "Energia oggi",
-            value: `${metricFormatter.format(overview.metrics.daily_energy_kwh)} kWh`,
+            value: formatElectricalMetric(overview.metrics, "daily_energy_kwh", "kWh"),
           },
           {
             label: "Energia totale",
-            value: `${metricFormatter.format(overview.metrics.total_energy_kwh)} kWh`,
+            value: formatElectricalMetric(overview.metrics, "total_energy_kwh", "kWh"),
           },
           {
             label: "Temperatura",
-            value: `${metricFormatter.format(overview.metrics.temperature_c)} C`,
+            value: formatElectricalMetric(overview.metrics, "temperature_c", "C"),
           },
         ],
       },
@@ -6110,7 +6176,7 @@ export default function App() {
     );
     const nextPowerMap = Object.entries(nextOverviewMap).reduce<DevicePowerMap>(
       (accumulator, [deviceId, overview]) => {
-        accumulator[deviceId] = overview?.metrics.power_kw ?? null;
+        accumulator[deviceId] = overview?.metrics.physical_measurements_available === false ? null : overview?.metrics.power_kw ?? null;
         return accumulator;
       },
       {},
@@ -7143,9 +7209,9 @@ export default function App() {
         ? `Riferimento live: ${sceneDevice.name} | ${sceneDevice.brand} | ${sceneDevice.model}`
         : "Nessun riferimento live disponibile. La scena si popolerà con il primo overview valido.";
   const scenePowerValue = selectedOverview
-    ? `${metricFormatter.format(selectedOverview.metrics.power_kw)} kW`
+    ? formatElectricalMetric(selectedOverview.metrics, "power_kw", "kW")
     : summary
-      ? `${metricFormatter.format(summary.total_power_kw)} kW`
+      ? formatFleetMetric(summary, "total_power_kw", "kW")
       : "--";
   const scenePowerNote = selectedOverview
     ? "Potenza attiva disponibile sull'ultimo polling utile."
@@ -7201,17 +7267,17 @@ export default function App() {
       ? [
           {
             label: "Energia oggi",
-            value: `${metricFormatter.format(selectedOverview.metrics.daily_energy_kwh)} kWh`,
+            value: formatElectricalMetric(selectedOverview.metrics, "daily_energy_kwh", "kWh"),
             note: "Yield giornaliero disponibile",
           },
           {
             label: "Energia totale",
-            value: `${metricFormatter.format(selectedOverview.metrics.total_energy_kwh)} kWh`,
+            value: formatElectricalMetric(selectedOverview.metrics, "total_energy_kwh", "kWh"),
             note: "Contatore cumulato del dispositivo",
           },
           {
             label: "Temperatura",
-            value: `${metricFormatter.format(selectedOverview.metrics.temperature_c)} C`,
+            value: formatElectricalMetric(selectedOverview.metrics, "temperature_c", "C"),
             note: "Lettura termica corrente",
           },
           {
@@ -7233,12 +7299,12 @@ export default function App() {
           },
           {
             label: "Energia oggi",
-            value: summary ? `${metricFormatter.format(summary.daily_energy_kwh)} kWh` : "--",
+            value: summary ? formatFleetMetric(summary, "daily_energy_kwh", "kWh") : "--",
             note: "Produzione cumulata di giornata",
           },
           {
             label: "Energia totale",
-            value: summary ? `${metricFormatter.format(summary.total_energy_kwh)} kWh` : "--",
+            value: summary ? formatFleetMetric(summary, "total_energy_kwh", "kWh") : "--",
             note: "Produzione complessiva dell'impianto",
           },
         ];
@@ -7384,7 +7450,7 @@ export default function App() {
         }));
         setDevicePowerMap((current) => ({
           ...current,
-          [currentDeviceId]: overview.metrics.power_kw,
+          [currentDeviceId]: overview.metrics.physical_measurements_available === false ? null : overview.metrics.power_kw,
         }));
       } catch {
         // Keep the cached or stub overview already visible in the scene.
@@ -7786,7 +7852,7 @@ export default function App() {
                   <div className="control-metric-chip control-metric-chip--primary">
                     <span>Potenza totale attuale</span>
                     <strong>
-                      {summary ? formatCompactPowerKw(summary.total_power_kw) : "--"}
+                      {summary ? formatFleetMetric(summary, "total_power_kw", "kW") : "--"}
                     </strong>
                     <p className="control-metric-chip-note">
                       {loading
@@ -7817,7 +7883,7 @@ export default function App() {
                   {selectedDevice === null ? (
                     <OperatorPlantControlCard
                       loading={loading}
-                      powerValue={summary ? formatCompactPowerKw(summary.total_power_kw) : "--"}
+                      powerValue={summary ? formatFleetMetric(summary, "total_power_kw", "kW") : "--"}
                       caption={
                         summary
                           ? `${summary.online_devices}/${summary.total_devices} inverter online`
@@ -7879,7 +7945,7 @@ export default function App() {
                   <div className="control-metric-chip control-metric-chip--primary">
                     <span>Potenza totale</span>
                     <strong>
-                      {summary ? formatCompactPowerKw(summary.total_power_kw) : "--"}
+                      {summary ? formatFleetMetric(summary, "total_power_kw", "kW") : "--"}
                     </strong>
                     <p className="control-metric-chip-note">
                       {loading
@@ -8202,7 +8268,7 @@ export default function App() {
                     <PlantPowerControlCard
                       label="Stato impianto"
                       loading={loading}
-                      value={summary ? formatCompactPowerKw(summary.total_power_kw) : "--"}
+                      value={summary ? formatFleetMetric(summary, "total_power_kw", "kW") : "--"}
                       caption={
                         summary
                           ? `${summary.online_devices}/${summary.total_devices} inverter online`
@@ -8306,7 +8372,7 @@ export default function App() {
                     <PlantPowerControlCard
                       label="Stato impianto"
                       loading={loading}
-                      value={summary ? formatCompactPowerKw(summary.total_power_kw) : "--"}
+                      value={summary ? formatFleetMetric(summary, "total_power_kw", "kW") : "--"}
                       caption={
                         summary
                           ? `${summary.online_devices}/${summary.total_devices} inverter online`

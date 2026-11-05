@@ -40,7 +40,7 @@ class DeviceOverviewService:
 
         if (
             allow_live_poll_on_cache_miss
-            and device.protocol in {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485"}
+            and device.protocol in {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485", "s7_tcp"}
         ):
             polled_entry = poll_device_with_runtime(device)
             if polled_entry is not None:
@@ -77,7 +77,10 @@ class DeviceOverviewService:
         )
         return DeviceOverviewResponse(
             device=device,
-            metrics=cache_entry.metrics.model_copy(deep=True),
+            metrics=cache_entry.metrics.model_copy(
+                deep=True,
+                update={"physical_measurements_available": False} if device.protocol == "s7_tcp" else {},
+            ),
             diagnostics=diagnostics,
             telemetry=[item.model_copy(deep=True) for item in cache_entry.telemetry],
             commands=[item.model_copy(deep=True) for item in commands],
@@ -94,6 +97,7 @@ class DeviceOverviewService:
         return DeviceOverviewResponse(
             device=device,
             metrics=DeviceOverviewMetrics(
+                physical_measurements_available=device.protocol != "s7_tcp",
                 power_kw=0.0,
                 daily_energy_kwh=0.0,
                 total_energy_kwh=0.0,

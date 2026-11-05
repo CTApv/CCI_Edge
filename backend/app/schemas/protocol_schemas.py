@@ -332,7 +332,10 @@ class DeviceDiscoveryTcpResult(BaseModel):
     port: int
     unit_id: int
     register_address: int = Field(alias="register")
-    function: ModbusScanFunction
+    function: ModbusScanFunction | Literal["s7"]
+    signature_label: str | None = None
+    rack: int | None = None
+    slot: int | None = None
     raw_values: list[int]
     candidate_brands: list[str]
     candidate_profile_count: int
@@ -345,3 +348,4 @@ class DeviceDiscoveryTcpResponse(BaseModel):
     duration_ms: int
     request_count: int
     results: list[DeviceDiscoveryTcpResult]
+    errors: list[str] = Field(default_factory=list)

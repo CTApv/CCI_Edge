@@ -98,6 +98,7 @@ class DashboardService:
             else None
         )
         return DashboardSummaryResponse(
+            physical_measurements_available=any(device.protocol != "s7_tcp" for device in devices),
             total_devices=total_devices,
             online_devices=online_devices,
             offline_devices=offline_devices,
@@ -114,6 +115,7 @@ class DashboardService:
         summary = self.get_summary()
         active_power_kw = round(summary.total_power_kw, 3)
         return DashboardActivePowerResponse(
+            physical_measurements_available=summary.physical_measurements_available,
             active_power_kw=active_power_kw,
             active_power_w=round(active_power_kw * 1000.0, 1),
             online_devices=summary.online_devices,

@@ -22,6 +22,7 @@ from app.services.bonfiglioli_modbus_service import (
     bonfiglioli_modbus_service,
 )
 from app.services.connection_manager import connection_manager
+from app.services.sinvert_s7_service import sinvert_s7_service
 from app.services.delta_rs485_service import DELTA_RS485_DRIVER, delta_rs485_service
 from app.services.ingeteam_command_service import (
     INGETEAM_UNIT_COMMAND_DRIVER,
@@ -94,6 +95,7 @@ ESSENTIAL_EXCLUDE_TERMS = {
 class TelemetryReadResult:
     values: dict[str, str | float | int | bool | None]
     unit_argument_style: str
+    read_errors: dict[str, str] | None = None
 
 
 @dataclass(slots=True, frozen=True)
@@ -113,7 +115,7 @@ class InverterIoService:
     ) -> TelemetryReadResult:
         points = (
             self._select_essential_readable_points(inverter_model.telemetry_points)
-            if essential_only
+            if essential_only and device.protocol != "s7_tcp"
             else self._select_readable_points(inverter_model.telemetry_points)
         )
         if not points:
@@ -150,6 +152,9 @@ class InverterIoService:
         inverter_model: InverterModel,
         points: list[InverterPoint],
     ) -> TelemetryReadResult:
+        if device.protocol == "s7_tcp":
+            result = sinvert_s7_service.read_points(device.connection_settings, points)
+            return TelemetryReadResult(values=result.values, unit_argument_style="s7_absolute", read_errors=result.errors)
         if device.protocol == "modbus_rtu":
             return self._read_modbus_rtu_telemetry(device, inverter_model, points)
         if device.protocol in {"modbus_tcp", "sunspec"}:
@@ -166,6 +171,10 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if device.protocol == "s7_tcp":
+            from app.services.sinvert_s7_command_service import sinvert_s7_command_service
+            result=sinvert_s7_command_service.write(device,point,value)
+            return CommandWriteResult(result.success,{**result.diagnostics,"read_only":result.diagnostics.get("stage")=="blocked"},result.error)
         if device.protocol == "modbus_rtu":
             return self._write_modbus_rtu_command(device, point, value)
         if device.protocol in {"modbus_tcp", "sunspec"}:

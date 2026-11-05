@@ -10,6 +10,7 @@ type ConnectionValue = string | number | boolean;
 export type ConnectionSettings = Record<string, ConnectionValue>;
 
 export type DashboardSummary = {
+  physical_measurements_available?: boolean;
   total_devices: number;
   online_devices: number;
   offline_devices: number;
@@ -232,6 +233,7 @@ export type Device = {
   connection_settings: ConnectionSettings;
   status: string;
   created_at: string;
+  profile_overrides?: Record<string, unknown>;
 };
 
 export type CatalogModel = {
@@ -515,6 +517,7 @@ export type CreateDevicePayload = {
   protocol: string;
   transport: string;
   connection_settings: ConnectionSettings;
+  profile_overrides?: Record<string, unknown>;
 };
 
 export type ProtocolTestPayload = {
@@ -537,6 +540,7 @@ export type ProtocolTestResult = {
 };
 
 export type DeviceOverviewMetrics = {
+  physical_measurements_available?: boolean;
   power_kw: number;
   daily_energy_kwh: number;
   total_energy_kwh: number;
@@ -573,6 +577,9 @@ export type DeviceOverviewCommandPoint = {
 };
 
 export type DeviceOverviewDiagnostics = {
+  sinvert?: SinvertMonitor | null;
+  failed_points?: number;
+  read_errors?: Record<string, string>;
   last_poll_status: string;
   response_time_ms: number;
   retries: number;
@@ -584,6 +591,23 @@ export type DeviceOverviewDiagnostics = {
   data_freshness: "fresh" | "stale" | "missing";
   communication_age_seconds: number | null;
   data_age_seconds: number | null;
+};
+
+export type SinvertMonitor = {
+  manual_enabled: boolean;
+  on_blockers: string[];
+  power_blockers: string[];
+  power_scale_confirmed: boolean;
+  reference_chain: Record<string, number | null>;
+  note: string;
+  groups: {
+    index: number; configured: boolean | null; consent: boolean | null;
+    consent_reasons: string[]; state_code: number | null; state_label: string;
+    hmi_on: boolean | null; hmi_ac_contactor: boolean | null;
+    measurement_quality: string; measurements: Record<string, number | null>;
+    messages_complete: boolean;
+    active_messages: {address: string; kind: string; label: string; manual_page: number | null}[];
+  }[];
 };
 
 export type DeviceOverview = {
@@ -749,7 +773,10 @@ export type DeviceDiscoveryTcpResult = {
   port: number;
   unit_id: number;
   register: number;
-  function: ModbusScanFunction;
+  function: ModbusScanFunction | "s7";
+  signature_label?: string | null;
+  rack?: number | null;
+  slot?: number | null;
   raw_values: number[];
   candidate_brands: string[];
   candidate_profile_count: number;
@@ -760,6 +787,7 @@ export type DeviceDiscoveryTcpResponse = {
   duration_ms: number;
   request_count: number;
   results: DeviceDiscoveryTcpResult[];
+  errors?: string[];
 };
 
 export type ProtocolOperationState = {
@@ -927,6 +955,11 @@ export const sendDeviceCommand = (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+
+export const checkSinvertCommand = (deviceId: string, commandKey: string, value: number) =>
+  request<CommandResponse>(`/devices/${deviceId}/sinvert/preflight/${commandKey}`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ value }),
+  });
 export const getDeviceOverview = (
   deviceId: string,
   options?: { refresh?: boolean },
@@ -1042,6 +1075,22 @@ export const updateDevice = (deviceId: string, payload: UpdateDevicePayload) =>
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+
+export async function saveSinvertReferenceLimit(deviceId: string, maximum: number): Promise<Device> {
+  if (!Number.isFinite(maximum) || maximum < 0 || maximum > 1000000) {
+    throw new Error("Limite PLC non valido: inserire un valore tra 0 e 1000000.");
+  }
+  const latest = await getDevice(deviceId);
+  if (latest.protocol !== "s7_tcp" || !latest.model.includes("Collaudo comandi")) {
+    throw new Error("Il limite è disponibile solo per il profilo SINVERT Collaudo comandi.");
+  }
+  return updateDevice(deviceId, {
+    name: latest.name, brand: latest.brand, model: latest.model,
+    protocol: latest.protocol, transport: latest.transport, status: latest.status,
+    profile_overrides: latest.profile_overrides,
+    connection_settings: { ...latest.connection_settings, sinvert_reference_max_raw: maximum },
+  });
+}
 export const deleteDevice = (deviceId: string) =>
   request<void>(`/devices/${deviceId}`, { method: "DELETE" });
 export const deleteAllDevices = () =>

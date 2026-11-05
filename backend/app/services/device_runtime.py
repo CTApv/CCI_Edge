@@ -34,7 +34,7 @@ MAX_SERIAL_PARTIAL_GRACE_SECONDS = 14400.0
 PARTIAL_GRACE_MULTIPLIER = 6.0
 TCP_ENDPOINT_PARTIAL_GRACE_MULTIPLIER = 1.0
 SERIAL_ENDPOINT_PARTIAL_GRACE_MULTIPLIER = 2.0
-RUNTIME_POLL_PROTOCOLS = {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485"}
+RUNTIME_POLL_PROTOCOLS = {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485", "s7_tcp"}
 SERIAL_LIKE_POLL_PROTOCOLS = {"modbus_rtu", "aurora", "delta_rs485"}
 
 

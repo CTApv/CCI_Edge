@@ -1,0 +1,70 @@
+{
+  "blocks": {
+    "OB1": {
+      "MC7Size": 1472,
+      "CheckSum": 28056
+    },
+    "FC30": {
+      "MC7Size": 7968,
+      "CheckSum": 14234
+    },
+    "FC55": {
+      "MC7Size": 594,
+      "CheckSum": 52546
+    },
+    "FC120": {
+      "MC7Size": 4560,
+      "CheckSum": 28873
+    },
+    "FC501": {
+      "MC7Size": 2760,
+      "CheckSum": 4368
+    },
+    "FB64": {
+      "MC7Size": 1292,
+      "CheckSum": 29356
+    },
+    "FB232": {
+      "MC7Size": 19304,
+      "CheckSum": 20975
+    },
+    "FB233": {
+      "MC7Size": 962,
+      "CheckSum": 25183
+    },
+    "FB570": {
+      "MC7Size": 3022,
+      "CheckSum": 61197
+    },
+    "FB572": {
+      "MC7Size": 532,
+      "CheckSum": 60708
+    },
+    "FC10": {
+      "MC7Size": 4706,
+      "CheckSum": 39642
+    },
+    "FC60": {
+      "MC7Size": 4358,
+      "CheckSum": 54049
+    },
+    "FC402": {
+      "MC7Size": 9866,
+      "CheckSum": 17022
+    }
+  },
+  "cpu_module": "CPU 315-2 DP",
+  "db_sizes": {
+    "64": 164,
+    "100": 158,
+    "120": 298,
+    "126": 600,
+    "511": 64,
+    "600": 64,
+    "944": 64,
+    "401": 640,
+    "402": 1618,
+    "570": 246,
+    "579": 98
+  }
+}
