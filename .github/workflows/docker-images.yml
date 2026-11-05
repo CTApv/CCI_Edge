@@ -23,8 +23,8 @@ jobs:
     name: Tests and release configuration
     runs-on: ubuntu-latest
     env:
-      PV_EDGE_MANAGER_DATABASE_PATH: ${{ runner.temp }}/pv-guardian-tests.db
-      PV_EDGE_MANAGER_HISTORY_DATABASE_PATH: ${{ runner.temp }}/pv-guardian-tests-history.db
+      PV_EDGE_MANAGER_DATABASE_PATH: /tmp/pv-guardian-tests.db
+      PV_EDGE_MANAGER_HISTORY_DATABASE_PATH: /tmp/pv-guardian-tests-history.db
       PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_ENABLED: "false"
     steps:
       - uses: actions/checkout@v4

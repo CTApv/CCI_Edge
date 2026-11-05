@@ -1,6 +1,6 @@
 # TEST SINVERT — IOT2050 muletto
 
-Release sperimentale **v1.2.0-test-sinvert.1**, separata dalla serie stabile.
+Release sperimentale **v1.2.0-test-sinvert.2**, separata dalla serie stabile.
 Include la base PV Guardian v1.2.0-rc2 e l'integrazione SINVERT S7 analizzata
 sul banco. Non promuove né sostituisce la versione1.2.0. La convalida e una
 successiva release stabile dopo1.2.0 sono attività future.
@@ -23,7 +23,7 @@ su GHCR con il tag specifico della release. Nessun tag `latest` viene aggiornato
 
 Scaricare dalla release GitHub:
 
-1. `pv-guardian-TEST-SINVERT-v1.2.0-test-sinvert.1.tar.gz`.
+1. `pv-guardian-TEST-SINVERT-v1.2.0-test-sinvert.2.tar.gz`.
 2. `SHA256SUMS`.
 3. `release-manifest.json`, per commit e immagini effettive.
 
@@ -31,7 +31,7 @@ Trasferire i file sul muletto e verificare l'archivio:
 
 ```sh
 sha256sum -c SHA256SUMS
-tar -xzf pv-guardian-TEST-SINVERT-v1.2.0-test-sinvert.1.tar.gz
+tar -xzf pv-guardian-TEST-SINVERT-v1.2.0-test-sinvert.2.tar.gz
 cd pv-guardian-test-sinvert
 cp deployment/sinvert/test.compose.env.example deployment/sinvert/test.compose.env
 ```
@@ -39,7 +39,7 @@ cp deployment/sinvert/test.compose.env.example deployment/sinvert/test.compose.e
 Il file `deployment/sinvert/test.compose.env` imposta:
 
 ```text
-TEST_SINVERT_TAG=v1.2.0-test-sinvert.1
+TEST_SINVERT_TAG=v1.2.0-test-sinvert.2
 TEST_SINVERT_WEB_PORT=18080
 TEST_SINVERT_API_PORT=18000
 ```
