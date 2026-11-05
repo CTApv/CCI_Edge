@@ -1162,6 +1162,20 @@ export async function saveSinvertReferenceLimit(deviceId: string, maximum: numbe
     connection_settings: { ...latest.connection_settings, sinvert_reference_max_raw: maximum },
   });
 }
+
+export async function saveSinvertCommissioningMode(deviceId: string, enabled: boolean): Promise<Device> {
+  if (typeof enabled !== "boolean") throw new Error("Modalità di collaudo non valida.");
+  const latest = await getDevice(deviceId);
+  if (latest.protocol !== "s7_tcp" || latest.brand !== "SINVERT" || !latest.model.includes("Collaudo comandi")) {
+    throw new Error("Selezionare il modello SINVERT M/TL S7-300 - Collaudo comandi.");
+  }
+  return updateDevice(deviceId, {
+    name: latest.name, brand: latest.brand, model: latest.model,
+    protocol: latest.protocol, transport: latest.transport, status: latest.status,
+    profile_overrides: latest.profile_overrides,
+    connection_settings: { ...latest.connection_settings, sinvert_write_mode: enabled ? "commissioning" : "read_only" },
+  });
+}
 export const deleteDevice = (deviceId: string) =>
   request<void>(`/devices/${deviceId}`, { method: "DELETE" });
 export const deleteAllDevices = () =>

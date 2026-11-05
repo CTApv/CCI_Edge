@@ -49,6 +49,7 @@ jobs:
           npm run build
           node scripts/check-sinvert-presentation.mjs
           node scripts/check-sinvert-routing.mjs
+          node scripts/check-sinvert-profile.mjs
       - name: Compose validation
         env:
           PV_EDGE_MANAGER_ENV_FILE: ./deployment/docker/app.env.example

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { checkSinvertCommand, getDeviceOverview, getDevices, saveSinvertReferenceLimit, sendDeviceCommand,
+import { checkSinvertCommand, getDeviceOverview, getDevices, saveSinvertReferenceLimit, saveSinvertCommissioningMode, sendDeviceCommand,
   type Device, type DeviceOverview, type CommandResponse } from "../api";
 import { commandNames, explainBlocker, groupState, number, summary, timestamp, type Group, type Tab, type Tone } from "./presentation";
 import { requestedSinvertDevice, sinvertDeviceUrl } from "./routing";
@@ -53,7 +53,10 @@ export function SinvertDashboard() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [selected, setSelected] = useState("");
   const [overview, setOverview] = useState<DeviceOverview | null>(null);
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>(() => {
+    const requested = new URLSearchParams(window.location.search).get("tab");
+    return ["overview","alarms","commissioning","diagnostics"].includes(requested ?? "") ? requested as Tab : "overview";
+  });
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [manual, setManual] = useState(false);
@@ -61,6 +64,8 @@ export function SinvertDashboard() {
   const [limit, setLimit] = useState("");
   const [saving, setSaving] = useState(false);
   const [settingsMessage, setSettingsMessage] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileMessage, setProfileMessage] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [review, setReview] = useState<Action | null>(null);
@@ -98,18 +103,21 @@ export function SinvertDashboard() {
   }, []);
   useEffect(() => {
     if (!selected) return;
-    window.history.replaceState(null, "", sinvertDeviceUrl(selected));
     setOverview(null); setManual(false); setReview(null); setOutcome(null); setLoading(true);
     void fetchData(selected);
     const timer = window.setInterval(() => void fetchData(selected), 5000);
     return () => window.clearInterval(timer);
   }, [selected, fetchData]);
+  useEffect(() => {
+    if (selected) window.history.replaceState(null, "", sinvertDeviceUrl(selected) + (tab === "overview" ? "" : `&tab=${tab}`));
+  }, [selected, tab]);
   const model = summary(overview, Boolean(loadError));
   const { monitor, fresh, configured, reporting, alarms, power } = model;
   const device = overview?.device ?? devices.find(entry => entry.device_id === selected);
   const max = Number(device?.connection_settings.sinvert_reference_max_raw ?? 0);
   const commissioning = Boolean(device?.model.includes("Collaudo comandi"));
-  const writable = fresh && commissioning && monitor?.manual_enabled === true && manual;
+  const profileEnabled = device?.connection_settings.sinvert_write_mode === "commissioning";
+  const writable = fresh && commissioning && profileEnabled && manual && !savingProfile;
   const startBlocked = !monitor || monitor.on_blockers.length > 0;
   const connection = !overview ? "In attesa" : fresh ? "Collegato" : "Da verificare";
   const problems = [...new Set((monitor?.on_blockers ?? []).map(explainBlocker))];
@@ -150,6 +158,20 @@ export function SinvertDashboard() {
       await fetchData(device.device_id);
     } catch (error) { setSettingsMessage(error instanceof Error ? error.message : "Salvataggio non riuscito"); }
     finally { setSaving(false); }
+  }
+  async function saveProfile(enabled: boolean) {
+    if (!device || savingProfile || busy) return;
+    const deviceId = device.device_id;
+    setManual(false); setReview(null); setProfileMessage(""); setSavingProfile(true);
+    try {
+      const updated = await saveSinvertCommissioningMode(deviceId, enabled);
+      if (!mounted.current || selectedRef.current !== deviceId) return;
+      setOverview(current => current && current.device.device_id === deviceId ? { ...current, device: updated } : current);
+      setProfileMessage(enabled
+        ? "Profilo abilitato nell’app. Ora seleziona «Abilita i comandi in questa pagina». Nessun comando inviato al PLC."
+        : "Profilo riportato in sola lettura. Nessun comando inviato al PLC.");
+    } catch (error) { setProfileMessage(error instanceof Error ? error.message : "Salvataggio del profilo non riuscito."); }
+    finally { setSavingProfile(false); }
   }
   function openDiagnostics(index: number) { setGroupIndex(index); setTab("diagnostics"); }
   const group = monitor?.groups.find(entry => entry.index === groupIndex);
@@ -207,8 +229,8 @@ export function SinvertDashboard() {
 
           {tab === "commissioning" && <>
             <div className="sv-notice"><Icon name="settings"/><div><strong>Collaudo manuale · intero PLC</strong><p>Verifica le condizioni, prepara la richiesta e controlla l’esito. Una risposta S7 positiva non conferma il movimento o la produzione dell’inverter.</p></div></div>
-            <div className="sv-commissioning-grid"><section className="sv-panel"><div className="sv-panel-heading"><h2>1. Condizioni di controllo</h2><Badge tone={fresh && !startBlocked ? "ok" : "warn"}>{fresh && !startBlocked ? "Da verificare online" : "Blocchi presenti"}</Badge></div><ul className="sv-condition-list"><Condition ok={fresh} title="Collegamento al PLC" detail={fresh ? "Dati aggiornati disponibili" : "Collegamento o dati non confermati"}/><Condition ok={reporting.length === configured.length && configured.length > 0 && fresh} title="Feedback dei gruppi" detail={`${fresh ? reporting.length : 0} di ${configured.length} gruppi con misure di qualità confermata dal PLC`}/><Condition ok={fresh && !startBlocked} title="Disponibilità all’avvio" detail={problems[0] ?? "Nessun blocco nel campione; serve la verifica online"}/><Condition ok={monitor.manual_enabled && commissioning} title="Profilo di collaudo" detail={monitor.manual_enabled && commissioning ? "Abilitato nelle impostazioni locali" : "Scritture non abilitate nel profilo"}/></ul><button className="sv-button sv-button--white" disabled={Boolean(busy)} onClick={() => void perform("sinvert_on_request",1)}><Icon name="refresh" size={16}/>{busy === "sinvert_on_request" ? "Verifica in corso…" : "Verifica avvio · sola lettura"}</button><details className="sv-details"><summary>Tutte le condizioni rilevate</summary><ul>{[...new Set(monitor.power_blockers.map(explainBlocker))].map(item => <li key={item}>{item}</li>)}</ul></details></section>
-              <section className="sv-panel"><div className="sv-panel-heading"><h2>2. Richieste manuali</h2><Icon name="lock"/></div><label className="sv-toggle"><input type="checkbox" checked={manual} disabled={!commissioning || !monitor.manual_enabled} onChange={event => { setManual(event.target.checked); setReview(null); }}/><span><strong>Abilita i comandi in questa pagina</strong><small>Non modifica i consensi del PLC. Si disattiva riaprendo la pagina.</small></span></label><div className="sv-command-pair"><button className="sv-button sv-button--primary" disabled={!writable || startBlocked || Boolean(busy)} onClick={() => void perform("sinvert_on_request",1,"prepare")}><Icon name="play" size={16}/>Prepara avvio</button><button className="sv-button sv-button--stop" disabled={!writable || Boolean(busy)} onClick={() => void perform("sinvert_off_request",1,"prepare")}><Icon name="stop" size={16}/>Prepara arresto</button></div><button className="sv-text-button" disabled={Boolean(busy)} onClick={() => void perform("sinvert_off_request",1)}>Verifica arresto senza inviare <Icon name="arrow" size={16}/></button><p className="sv-source-note">L’arresto software non sostituisce l’arresto di emergenza dell’impianto.</p></section></div>
+            <div className="sv-commissioning-grid"><section className="sv-panel"><div className="sv-panel-heading"><h2>1. Condizioni di controllo</h2><Badge tone={fresh && !startBlocked ? "ok" : "warn"}>{fresh && !startBlocked ? "Da verificare online" : "Blocchi presenti"}</Badge></div><ul className="sv-condition-list"><Condition ok={fresh} title="Collegamento al PLC" detail={fresh ? "Dati aggiornati disponibili" : "Collegamento o dati non confermati"}/><Condition ok={reporting.length === configured.length && configured.length > 0 && fresh} title="Feedback dei gruppi" detail={`${fresh ? reporting.length : 0} di ${configured.length} gruppi con misure di qualità confermata dal PLC`}/><Condition ok={fresh && !startBlocked} title="Disponibilità all’avvio" detail={problems[0] ?? "Nessun blocco nel campione; serve la verifica online"}/><Condition ok={profileEnabled && commissioning} title="Profilo di collaudo" detail={profileEnabled && commissioning ? "Abilitato nelle impostazioni locali" : "Scritture non abilitate nel profilo"}/></ul><button className="sv-button sv-button--white" disabled={Boolean(busy)} onClick={() => void perform("sinvert_on_request",1)}><Icon name="refresh" size={16}/>{busy === "sinvert_on_request" ? "Verifica in corso…" : "Verifica avvio · sola lettura"}</button><details className="sv-details"><summary>Tutte le condizioni rilevate</summary><ul>{[...new Set(monitor.power_blockers.map(explainBlocker))].map(item => <li key={item}>{item}</li>)}</ul></details></section>
+              <section className="sv-panel"><div className="sv-panel-heading"><h2>2. Richieste manuali</h2><Icon name="lock"/></div><div className="sv-profile-setting"><strong>Impostazione del profilo nell?app</strong><p>{profileEnabled ? "Collaudo manuale abilitato nel profilo." : "Il profilo ? in sola lettura. Prima abilitalo qui, poi attiva i comandi della pagina."}</p>{commissioning ? <button className={profileEnabled ? "sv-button sv-button--white" : "sv-button sv-button--primary"} type="button" disabled={savingProfile || Boolean(busy)} onClick={() => void saveProfile(!profileEnabled)}>{savingProfile ? "Salvataggio?" : profileEnabled ? "Riporta il profilo in sola lettura" : "Abilita profilo di collaudo nell?app"}</button> : <p>Per i comandi selezionare il modello ?M/TL S7-300 - Collaudo comandi? nella configurazione del dispositivo.</p>}{profileMessage && <p role="status">{profileMessage}</p>}<small>Salva solo un?impostazione di PV Guardian: non scrive nel PLC e non supera M55 o altri interblocchi.</small></div><label className="sv-toggle"><input type="checkbox" checked={manual} disabled={!commissioning || !profileEnabled || savingProfile} onChange={event => { setManual(event.target.checked); setReview(null); }}/><span><strong>Abilita i comandi in questa pagina</strong><small>Non modifica i consensi del PLC. Si disattiva riaprendo la pagina.</small></span></label><div className="sv-command-pair"><button className="sv-button sv-button--primary" disabled={!writable || startBlocked || Boolean(busy)} onClick={() => void perform("sinvert_on_request",1,"prepare")}><Icon name="play" size={16}/>Prepara avvio</button><button className="sv-button sv-button--stop" disabled={!writable || Boolean(busy)} onClick={() => void perform("sinvert_off_request",1,"prepare")}><Icon name="stop" size={16}/>Prepara arresto</button></div><button className="sv-text-button" disabled={Boolean(busy)} onClick={() => void perform("sinvert_off_request",1)}>Verifica arresto senza inviare <Icon name="arrow" size={16}/></button><p className="sv-source-note">L’arresto software non sostituisce l’arresto di emergenza dell’impianto.</p></section></div>
             <section className="sv-panel"><div className="sv-section-title"><div><h2>Riferimento di potenza · collaudo tecnico</h2><p>Valori PLC grezzi. Nessuna equivalenza automatica con kW o percentuale.</p></div><Badge tone="warn">Unità da confermare</Badge></div><div className="sv-reference-track">{[["Esterno",monitor.reference_chain.controller_a_external_raw],["Copia PLC",monitor.reference_chain.controller_a_copied_raw],["Ingresso regolatore",monitor.reference_chain.controller_a_input_raw],["Dopo selezione / rampa",monitor.reference_chain.controller_a_processed_raw]].map(([label,value], index) => <div key={String(label)}><span><em>{index+1}</em>{label}</span><strong>{fresh ? number(value as number | null,3) : "—"}</strong></div>)}</div><p className="sv-source-note">Fallback configurato: {number(monitor.reference_chain.controller_fallback_a,3)}. La ricezione di un valore non dimostra che sia stato selezionato o applicato dall’inverter.</p><div className="sv-reference-form"><label>Riferimento da verificare <span>VALORE PLC · MAX {number(max,3)}</span><input type="number" min="0" max={max} step="any" placeholder="Inserisci un valore PLC" value={raw} onChange={event => setRaw(event.target.value)}/></label><button className="sv-button sv-button--white" disabled={!numericValid || Boolean(busy)} onClick={() => void perform("sinvert_power_reference_raw",rawValue)}>Verifica senza inviare</button><button className="sv-button sv-button--primary" disabled={!numericValid || !writable || monitor.power_blockers.length > 0 || Boolean(busy)} onClick={() => void perform("sinvert_power_reference_raw",rawValue,"prepare")}>Prepara riferimento <Icon name="arrow" size={16}/></button></div><details className="sv-details"><summary>Impostazioni del limite locale · attuale {number(max,3)}</summary><p>Questo limite controlla l’intervallo accettato dall’app, non la potenza nominale. Con 0 l’invio è disabilitato.</p><div className="sv-reference-form"><label>Massimo valore PLC consentito<input type="number" min="0" max="1000000" step="any" value={limit} placeholder={String(max)} onChange={event => setLimit(event.target.value)}/></label><button className="sv-button sv-button--white" disabled={saving || !limit.trim()} onClick={() => void saveLimit()}>{saving ? "Salvataggio…" : "Salva solo nell’app"}</button></div>{settingsMessage && <p role="status">{settingsMessage}</p>}</details></section>
           </>}
 

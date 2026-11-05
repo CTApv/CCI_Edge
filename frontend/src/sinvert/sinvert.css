@@ -174,6 +174,10 @@ input:disabled { background: #f4f7f9; }
 .sv-toggle input { accent-color: #18836c; width: 17px; height: 17px; margin: 2px 0 0; flex-shrink: 0; }
 .sv-toggle strong { font-size: 13px; font-weight: 600; color: #516f7d; display: block; }
 .sv-toggle small { color: #92a3ac; font-size: 11px; margin-top: 6px; display: block; line-height: 1.7; }
+.sv-profile-setting { padding: 16px; border: 1px solid #d9e7e8; border-radius: 8px; background: #f4faf8; margin-top: 20px; }
+.sv-profile-setting > strong { display: block; font-size: 13px; color: #3d625e; }
+.sv-profile-setting > p { font-size: 12px; line-height: 1.7; margin: 9px 0; color: #607d83; }
+.sv-profile-setting > small { display: block; margin-top: 12px; font-size: 11px; line-height: 1.6; color: #7f989e; }
 .sv-command-pair { display: flex; gap: 12px; margin-top: 15px; }
 .sv-command-pair .sv-button { flex: 1; }
 .sv-details { margin-top: 20px; border-top: 1px solid #e7edf1; padding-top: 16px; color: #78909f; font-size: 12px; line-height: 1.8; }

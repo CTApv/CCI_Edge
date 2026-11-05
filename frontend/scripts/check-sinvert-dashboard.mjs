@@ -91,6 +91,12 @@ try {
   await wait("!!document.querySelector('.sv-outcome') && !document.querySelector('.sv-working')");
   assert.equal(await evaluate("document.querySelector('.sv-outcome').textContent.includes('Controlli superati')"),true);
   checks.push("Real OFF preflight succeeds and identifies operation as read-only");
+  const profileReadOnly=await evaluate("document.querySelector('.sv-toggle input').disabled");
+  if (profileReadOnly) {
+    assert.equal(await evaluate("Array.from(document.querySelectorAll('button')).some(b=>b.textContent.includes('Abilita profilo di collaudo nell’app'))"),true);
+    await capture("04_profilo_sola_lettura.png");
+    checks.push("Read-only profile: inline enable setting is visible; configuration was not changed");
+  } else {
   await evaluate("document.querySelector('.sv-toggle input').click()");
   await evaluate("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('Prepara arresto')).click()");
   await wait("!!document.querySelector('[role=dialog]')");
@@ -100,8 +106,10 @@ try {
   await cdp("Input.dispatchKeyEvent",{type:"keyUp",key:"Escape",code:"Escape",windowsVirtualKeyCode:27});
   await wait("!document.querySelector('[role=dialog]')");
   checks.push("Command review states collective scope; Escape cancels; no send performed");
+  }
   await tab("Diagnostica");await capture("05_diagnostica_desktop.png");
-  await cdp("Page.reload");await wait("document.querySelectorAll('.sv-inverter').length===4");
+  await cdp("Page.reload");await wait("!!document.querySelector('.sv-diagnostic-layout')");
+  assert.equal(await evaluate("new URLSearchParams(location.search).get('tab')"),'diagnostics');
   await tab("Collaudo");
   assert.equal(await evaluate("document.querySelector('.sv-toggle input').checked"),false);
   checks.push("Reload resets manual activation");

@@ -1,6 +1,6 @@
 # TEST SINVERT — IOT2050 muletto
 
-Release sperimentale **v1.2.0-test-sinvert.3**, separata dalla serie stabile.
+Release sperimentale **v1.2.0-test-sinvert.4**, separata dalla serie stabile.
 Include la base PV Guardian v1.2.0-rc2 e l'integrazione SINVERT S7 analizzata
 sul banco. Non promuove né sostituisce la versione1.2.0. La convalida e una
 successiva release stabile dopo1.2.0 sono attività future.
@@ -23,7 +23,7 @@ su GHCR con il tag specifico della release. Nessun tag `latest` viene aggiornato
 
 Scaricare dalla release GitHub:
 
-1. `pv-guardian-TEST-SINVERT-v1.2.0-test-sinvert.3.tar.gz`.
+1. `pv-guardian-TEST-SINVERT-v1.2.0-test-sinvert.4.tar.gz`.
 2. `SHA256SUMS`.
 3. `release-manifest.json`, per commit e immagini effettive.
 
@@ -31,7 +31,7 @@ Trasferire i file sul muletto e verificare l'archivio:
 
 ```sh
 sha256sum -c SHA256SUMS
-tar -xzf pv-guardian-TEST-SINVERT-v1.2.0-test-sinvert.3.tar.gz
+tar -xzf pv-guardian-TEST-SINVERT-v1.2.0-test-sinvert.4.tar.gz
 cd pv-guardian-test-sinvert
 cp deployment/sinvert/test.compose.env.example deployment/sinvert/test.compose.env
 ```
@@ -39,7 +39,7 @@ cp deployment/sinvert/test.compose.env.example deployment/sinvert/test.compose.e
 Il file `deployment/sinvert/test.compose.env` imposta:
 
 ```text
-TEST_SINVERT_TAG=v1.2.0-test-sinvert.3
+TEST_SINVERT_TAG=v1.2.0-test-sinvert.4
 TEST_SINVERT_WEB_PORT=18080
 TEST_SINVERT_API_PORT=18000
 ```
@@ -77,6 +77,14 @@ Le funzioni LAN del gateway restano gestite dall'host, non da questo stack S7.
 
 ## Configurazione iniziale
 
+Novità della versione `.4`: nella scheda **Collaudo**, riquadro
+**2. Richieste manuali**, è presente **Abilita profilo di collaudo nell’app**.
+Salva la sola impostazione locale `sinvert_write_mode`; non invia comandi,
+non modifica M55 e conserva indirizzo, limite del riferimento e altre impostazioni.
+Dopo l'abilitazione attivare **Abilita i comandi in questa pagina**.
+È disponibile anche **Riporta il profilo in sola lettura**.
+Il link può includere `&tab=commissioning` per aprire direttamente il collaudo.
+
 Lo stack parte con archivi vuoti. Non contiene configurazioni, database,
 limiti o abilitazioni del PC usato per l'analisi.
 
@@ -87,7 +95,7 @@ limiti o abilitazioni del PC usato per l'analisi.
 3. Verificare rack/slot per l'installazione; nel progetto analizzato sono0/2.
 4. Controllare collegamento PLC, feedback dei gruppi, qualità delle misure e
    blocchi. La presenza del PLC non dimostra la comunicazione con gli inverter.
-5. Per il collaudo, abilitare esplicitamente il profilo nelle impostazioni;
+5. Per il collaudo, abilitare esplicitamente il profilo dal riquadro della pagina;
    la dashboard richiede inoltre l'attivazione manuale della pagina. Le
    verifiche preventive non inviano comandi.
 
@@ -110,6 +118,12 @@ Questa release serve alle prove sul muletto e al successivo collaudo fisico,
 non costituisce una versione già approvata per il servizio in campo.
 
 ## Arresto e ritorno alla situazione precedente
+
+Per aggiornare uno stack TEST SINVERT già presente, estrarre il nuovo archivio,
+configurare il suo `test.compose.env` con il nuovo tag e con le stesse porte
+usate nel test precedente, quindi usare `start`. Il progetto Compose resta
+`pv-guardian-test-sinvert` e riusa i suoi volumi: non rimuovere i volumi di test
+e non copiare archivi o impostazioni dalla produzione.
 
 ```sh
 sh deployment/sinvert/manage-test-sinvert.sh stop
