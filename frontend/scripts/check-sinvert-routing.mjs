@@ -1,0 +1,14 @@
+import { readFile } from "node:fs/promises";
+import assert from "node:assert/strict";
+import ts from "typescript";
+const source=await readFile(new URL("../src/sinvert/routing.ts",import.meta.url),"utf8");
+const code=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
+const {sinvertDeviceUrl,requestedSinvertDevice}=await import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
+assert.equal(sinvertDeviceUrl('plc-123'),'/sinvert.html?device=plc-123');
+assert.equal(requestedSinvertDevice('?device=plc-123'),'plc-123');
+assert.equal(requestedSinvertDevice(''),null);
+assert.equal(requestedSinvertDevice('?other=1'),null);
+const special='PLC / A?+&#';
+assert.equal(requestedSinvertDevice(new URL(sinvertDeviceUrl(special),'http://localhost').search),special);
+assert.equal(requestedSinvertDevice('?device=not-found'),'not-found');
+console.log('6 SINVERT direct-link routing checks passed');

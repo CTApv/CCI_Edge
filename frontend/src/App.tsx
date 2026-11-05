@@ -43,6 +43,7 @@ import {
 } from "./components/DeviceDiscoveryModal";
 import { DrawerErrorBoundary } from "./components/DrawerErrorBoundary";
 import { DeviceDetailPanel } from "./components/DeviceDetailPanel";
+import { sinvertDeviceUrl } from "./sinvert/routing";
 import { InverterFlowScene } from "./components/InverterFlowScene";
 import {
   OperatorProvisioningDrawer,
@@ -6048,6 +6049,12 @@ export default function App() {
   const [isAdvancedFleetHistoryOpen, setIsAdvancedFleetHistoryOpen] = useState(false);
   const [mobileStageTab, setMobileStageTab] = useState<MobileStageTab>("live");
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  useEffect(() => {
+    const selected = devices.find(device => device.device_id === selectedDeviceId);
+    if (selected?.protocol === "s7_tcp" && selected.brand === "SINVERT") {
+      window.location.assign(sinvertDeviceUrl(selected.device_id));
+    }
+  }, [selectedDeviceId, devices]);
   const [settingsDeviceId, setSettingsDeviceId] = useState<string | null>(null);
   const [isLiteSidebarExpanded, setIsLiteSidebarExpanded] = useState(true);
   const [isOperatorSettingsPageOpen, setIsOperatorSettingsPageOpen] = useState(false);

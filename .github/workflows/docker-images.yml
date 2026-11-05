@@ -19,8 +19,48 @@ env:
   WEB_IMAGE: ghcr.io/ctapv/pv-guardian-edge-web
 
 jobs:
+  validate:
+    name: Tests and release configuration
+    runs-on: ubuntu-latest
+    env:
+      PV_EDGE_MANAGER_DATABASE_PATH: ${{ runner.temp }}/pv-guardian-tests.db
+      PV_EDGE_MANAGER_HISTORY_DATABASE_PATH: ${{ runner.temp }}/pv-guardian-tests-history.db
+      PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Backend tests and compile
+        working-directory: backend
+        run: |
+          python -m pip install -r requirements.txt
+          python -m unittest discover -s tests
+          python -m compileall -q app tests
+      - name: Frontend build and SINVERT state checks
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+          node scripts/check-sinvert-presentation.mjs
+          node scripts/check-sinvert-routing.mjs
+      - name: Compose validation
+        env:
+          PV_EDGE_MANAGER_ENV_FILE: ./deployment/docker/app.env.example
+        run: |
+          docker compose --env-file deployment/docker/production.compose.env.example config --quiet
+          docker compose --env-file deployment/docker/pilot-ghcr.compose.env.example config --quiet
+          docker compose -f deployment/sinvert/compose.test-sinvert.yml --env-file deployment/sinvert/test.compose.env.example config --quiet
+          sh -n deployment/sinvert/manage-test-sinvert.sh
+
   build:
     name: Build ${{ matrix.component }}
+    needs: validate
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -45,8 +85,12 @@ jobs:
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             version="${GITHUB_REF_NAME}"
           fi
+          label="${version}-${GITHUB_REF_NAME}-${GITHUB_SHA::12}"
+          if [[ "${version}" == *test-sinvert* ]]; then
+            label="TEST SINVERT-${version}-${GITHUB_SHA::12}"
+          fi
           echo "version=${version}" >> "${GITHUB_OUTPUT}"
-          echo "label=${version}-${GITHUB_REF_NAME}-${GITHUB_SHA::12}" >> "${GITHUB_OUTPUT}"
+          echo "label=${label}" >> "${GITHUB_OUTPUT}"
           echo "commit=${GITHUB_SHA::12}" >> "${GITHUB_OUTPUT}"
           echo "time=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "${GITHUB_OUTPUT}"
 
@@ -75,6 +119,7 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push
+        id: publish
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -89,3 +134,24 @@ jobs:
             PV_EDGE_MANAGER_BUILD_LABEL=${{ steps.build_meta.outputs.label }}
             PV_EDGE_MANAGER_BUILD_COMMIT=${{ steps.build_meta.outputs.commit }}
             PV_EDGE_MANAGER_BUILD_TIME=${{ steps.build_meta.outputs.time }}
+
+      - name: Record immutable release image
+        env:
+          IMAGE: ${{ matrix.image }}
+          DIGEST: ${{ steps.publish.outputs.digest }}
+          VERSION: ${{ steps.build_meta.outputs.version }}
+        run: |
+          printf 'RELEASE_IMAGE=%s\nRELEASE_DIGEST=%s\n' "$IMAGE" "$DIGEST"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path('image-manifest.json').write_text(json.dumps({
+              'image': os.environ['IMAGE'], 'digest': os.environ['DIGEST'],
+              'version': os.environ['VERSION'], 'commit': os.environ['GITHUB_SHA'],
+              'platform': 'linux/arm64',
+          }, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: image-manifest-${{ matrix.component }}
+          path: image-manifest.json

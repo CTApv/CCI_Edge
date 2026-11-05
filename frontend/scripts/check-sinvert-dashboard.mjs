@@ -62,6 +62,18 @@ try {
   await cdp("Emulation.setDeviceMetricsOverride",{width:1600,height:1100,deviceScaleFactor:1,mobile:false});
   await cdp("Page.navigate",{url:"http://127.0.0.1:5173/sinvert.html"});
   await wait("document.querySelectorAll('.sv-inverter').length===4");
+  const selectedDevice=await evaluate("new URLSearchParams(location.search).get('device')");
+  assert.ok(selectedDevice);
+  await cdp("Page.navigate",{url:"http://127.0.0.1:5173/sinvert.html?device=unknown-plc"});
+  await wait("!!document.querySelector('.sv-notice--bad')");
+  assert.equal(await evaluate("document.querySelectorAll('.sv-inverter').length"),0);
+  checks.push("Unknown device deep link never falls back to another PLC");
+  await cdp("Page.navigate",{url:"http://127.0.0.1:5173/"});
+  await wait("!!document.querySelector('.sidebar-device-main, .operator-device-tile__main')");
+  await evaluate("document.querySelector('.sidebar-device-main, .operator-device-tile__main').click()");
+  await wait("location.pathname==='/sinvert.html' && document.querySelectorAll('.sv-inverter').length===4");
+  assert.equal(await evaluate("new URLSearchParams(location.search).get('device')"),selectedDevice);
+  checks.push("Normal PV Guardian device selection opens integrated SINVERT dashboard for the same device");
   assert.equal(await evaluate("Array.from(document.querySelectorAll('.sv-control-column .sv-button--full')).every(b=>b.disabled)"),true);
   checks.push("Default consultazione: both collective command buttons disabled");
   assert.equal(await evaluate("document.documentElement.scrollWidth<=window.innerWidth"),true);

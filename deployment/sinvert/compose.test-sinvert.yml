@@ -1,0 +1,42 @@
+name: pv-guardian-test-sinvert
+
+services:
+  backend:
+    image: ghcr.io/ctapv/pv-guardian-edge-backend:${TEST_SINVERT_TAG:?Set TEST_SINVERT_TAG in test.compose.env}
+    restart: unless-stopped
+    environment:
+      PV_EDGE_MANAGER_DATABASE_PATH: /var/lib/pv-edge-manager/test_sinvert.db
+      PV_EDGE_MANAGER_HISTORY_DATABASE_PATH: /var/lib/pv-edge-manager/test_sinvert_history.db
+      PV_EDGE_MANAGER_MODBUS_TCP_SLAVE_ENABLED: "false"
+      PV_EDGE_MANAGER_VERSION: ${TEST_SINVERT_TAG}
+      PV_EDGE_MANAGER_RELEASE_TAG: ${TEST_SINVERT_TAG}
+    volumes:
+      - sinvert_data:/var/lib/pv-edge-manager
+      - sinvert_logs:/var/log/pv-edge-manager
+    ports:
+      - "127.0.0.1:${TEST_SINVERT_API_PORT:-18000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3).read()"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
+
+  web:
+    image: ghcr.io/ctapv/pv-guardian-edge-web:${TEST_SINVERT_TAG:?Set TEST_SINVERT_TAG in test.compose.env}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${TEST_SINVERT_WEB_PORT:-18080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/sinvert.html"]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 6
+
+volumes:
+  sinvert_data:
+  sinvert_logs:
