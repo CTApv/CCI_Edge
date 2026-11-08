@@ -30,6 +30,9 @@ class TelemetryQualityService:
         if value is None or (isinstance(value, str) and not value.strip()):
             return TelemetryQualityEvaluation("unavailable", "Valore non disponibile")
 
+        if point.datatype.strip().lower() == "bool":
+            return TelemetryQualityEvaluation("valid") if type(value) is bool else TelemetryQualityEvaluation("invalid", "Valore booleano non interpretabile")
+
         if self._matches_invalid_sentinel(point, value):
             return TelemetryQualityEvaluation("invalid", "Valore sentinella dichiarato dal protocollo")
 

@@ -429,7 +429,7 @@ export function DeviceConnectionDrawer({
                           key={`${catalogModel.brand}|${catalogModel.model}|${catalogModel.protocol}`}
                           value={catalogModel.model}
                         >
-                          {catalogModel.model}
+                          {catalogModel.model}{catalogModel.mppt_count ? ` - ${catalogModel.mppt_count} MPPT` : ""}
                         </option>
                       ))}
                     </select>

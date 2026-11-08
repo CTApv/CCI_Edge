@@ -1,12 +1,28 @@
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock
 
 from app.config import settings
 from app.services.power_history_service import PowerHistoryService
 
 
 class PowerHistoryServiceTests(unittest.TestCase):
+    def test_storage_stats_tolerate_disappearing_sqlite_sidecar(self) -> None:
+        service = PowerHistoryService.__new__(PowerHistoryService)
+        paths = [SimpleNamespace(stat=Mock(return_value=SimpleNamespace(st_size=100))),
+                 SimpleNamespace(stat=Mock(side_effect=FileNotFoundError("WAL removed"))),
+                 SimpleNamespace(stat=Mock(return_value=SimpleNamespace(st_size=20)))]
+        service._history_related_paths = lambda: paths
+        self.assertEqual(service._get_storage_size_bytes(), 120)
+
+    def test_storage_stats_do_not_hide_permission_errors(self) -> None:
+        service = PowerHistoryService.__new__(PowerHistoryService)
+        service._history_related_paths = lambda: [SimpleNamespace(stat=Mock(side_effect=PermissionError("denied")))]
+        with self.assertRaises(PermissionError):
+            service._get_storage_size_bytes()
+
     def test_row_count_estimate_quarantines_malformed_database(self) -> None:
         original_database_path = settings.power_history_database_path
         original_limit = settings.power_history_limit

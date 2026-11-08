@@ -328,7 +328,7 @@ function matchExistingTcpDevice(
       const unitId = findNumericConnectionValue(device.connection_settings, "unit_id", [
         "slave_id",
       ]);
-      return host === result.host && port === result.port && unitId === result.unit_id;
+      return host === result.host && port === result.port && (result.function === "s7" ? device.protocol === "s7_tcp" : unitId === result.unit_id);
     }) ?? null
   );
 }
@@ -465,7 +465,7 @@ function buildTcpConnectionSettings(
     ...buildProtocolSettings(protocol, defaults, transport),
     host: result.host,
     port: result.port,
-    unit_id: result.unit_id,
+    ...(protocol === "s7_tcp" ? { rack: result.rack ?? 0, slot: result.slot ?? 2 } : { unit_id: result.unit_id }),
     timeout_seconds: Number(form.timeoutSeconds),
     retries: Number(form.retries),
   };
@@ -990,6 +990,8 @@ export function OperatorProvisioningDrawer({
     }));
   }, [open, scanTransport, selectedCatalogEntry]);
 
+  const knownS7Host = existingDevices.find((device) => device.protocol === "s7_tcp")?.connection_settings.host;
+
   useEffect(() => {
     if (!open || scanTransport !== "tcp" || selectedCatalogEntry === null) {
       return;
@@ -1003,10 +1005,12 @@ export function OperatorProvisioningDrawer({
     );
     setNetworkForm((current) => ({
       ...current,
+      ...(selectedCatalogEntry.protocol === "s7_tcp" && typeof knownS7Host === "string"
+        ? { hostStart: knownS7Host, hostEnd: knownS7Host } : {}),
       portStart: String(defaults.port ?? current.portStart),
       portEnd: String(defaults.port ?? current.portEnd),
       timeoutSeconds: String(defaults.timeout_seconds ?? current.timeoutSeconds),
-      retries: String(defaults.retries ?? current.retries),
+      retries: selectedCatalogEntry.protocol === "s7_tcp" ? "1" : String(defaults.retries ?? current.retries),
       unitIdStart: String(
         defaults.unit_id ?? defaults.slave_id ?? defaults.address ?? current.unitIdStart,
       ),
@@ -1014,7 +1018,7 @@ export function OperatorProvisioningDrawer({
         defaults.unit_id ?? defaults.slave_id ?? defaults.address ?? current.unitIdEnd,
       ),
     }));
-  }, [gatewayUsesRtuOverTcp, linkMode, open, scanTransport, selectedCatalogEntry]);
+  }, [gatewayUsesRtuOverTcp, linkMode, open, scanTransport, selectedCatalogEntry, knownS7Host]);
 
   const decoratedResults = useMemo<DecoratedResult[]>(() => {
     if (scanTransport === "serial") {
@@ -1090,7 +1094,7 @@ export function OperatorProvisioningDrawer({
           ),
         );
         const compatibility = describeCompatibility(result.candidate_profiles, selectedCatalogEntry);
-        const resolvedProtocol =
+        const resolvedProtocol = result.function === "s7" ? "s7_tcp" :
           selectedCatalogEntry?.protocol ??
           (gatewayUsesRtuOverTcp ? "modbus_rtu" : protocol || "modbus_tcp");
         const resolvedTransport = "tcp";
@@ -1108,7 +1112,7 @@ export function OperatorProvisioningDrawer({
             : "TCP";
         return {
           key: `tcp:${result.host}:${result.port}:${result.unit_id}`,
-          label: `${endpointPrefix} | ${result.host}:${result.port} | unit ${result.unit_id}`,
+          label: result.function === "s7" ? `S7 | ${result.host}:${result.port} | rack ${result.rack ?? 0} slot ${result.slot ?? 2}` : `${endpointPrefix} | ${result.host}:${result.port} | unit ${result.unit_id}`,
           description: `Endpoint di rete trovato su ${result.host}:${result.port}.`,
           candidateSummary: candidateSummary.headline,
           candidateDetails: candidateSummary.detailLines,
@@ -1120,7 +1124,7 @@ export function OperatorProvisioningDrawer({
               buildProtocolSettings(resolvedProtocol, null, resolvedTransport);
             return {
               key: `tcp:${result.host}:${result.port}:${result.unit_id}`,
-              label: `${endpointPrefix} | ${result.host}:${result.port} | unit ${result.unit_id}`,
+              label: result.function === "s7" ? `S7 | ${result.host}:${result.port} | rack ${result.rack ?? 0} slot ${result.slot ?? 2}` : `${endpointPrefix} | ${result.host}:${result.port} | unit ${result.unit_id}`,
               protocol: resolvedProtocol,
               transport: resolvedTransport,
               transportLabel,
@@ -1449,7 +1453,7 @@ export function OperatorProvisioningDrawer({
         return;
       }
 
-      const unitIds = buildIntegerRange(networkForm.unitIdStart, networkForm.unitIdEnd, 0, 247);
+      const unitIds = protocol === "s7_tcp" ? [0] : buildIntegerRange(networkForm.unitIdStart, networkForm.unitIdEnd, 0, 247);
       if (!networkForm.hostStart.trim() || !networkForm.hostEnd.trim()) {
         throw new Error("Definisci un intervallo IP valido.");
       }
@@ -1522,6 +1526,9 @@ export function OperatorProvisioningDrawer({
           }, { signal: controller.signal });
           totalDurationMs += response.duration_ms;
           totalRequestCount += response.request_count;
+          if (response.results.length === 0 && response.errors?.length) {
+            chunkErrors.push(...response.errors.slice(0, 3));
+          }
           for (const result of response.results) {
             aggregatedResults.set(
               `${result.host}:${result.port}:${result.unit_id}:${result.register}:${result.function}`,
@@ -2127,7 +2134,7 @@ export function OperatorProvisioningDrawer({
                     <option value="">Seleziona modello</option>
                     {modelOptions.map((catalogModel) => (
                       <option key={catalogModel.model} value={catalogModel.model}>
-                        {catalogModel.model}
+                        {catalogModel.model}{catalogModel.mppt_count ? ` - ${catalogModel.mppt_count} MPPT` : ""}
                       </option>
                     ))}
                   </select>

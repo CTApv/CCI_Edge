@@ -3,3 +3,4 @@ pydantic==2.13.3
 pymodbus==3.12.1
 pyserial==3.5
 uvicorn==0.45.0
+python-snap7==3.3.1

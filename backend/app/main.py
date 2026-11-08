@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes_sinvert_lab import router as sinvert_lab_router
 from app.api.routes_catalog import router as catalog_router
 from app.api.routes_commands import router as commands_router
 from app.api.routes_fleet_control import router as fleet_control_router
@@ -53,6 +54,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(sinvert_lab_router)
 app.include_router(catalog_router)
 app.include_router(commands_router)
 app.include_router(fleet_control_router)

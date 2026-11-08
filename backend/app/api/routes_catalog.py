@@ -16,6 +16,8 @@ def list_catalog_models() -> list[dict[str, object]]:
                 "transport": model.transport,
                 "defaults": model.defaults,
                 "features": model.features,
+                "series": model.catalog_meta.get("series"),
+                "mppt_count": model.catalog_meta.get("mppt_count"),
                 "verification": {
                     "status": str(model.catalog_meta.get("verification_status", "unclassified")),
                     "source_document": str(model.catalog_meta.get("source_document", "")) or None,

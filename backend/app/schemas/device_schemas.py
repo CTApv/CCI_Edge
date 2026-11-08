@@ -10,6 +10,7 @@ from app.core.connection_settings import (
 
 ConnectionValue = str | int | float | bool
 ProtocolValue = Literal[
+    "s7_tcp",
     "modbus_rtu",
     "modbus_tcp",
     "sunspec",

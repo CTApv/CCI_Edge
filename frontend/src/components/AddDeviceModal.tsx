@@ -902,7 +902,7 @@ export function AddDeviceModal({ onClose, onCreated, prefill }: AddDeviceModalPr
                     <option value="">{form.brand ? "Seleziona modello" : "Scegli prima la marca"}</option>
                     {catalogModelOptions.map((catalogModel) => (
                       <option key={catalogModel.model} value={catalogModel.model}>
-                        {catalogModel.model}
+                        {catalogModel.model}{catalogModel.mppt_count ? ` - ${catalogModel.mppt_count} MPPT` : ""}
                       </option>
                     ))}
                   </select>
@@ -985,7 +985,7 @@ export function AddDeviceModal({ onClose, onCreated, prefill }: AddDeviceModalPr
                         <strong>
                           {selectedCatalogEntry.verification.field_tested
                             ? "Collaudato in campo"
-                            : selectedCatalogEntry.verification.status === "manual_verified"
+                            : ["manual_verified", "documented_not_field_tested"].includes(selectedCatalogEntry.verification.status)
                               ? "Verificato da manuale"
                               : "Da classificare"}
                         </strong>

@@ -1,3 +1,4 @@
+from app.services.fronius_sunspec_service import FRONIUS_DRIVER, fronius_sunspec_service
 from dataclasses import dataclass
 from struct import pack, unpack
 from time import perf_counter, sleep
@@ -23,6 +24,7 @@ from app.services.bonfiglioli_modbus_service import (
     bonfiglioli_modbus_service,
 )
 from app.services.connection_manager import connection_manager
+from app.services.sinvert_s7_service import sinvert_s7_service
 from app.services.delta_rs485_service import DELTA_RS485_DRIVER, delta_rs485_service
 from app.services.ingeteam_command_service import (
     INGETEAM_UNIT_COMMAND_DRIVER,
@@ -95,6 +97,7 @@ ESSENTIAL_EXCLUDE_TERMS = {
 class TelemetryReadResult:
     values: dict[str, str | float | int | bool | None]
     unit_argument_style: str
+    read_errors: dict[str, str] | None = None
 
 
 @dataclass(slots=True, frozen=True)
@@ -114,7 +117,7 @@ class InverterIoService:
     ) -> TelemetryReadResult:
         points = (
             self._select_essential_readable_points(inverter_model.telemetry_points)
-            if essential_only
+            if essential_only and device.protocol != "s7_tcp"
             else self._select_readable_points(inverter_model.telemetry_points)
         )
         if not points:
@@ -126,6 +129,9 @@ class InverterIoService:
         device: DeviceResponse,
         inverter_model: InverterModel,
     ) -> TelemetryReadResult:
+        if any(p.protocol_meta.get("driver") == FRONIUS_DRIVER for p in inverter_model.telemetry_points):
+            return self._read_telemetry_points(device, inverter_model,
+                [p for p in inverter_model.telemetry_points if p.key in {"operating_state", "active_power_kw"}])
         probe_point = self._select_heartbeat_probe_point(inverter_model)
         if probe_point is not None:
             return self._read_telemetry_points(device, inverter_model, [probe_point])
@@ -154,6 +160,12 @@ class InverterIoService:
         inverter_model: InverterModel,
         points: list[InverterPoint],
     ) -> TelemetryReadResult:
+        if any(p.protocol_meta.get("driver") == FRONIUS_DRIVER for p in points):
+            raw_values = fronius_sunspec_service.read_points(device, points)
+            return TelemetryReadResult(self._apply_point_scaling(points, raw_values), FRONIUS_DRIVER)
+        if device.protocol == "s7_tcp":
+            result = sinvert_s7_service.read_points(device.connection_settings, points)
+            return TelemetryReadResult(values=result.values, unit_argument_style="s7_absolute", read_errors=result.errors)
         if device.protocol == "modbus_rtu":
             return self._read_modbus_rtu_telemetry(device, inverter_model, points)
         if device.protocol in {"modbus_tcp", "sunspec"}:
@@ -170,6 +182,17 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
+            try:
+                result = fronius_sunspec_service.write_point(device, point, value)
+                return CommandWriteResult(True, result)
+            except Exception as exc:
+                return CommandWriteResult(False, {"stub_mode": False, "driver": FRONIUS_DRIVER,
+                    "stage": "write_sunspec", "physical_execution_confirmed": False}, str(exc))
+        if device.protocol == "s7_tcp":
+            from app.services.sinvert_s7_command_service import sinvert_s7_command_service
+            result=sinvert_s7_command_service.write(device,point,value)
+            return CommandWriteResult(result.success,{**result.diagnostics,"read_only":result.diagnostics.get("stage")=="blocked"},result.error)
         if device.protocol == "modbus_rtu":
             return self._write_modbus_rtu_command(device, point, value)
         if device.protocol in {"modbus_tcp", "sunspec"}:
@@ -190,6 +213,8 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> tuple[object, ...] | None:
+        if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
+            return None
         if device.protocol not in {"modbus_rtu", "modbus_tcp"}:
             return None
         if point.register_type != "holding":
@@ -245,6 +270,9 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
+            return CommandWriteResult(False, {"stub_mode": False, "stage": "profile", "broadcast": True},
+                "Fronius SunSpec richiede comandi indirizzati con verifica; broadcast disabilitato.")
         if device.protocol not in {"modbus_rtu", "modbus_tcp"}:
             return CommandWriteResult(
                 success=False,

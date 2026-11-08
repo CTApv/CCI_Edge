@@ -48,6 +48,7 @@ export const EMPTY_PROVISION_FORM: ProvisionFormState = {
 };
 
 export const PROTOCOL_TRANSPORTS: Record<string, string> = {
+  s7_tcp: "tcp",
   modbus_tcp: "tcp",
   modbus_rtu: "serial",
   aurora: "serial",
@@ -56,6 +57,7 @@ export const PROTOCOL_TRANSPORTS: Record<string, string> = {
 };
 
 export const PROTOCOL_ALLOWED_TRANSPORTS: Record<string, string[]> = {
+  s7_tcp: ["tcp"],
   modbus_tcp: ["tcp"],
   modbus_rtu: ["serial", "tcp"],
   aurora: ["serial"],
@@ -64,6 +66,7 @@ export const PROTOCOL_ALLOWED_TRANSPORTS: Record<string, string[]> = {
 };
 
 export const PROTOCOL_DEFAULT_SETTINGS: Record<string, ConnectionSettings> = {
+  s7_tcp: { port: 102, rack: 0, slot: 2, timeout_seconds: 5, retries: 0, poll_interval_seconds: 15 },
   modbus_tcp: {
     host: "192.168.1.100",
     port: 502,
@@ -139,6 +142,17 @@ const PARITY_OPTIONS: GuidedFieldOption[] = [
 ];
 
 export const GUIDED_CONNECTION_FIELDS: Record<string, GuidedFieldConfig[]> = {
+  s7_tcp: [
+    { key: "host", label: "Indirizzo PLC", type: "text" },
+    { key: "port", label: "Porta TCP", type: "number" },
+    { key: "rack", label: "Rack", type: "number" },
+    { key: "slot", label: "Slot CPU", type: "number" },
+    { key: "sinvert_write_mode", label: "Comandi SINVERT", type: "text", options: [
+      { value: "read_only", label: "Sola lettura" },
+      { value: "commissioning", label: "Collaudo manuale abilitato" },
+    ] },
+    { key: "sinvert_reference_max_raw", label: "Massimo riferimento PLC per collaudo (scala da confermare)", type: "number" },
+  ],
   modbus_tcp: [
     { key: "host", label: "Indirizzo host", type: "text" },
     { key: "port", label: "Porta TCP", type: "number" },
@@ -226,6 +240,7 @@ const MODBUS_RTU_TCP_GUIDED_FIELDS: GuidedFieldConfig[] = [
 ];
 
 const PROTOCOL_PRIORITY: Record<string, number> = {
+  s7_tcp: 5,
   modbus_tcp: 0,
   modbus_rtu: 1,
   sunspec: 2,
@@ -235,6 +250,7 @@ const PROTOCOL_PRIORITY: Record<string, number> = {
 type ConnectionScalar = string | number | boolean;
 
 const PROTOCOL_REQUIRED_CONNECTION_FIELDS: Record<string, string[]> = {
+  s7_tcp: ["host", "port", "rack", "slot", "timeout_seconds", "retries"],
   modbus_tcp: ["host", "port", "unit_id", "timeout_seconds", "retries"],
   modbus_rtu: [
     "port",
@@ -274,6 +290,7 @@ const PROTOCOL_REQUIRED_CONNECTION_FIELDS_BY_TRANSPORT: Record<string, string[]>
 };
 
 const PROTOCOL_CONNECTION_ALIASES: Record<string, Record<string, string>> = {
+  s7_tcp: {},
   modbus_tcp: { slave_id: "unit_id" },
   sunspec: { slave_id: "unit_id" },
   modbus_rtu: { unit_id: "slave_id", address: "slave_id" },
@@ -295,6 +312,8 @@ const BOOLEAN_CONNECTION_KEYS = new Set([
 ]);
 
 const INTEGER_CONNECTION_RANGES: Record<string, { min: number; max?: number }> = {
+  rack: { min: 0, max: 7 },
+  slot: { min: 0, max: 31 },
   port: { min: 1, max: 65535 },
   unit_id: { min: 0, max: 247 },
   slave_id: { min: 0, max: 247 },

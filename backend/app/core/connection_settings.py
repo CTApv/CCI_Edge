@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from typing import Literal
 
 ConnectionPrimitive = str | int | float | bool
-ProtocolKey = Literal["modbus_rtu", "modbus_tcp", "sunspec", "aurora", "delta_rs485"]
+ProtocolKey = Literal["modbus_rtu", "modbus_tcp", "sunspec", "aurora", "delta_rs485", "s7_tcp"]
 TransportKey = Literal["serial", "tcp"]
 
 DEFAULT_TIMEOUT_SECONDS = 3.0
@@ -15,6 +15,7 @@ DEFAULT_SERIAL_GATEWAY_POLL_TIMEOUT_CAP_SECONDS = 2.0
 DEFAULT_SERIAL_GATEWAY_POLL_RETRY_CAP = 0
 
 PROTOCOL_TRANSPORTS: dict[ProtocolKey, TransportKey] = {
+    "s7_tcp": "tcp",
     "modbus_tcp": "tcp",
     "modbus_rtu": "serial",
     "aurora": "serial",
@@ -23,6 +24,7 @@ PROTOCOL_TRANSPORTS: dict[ProtocolKey, TransportKey] = {
 }
 
 PROTOCOL_ALLOWED_TRANSPORTS: dict[ProtocolKey, tuple[TransportKey, ...]] = {
+    "s7_tcp": ("tcp",),
     "modbus_tcp": ("tcp",),
     "modbus_rtu": ("serial", "tcp"),
     "aurora": ("serial",),
@@ -31,6 +33,7 @@ PROTOCOL_ALLOWED_TRANSPORTS: dict[ProtocolKey, tuple[TransportKey, ...]] = {
 }
 
 PROTOCOL_REQUIRED_CONNECTION_SETTINGS: dict[ProtocolKey, tuple[str, ...]] = {
+    "s7_tcp": ("host", "port", "rack", "slot", "timeout_seconds", "retries"),
     "modbus_rtu": (
         "port",
         "slave_id",
@@ -73,6 +76,7 @@ PROTOCOL_REQUIRED_CONNECTION_SETTINGS_BY_TRANSPORT: dict[
 }
 
 PROTOCOL_DEFAULT_CONNECTION_SETTINGS: dict[ProtocolKey, dict[str, ConnectionPrimitive]] = {
+    "s7_tcp": {"port": 102, "rack": 0, "slot": 2, "timeout_seconds": 5.0, "retries": 0, "poll_interval_seconds": 15.0},
     "modbus_tcp": {
         "port": 502,
         "unit_id": 1,
@@ -164,6 +168,8 @@ _BOOLEAN_KEYS = {
 }
 
 _INT_RANGES: dict[str, tuple[int, int | None]] = {
+    "rack": (0, 7),
+    "slot": (0, 31),
     "port": (1, 65535),
     "unit_id": (0, 247),
     "slave_id": (0, 247),
@@ -192,6 +198,7 @@ _FLOAT_RANGES: dict[str, tuple[float, float | None]] = {
 }
 
 _PROTOCOL_ALIASES: dict[ProtocolKey, dict[str, str]] = {
+    "s7_tcp": {},
     "modbus_tcp": {"slave_id": "unit_id"},
     "sunspec": {"slave_id": "unit_id"},
     "modbus_rtu": {"unit_id": "slave_id", "address": "slave_id"},
@@ -389,7 +396,10 @@ def _validate_common_settings(
     transport: str,
     settings: dict[str, ConnectionPrimitive],
 ) -> None:
-    if protocol in {"modbus_tcp", "sunspec"}:
+    if protocol == "s7_tcp":
+        _validate_int_setting(settings, "rack")
+        _validate_int_setting(settings, "slot")
+    elif protocol in {"modbus_tcp", "sunspec"}:
         _validate_int_setting(settings, "unit_id")
     elif protocol == "modbus_rtu":
         if transport == "tcp":

@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class DashboardActivePowerResponse(BaseModel):
+    physical_measurements_available: bool = True
     active_power_kw: float
     active_power_w: float
     online_devices: int
@@ -10,6 +11,7 @@ class DashboardActivePowerResponse(BaseModel):
 
 
 class DashboardSummaryResponse(BaseModel):
+    physical_measurements_available: bool = True
     total_devices: int
     online_devices: int
     offline_devices: int

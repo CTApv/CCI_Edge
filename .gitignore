@@ -46,3 +46,8 @@ release/backup/
 Thumbs.db
 .vscode/
 .idea/
+# Local Windows SINVERT workspace runtime (never publish state or logs).
+/local_runtime/
+/release/
+sinvert_command_audit.jsonl
+sinvert_samples.jsonl*

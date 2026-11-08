@@ -32,9 +32,10 @@ from app.services.inverter_profile_resolver import inverter_profile_resolver
 from app.services.live_cache import LiveCacheEntry, live_cache
 from app.services.power_history_service import power_history_service
 from app.services.power_value_sanitizer import sanitize_device_power_kw
+from app.services.sinvert_monitor import build_sinvert_monitor
 from app.services.telemetry_quality_service import telemetry_quality_service
 
-SUPPORTED_POLL_PROTOCOLS = {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485"}
+SUPPORTED_POLL_PROTOCOLS = {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485", "s7_tcp"}
 MAX_PARALLEL_POLL_WORKERS = 8
 TCP_SHARED_MAX_ENDPOINT_OCCUPANCY_SECONDS = 4.0
 TCP_SHARED_MAX_ACTIVE_POWER_BUDGET_PER_ENDPOINT_CYCLE = 32
@@ -153,6 +154,7 @@ def poll_device(
         )
         return _build_cache_entry(
             metrics=DeviceOverviewMetrics(
+                physical_measurements_available=device.protocol != "s7_tcp",
                 power_kw=sanitized_power_kw if sanitized_power_kw is not None else 0.0,
                 daily_energy_kwh=_metric_value(
                     values=values,
@@ -183,6 +185,9 @@ def poll_device(
                 ),
             ),
             diagnostics=DeviceOverviewDiagnostics(
+                sinvert=build_sinvert_monitor(values,device.connection_settings) if device.protocol == "s7_tcp" else None,
+                failed_points=len(telemetry.read_errors or {}),
+                read_errors=telemetry.read_errors or {},
                 last_poll_status=(
                     f"status={_status_value(values, inverter_model)}; stage=read_register; "
                     f"stub_mode=false; poll_kind={effective_poll_kind}; "
@@ -1997,6 +2002,13 @@ class PollingEngine:
         previous_entry = live_cache.get(device.device_id)
         cached_entry = _merge_poll_entry(previous_entry, entry)
         live_cache.set(device.device_id, cached_entry)
+        if device.brand == "SINVERT" and device.protocol == "s7_tcp":
+            try:
+                from app.services.sinvert_trace_service import sinvert_trace_service
+                sinvert_trace_service.append(device, cached_entry)
+            except Exception as exc:
+                logger.warning("SINVERT trace storage failed for %s: %s", device.device_id, exc)
+
 
         if _is_backoff_entry(entry):
             return 0, 1, 1
@@ -2010,7 +2022,9 @@ class PollingEngine:
         should_append_persistent_power_history = is_full_history_sample or (
             allow_active_power_history and is_active_power_history_sample
         )
-        if should_append_live_power_history or should_append_persistent_power_history:
+        if cached_entry.metrics.physical_measurements_available and (
+            should_append_live_power_history or should_append_persistent_power_history
+        ):
             history_power_kw = sanitize_device_power_kw(
                 cached_entry.metrics.power_kw,
                 device=device,
@@ -2337,11 +2351,19 @@ def _build_telemetry_points(
     device: object | None = None,
 ) -> list[DeviceTelemetryPoint]:
     telemetry_items: list[DeviceTelemetryPoint] = []
+    sinvert_groups = build_sinvert_monitor(values)["groups"] if inverter_model.protocol == "s7_tcp" else []
     for point in inverter_model.telemetry_points:
         if not point.visible or point.key not in values:
             continue
 
         value = values[point.key]
+        raw_value = value
+        if point.register_type == "s7" and point.protocol_meta.get("semantics") == "documented_hmi" and isinstance(value, (int, float)) and not isinstance(value, bool):
+            value = value * point.scale
+            if point.unit:
+                index = int(point.key.split("_")[1]) - 1
+                if sinvert_groups[index]["measurement_quality"] != "plc_reported":
+                    value = None
         quality = telemetry_quality_service.evaluate(
             point,
             value,
@@ -2354,8 +2376,8 @@ def _build_telemetry_points(
                 key=point.key,
                 label=point.label,
                 value=value,
-                raw_value=value,
-                display_value=_format_point_value(point, value),
+                raw_value=raw_value,
+                display_value="--" if value is None else _format_point_value(point, value),
                 unit=point.unit,
                 section=str(point.protocol_meta.get("section", "General")),
                 visible=point.visible,

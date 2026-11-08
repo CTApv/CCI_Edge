@@ -588,8 +588,11 @@ class PowerHistoryService:
     def _get_storage_size_bytes(self) -> int:
         total_size = 0
         for path in self._history_related_paths():
-            if path.exists():
+            try:
                 total_size += path.stat().st_size
+            except FileNotFoundError:
+                # SQLite may remove WAL/SHM between filesystem calls.
+                continue
         return total_size
 
     def _history_related_paths(self) -> list[Path]:

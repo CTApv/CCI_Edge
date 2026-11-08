@@ -1,0 +1,5592 @@
+{
+  "source": "Siemens S7 HMI V1.0",
+  "sha256": "33c88678e6694a86d6b3fcca1d9c10a09cfdd5b7439089b8fcd2516d135f9d08",
+  "label_quality": "PDF table line excerpt; variant meaning requires code verification",
+  "messages": {
+    "0.0": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No25",
+      "label": "ADC Channel Fault Solar Panel Field T ension",
+      "page": 4
+    },
+    "0.1": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No26",
+      "label": "ADC Channel Fault MSD",
+      "page": 4
+    },
+    "0.2": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No27",
+      "label": "ADC Channel Fault Radiation Global",
+      "page": 4
+    },
+    "0.3": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No28",
+      "label": "ADC Channel Fault Radiation Module 1",
+      "page": 4
+    },
+    "0.4": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No29",
+      "label": "ADC Channel Fault Radiation Module 2",
+      "page": 4
+    },
+    "0.5": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No30",
+      "label": "ADC Channel Fault Radiation Module 3",
+      "page": 4
+    },
+    "0.6": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No31",
+      "label": "ADC Channel Fault Radiation Module 4",
+      "page": 4
+    },
+    "0.7": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No32",
+      "label": "ADC Channel Fault Radiation Module 5",
+      "page": 4
+    },
+    "1.0": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No17",
+      "label": "ADC Channel Fault Radiation Module Tr acker 1",
+      "page": 4
+    },
+    "1.1": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No18",
+      "label": "ADC Channel Fault Radiation Module Tr acker 2",
+      "page": 4
+    },
+    "1.2": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No19",
+      "label": "ADC Channel Fault Temperature Global",
+      "page": 4
+    },
+    "1.3": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No20",
+      "label": "ADC Channel Fault Temperature Module1",
+      "page": 4
+    },
+    "1.4": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No21",
+      "label": "ADC Channel Fault Temperature Module2",
+      "page": 4
+    },
+    "1.5": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No22",
+      "label": "ADC Channel Fault Temperature Module3",
+      "page": 4
+    },
+    "1.6": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No23",
+      "label": "ADC Channel Fault Temperature Module4",
+      "page": 4
+    },
+    "1.7": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No24",
+      "label": "ADC Channel Fault Temperature Module5",
+      "page": 4
+    },
+    "2.0": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No9",
+      "label": "ADC Channel Fault Temperature Module6",
+      "page": 4
+    },
+    "2.1": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No10",
+      "label": "ADC Channel Fault Temperature Tracker1",
+      "page": 4
+    },
+    "2.2": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No11",
+      "label": "ADC Channel Fault Temperature Tracker2",
+      "page": 5
+    },
+    "2.3": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No12",
+      "label": "ADC Channel Fault Temperature Contain er",
+      "page": 5
+    },
+    "2.4": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No13",
+      "label": "ADC Channel Fault Temperature External",
+      "page": 5
+    },
+    "2.5": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No14",
+      "label": "ADC Channel Fault Wind Direction",
+      "page": 5
+    },
+    "2.6": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No15",
+      "label": "ADC Channel Fault Wind Speeed",
+      "page": 5
+    },
+    "2.7": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No16",
+      "label": "PVU.STOER.PVU_Warnungen.No16",
+      "page": 5
+    },
+    "3.0": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No1",
+      "label": "PVU.STOER.PVU_Warnungen.No1",
+      "page": 5
+    },
+    "3.1": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No2",
+      "label": "PVU.STOER.PVU_Warnungen.No2",
+      "page": 5
+    },
+    "3.2": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No3",
+      "label": "ADC Channel Fault Grid Tension Gauging Phase L1/L2",
+      "page": 5
+    },
+    "3.3": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No4",
+      "label": "ADC Channel Fault Grid Tension Gauging Phase L3/L1",
+      "page": 5
+    },
+    "3.4": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No5",
+      "label": "ADC Channel Fault Grid Tension Gauging Phase L2/L3",
+      "page": 5
+    },
+    "3.5": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No6",
+      "label": "Switch Disconnection Trip 1 DC Contai ner",
+      "page": 5
+    },
+    "3.6": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No7",
+      "label": "Switch Disconnection Trip 2 AC Contai ner",
+      "page": 5
+    },
+    "3.7": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No8",
+      "label": "Switch Disconnection Trip 3 Weather Station",
+      "page": 5
+    },
+    "4.0": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No57",
+      "label": "Switch Disconnection Trip 4 Medium Voltage Container",
+      "page": 5
+    },
+    "4.1": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No58",
+      "label": "Switch Disconnection Trip 5 Backup Systems",
+      "page": 5
+    },
+    "4.2": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No59",
+      "label": "Switch Disconnection Trip 6 Fan",
+      "page": 5
+    },
+    "4.3": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No60",
+      "label": "Switch Disconnection Trip 7 Heating",
+      "page": 5
+    },
+    "4.4": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No61",
+      "label": "Switch Disconnection Trip 8",
+      "page": 5
+    },
+    "4.5": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No62",
+      "label": "Switch Disconnection Trip 9",
+      "page": 5
+    },
+    "4.6": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No63",
+      "label": "Switch Disconnection Trip 10",
+      "page": 5
+    },
+    "4.7": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No64",
+      "label": "Switch Disconnection Trip 11",
+      "page": 5
+    },
+    "5.0": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No49",
+      "label": "Switch Disconnection Trip 12",
+      "page": 5
+    },
+    "5.1": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No50",
+      "label": "UPS Battery Operation",
+      "page": 5
+    },
+    "5.2": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No51",
+      "label": "Warning Medium Voltage Transformer",
+      "page": 5
+    },
+    "5.3": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No52",
+      "label": "Warning Smoke Detector",
+      "page": 5
+    },
+    "5.4": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No53",
+      "label": "PVU.STOER.PVU_Warnungen.No53",
+      "page": 5
+    },
+    "5.5": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No54",
+      "label": "PVU.STOER.PVU_Warnungen.No54",
+      "page": 5
+    },
+    "5.6": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No55",
+      "label": "PVU.STOER.PVU_Warnungen.No55",
+      "page": 5
+    },
+    "5.7": {
+      "symbol": "PVU.STOER.PVU_Warnungen.No56",
+      "label": "PVU.STOER.PVU_Warnungen.No56",
+      "page": 5
+    },
+    "16.0": {
+      "symbol": "PVU.STOER.PVU_Alarme.No25",
+      "label": "PLC fast OFF",
+      "page": 5
+    },
+    "16.1": {
+      "symbol": "PVU.STOER.PVU_Alarme.No26",
+      "label": "Fast OFF",
+      "page": 5
+    },
+    "16.2": {
+      "symbol": "PVU.STOER.PVU_Alarme.No27",
+      "label": "MSD grid voltage supervision",
+      "page": 5
+    },
+    "16.3": {
+      "symbol": "PVU.STOER.PVU_Alarme.No28",
+      "label": "MSD short circuit detected",
+      "page": 5
+    },
+    "16.4": {
+      "symbol": "PVU.STOER.PVU_Alarme.No29",
+      "label": "Battery at Central Unit empty / not present",
+      "page": 5
+    },
+    "16.5": {
+      "symbol": "PVU.STOER.PVU_Alarme.No30",
+      "label": "PVU.STOER.PVU_Alarme.No30",
+      "page": 5
+    },
+    "16.6": {
+      "symbol": "PVU.STOER.PVU_Alarme.No31",
+      "label": "Backup Voltage at Expansion Unit missing",
+      "page": 5
+    },
+    "16.7": {
+      "symbol": "PVU.STOER.PVU_Alarme.No32",
+      "label": "24V Supply Voltage at EG missing",
+      "page": 5
+    },
+    "17.0": {
+      "symbol": "PVU.STOER.PVU_Alarme.No17",
+      "label": "Expansion Unit Failure",
+      "page": 5
+    },
+    "17.1": {
+      "symbol": "PVU.STOER.PVU_Alarme.No18",
+      "label": "DP Station Weather broken down",
+      "page": 5
+    },
+    "17.2": {
+      "symbol": "PVU.STOER.PVU_Alarme.No19",
+      "label": "Failure DP Station Weather",
+      "page": 5
+    },
+    "17.3": {
+      "symbol": "PVU.STOER.PVU_Alarme.No20",
+      "label": "Failure wrong Parameter at Expasion Unit",
+      "page": 6
+    },
+    "17.4": {
+      "symbol": "PVU.STOER.PVU_Alarme.No21",
+      "label": "Failure wrong Parameter at DP Station",
+      "page": 6
+    },
+    "17.5": {
+      "symbol": "PVU.STOER.PVU_Alarme.No22",
+      "label": "Failure CPU Hardware (MPI/K-Bus/DP)",
+      "page": 6
+    },
+    "17.6": {
+      "symbol": "PVU.STOER.PVU_Alarme.No23",
+      "label": "Failure OLM DP1",
+      "page": 6
+    },
+    "17.7": {
+      "symbol": "PVU.STOER.PVU_Alarme.No24",
+      "label": "Failure OLM DP2",
+      "page": 6
+    },
+    "18.0": {
+      "symbol": "PVU.STOER.PVU_Alarme.No9",
+      "label": "Failure OLM MPI 1",
+      "page": 6
+    },
+    "18.1": {
+      "symbol": "PVU.STOER.PVU_Alarme.No10",
+      "label": "Failute OLM MPI 2",
+      "page": 6
+    },
+    "18.2": {
+      "symbol": "PVU.STOER.PVU_Alarme.No11",
+      "label": "Alarm USV",
+      "page": 6
+    },
+    "18.3": {
+      "symbol": "PVU.STOER.PVU_Alarme.No12",
+      "label": "Alarm Trafo Medium Voltage",
+      "page": 6
+    },
+    "18.4": {
+      "symbol": "PVU.STOER.PVU_Alarme.No13",
+      "label": "Alarm Flue Gas Detector",
+      "page": 6
+    },
+    "18.5": {
+      "symbol": "PVU.STOER.PVU_Alarme.No14",
+      "label": "Supervision FB 161",
+      "page": 6
+    },
+    "18.6": {
+      "symbol": "PVU.STOER.PVU_Alarme.No15",
+      "label": "PVU.STOER.PVU_Alarme.No15",
+      "page": 6
+    },
+    "18.7": {
+      "symbol": "PVU.STOER.PVU_Alarme.No16",
+      "label": "PVU.STOER.PVU_Alarme.No16",
+      "page": 6
+    },
+    "19.0": {
+      "symbol": "PVU.STOER.PVU_Alarme.No1",
+      "label": "PVU.STOER.PVU_Alarme.No1",
+      "page": 6
+    },
+    "19.1": {
+      "symbol": "PVU.STOER.PVU_Alarme.No2",
+      "label": "PVU.STOER.PVU_Alarme.No2",
+      "page": 6
+    },
+    "108.0": {
+      "symbol": "PVU.EVENT.PVU_Events.No25",
+      "label": "Manual on",
+      "page": 6
+    },
+    "108.1": {
+      "symbol": "PVU.EVENT.PVU_Events.No26",
+      "label": "0 = Local, 1 = Remote",
+      "page": 6
+    },
+    "108.2": {
+      "symbol": "PVU.EVENT.PVU_Events.No27",
+      "label": "MSD OK",
+      "page": 6
+    },
+    "108.3": {
+      "symbol": "PVU.EVENT.PVU_Events.No28",
+      "label": "Plausibility 1",
+      "page": 6
+    },
+    "108.4": {
+      "symbol": "PVU.EVENT.PVU_Events.No29",
+      "label": "Plausibility 2",
+      "page": 6
+    },
+    "108.5": {
+      "symbol": "PVU.EVENT.PVU_Events.No30",
+      "label": "Plausibility 3",
+      "page": 6
+    },
+    "108.6": {
+      "symbol": "PVU.EVENT.PVU_Events.No31",
+      "label": "Plausibility 4",
+      "page": 6
+    },
+    "108.7": {
+      "symbol": "PVU.EVENT.PVU_Events.No32",
+      "label": "Plausibility 5",
+      "page": 6
+    },
+    "109.0": {
+      "symbol": "PVU.EVENT.PVU_Events.No17",
+      "label": "Plausibility 6",
+      "page": 6
+    },
+    "109.1": {
+      "symbol": "PVU.EVENT.PVU_Events.No18",
+      "label": "Plausibility 7",
+      "page": 6
+    },
+    "109.2": {
+      "symbol": "PVU.EVENT.PVU_Events.No19",
+      "label": "Plausibility 8",
+      "page": 6
+    },
+    "109.3": {
+      "symbol": "PVU.EVENT.PVU_Events.No20",
+      "label": "Plausibility 9",
+      "page": 6
+    },
+    "109.4": {
+      "symbol": "PVU.EVENT.PVU_Events.No21",
+      "label": "Plausibility 10",
+      "page": 6
+    },
+    "109.5": {
+      "symbol": "PVU.EVENT.PVU_Events.No22",
+      "label": "Plausibility 11",
+      "page": 6
+    },
+    "109.6": {
+      "symbol": "PVU.EVENT.PVU_Events.No23",
+      "label": "Plausibility 12",
+      "page": 6
+    },
+    "109.7": {
+      "symbol": "PVU.EVENT.PVU_Events.No24",
+      "label": "Plausibility 13",
+      "page": 6
+    },
+    "110.0": {
+      "symbol": "PVU.EVENT.PVU_Events.No9",
+      "label": "Plausibility 14",
+      "page": 6
+    },
+    "110.1": {
+      "symbol": "PVU.EVENT.PVU_Events.No10",
+      "label": "Plausibility 15",
+      "page": 6
+    },
+    "110.2": {
+      "symbol": "PVU.EVENT.PVU_Events.No11",
+      "label": "Plausibility 16",
+      "page": 6
+    },
+    "110.3": {
+      "symbol": "PVU.EVENT.PVU_Events.No12",
+      "label": "Plausibility 17",
+      "page": 6
+    },
+    "110.4": {
+      "symbol": "PVU.EVENT.PVU_Events.No13",
+      "label": "Plausibility 18",
+      "page": 6
+    },
+    "110.5": {
+      "symbol": "PVU.EVENT.PVU_Events.No14",
+      "label": "Plausibility 19",
+      "page": 6
+    },
+    "110.6": {
+      "symbol": "PVU.EVENT.PVU_Events.No15",
+      "label": "Plausibility 20",
+      "page": 6
+    },
+    "110.7": {
+      "symbol": "PVU.EVENT.PVU_Events.No16",
+      "label": "Plausibility 21",
+      "page": 6
+    },
+    "111.0": {
+      "symbol": "PVU.EVENT.PVU_Events.No1",
+      "label": "Plausibility 22",
+      "page": 6
+    },
+    "111.1": {
+      "symbol": "PVU.EVENT.PVU_Events.No2",
+      "label": "Plausibility 23",
+      "page": 6
+    },
+    "111.2": {
+      "symbol": "PVU.EVENT.PVU_Events.No3",
+      "label": "Plausibility 24",
+      "page": 6
+    },
+    "111.3": {
+      "symbol": "PVU.EVENT.PVU_Events.No4",
+      "label": "Plausibility 25",
+      "page": 6
+    },
+    "111.4": {
+      "symbol": "PVU.EVENT.PVU_Events.No5",
+      "label": "Over Voltage 1 AC Cabinet",
+      "page": 7
+    },
+    "111.5": {
+      "symbol": "PVU.EVENT.PVU_Events.No6",
+      "label": "Over Voltage 2 Weather Station",
+      "page": 7
+    },
+    "111.6": {
+      "symbol": "PVU.EVENT.PVU_Events.No7",
+      "label": "PVU.EVENT.PVU_Events.No7",
+      "page": 7
+    },
+    "111.7": {
+      "symbol": "PVU.EVENT.PVU_Events.No8",
+      "label": "Over Voltage 4",
+      "page": 7
+    },
+    "112.0": {
+      "symbol": "PVU.EVENT.PVU_Events.No57",
+      "label": "UPS online operation",
+      "page": 7
+    },
+    "112.1": {
+      "symbol": "PVU.EVENT.PVU_Events.No58",
+      "label": "UPS ready for battery backup",
+      "page": 7
+    },
+    "112.2": {
+      "symbol": "PVU.EVENT.PVU_Events.No59",
+      "label": "PVU.EVENT.PVU_Events.No59",
+      "page": 7
+    },
+    "112.3": {
+      "symbol": "PVU.EVENT.PVU_Events.No60",
+      "label": "PVU.EVENT.PVU_Events.No60",
+      "page": 7
+    },
+    "112.4": {
+      "symbol": "PVU.EVENT.PVU_Events.No61",
+      "label": "PVU.EVENT.PVU_Events.No61",
+      "page": 7
+    },
+    "112.5": {
+      "symbol": "PVU.EVENT.PVU_Events.No62",
+      "label": "PVU.EVENT.PVU_Events.No62",
+      "page": 7
+    },
+    "112.6": {
+      "symbol": "PVU.EVENT.PVU_Events.No63",
+      "label": "PVU.EVENT.PVU_Events.No63",
+      "page": 7
+    },
+    "112.7": {
+      "symbol": "PVU.EVENT.PVU_Events.No64",
+      "label": "PVU.EVENT.PVU_Events.No64",
+      "page": 7
+    },
+    "128.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No25",
+      "label": "01:Inverter power unit overtemperature; 1st stage",
+      "page": 7
+    },
+    "128.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No26",
+      "label": "02:Grid fault",
+      "page": 7
+    },
+    "128.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No27",
+      "label": "03:Grid fault rectifier mains",
+      "page": 7
+    },
+    "128.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No28",
+      "label": "04:Inverter i²t supervision over load; 1st stage",
+      "page": 7
+    },
+    "128.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No29",
+      "label": "05:Undervoltage DC circuit",
+      "page": 7
+    },
+    "128.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No30",
+      "label": "06:Inverter overload at UPS bar",
+      "page": 7
+    },
+    "128.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No31",
+      "label": "07:Inverter rotating field bypass grid wrong or single phase voltage failure",
+      "page": 7
+    },
+    "128.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No32",
+      "label": "14:Fan life span exceeded",
+      "page": 7
+    },
+    "129.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No17",
+      "label": "16:Inverter message 16 occupied",
+      "page": 7
+    },
+    "129.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No18",
+      "label": "42:Inverter message 42 occupied",
+      "page": 7
+    },
+    "129.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No19",
+      "label": "44:Inverter message 44 occupied",
+      "page": 7
+    },
+    "129.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No20",
+      "label": "46:Inverter message 46 occupied",
+      "page": 7
+    },
+    "129.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No21",
+      "label": "49:Undervoltage DC circuit (bypass contactor PV field - inverter open)",
+      "page": 7
+    },
+    "129.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No22",
+      "label": "56:Inverter message 56 occupied",
+      "page": 7
+    },
+    "129.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No23",
+      "label": "61:Inverter message 61 occupied",
+      "page": 7
+    },
+    "129.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No24",
+      "label": "64:Udc respectively Dudc/dt too high",
+      "page": 7
+    },
+    "130.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No9",
+      "label": "91:Fuse trip control",
+      "page": 7
+    },
+    "130.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No10",
+      "label": "92:Overvoltage protection (varistors)",
+      "page": 7
+    },
+    "130.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No11",
+      "label": "96:AC over- or undervoltage",
+      "page": 7
+    },
+    "130.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No12",
+      "label": "98:Failure symmetry",
+      "page": 7
+    },
+    "130.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No13",
+      "label": "DC Switch Disconnection trip",
+      "page": 7
+    },
+    "130.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No14",
+      "label": "AC Switch Disconnection trip",
+      "page": 7
+    },
+    "130.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No15",
+      "label": "DC Overvoltage",
+      "page": 7
+    },
+    "130.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No16",
+      "label": "AC Overvoltage",
+      "page": 7
+    },
+    "131.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No1",
+      "label": "WR[1].STOER.WR_Warnungen.No1",
+      "page": 7
+    },
+    "131.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No2",
+      "label": "WR[1].STOER.WR_Warnungen.No2",
+      "page": 7
+    },
+    "131.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No3",
+      "label": "WR[1].STOER.WR_Warnungen.No3",
+      "page": 7
+    },
+    "131.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No4",
+      "label": "WR[1].STOER.WR_Warnungen.No4",
+      "page": 7
+    },
+    "131.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No5",
+      "label": "WR[1].STOER.WR_Warnungen.No5",
+      "page": 7
+    },
+    "131.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No6",
+      "label": "WR[1].STOER.WR_Warnungen.No6",
+      "page": 7
+    },
+    "131.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No7",
+      "label": "WR[1].STOER.WR_Warnungen.No7",
+      "page": 7
+    },
+    "131.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No8",
+      "label": "WR[1].STOER.WR_Warnungen.No8",
+      "page": 7
+    },
+    "132.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No57",
+      "label": "65:Response DC Contactor 1 missing",
+      "page": 8
+    },
+    "132.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No58",
+      "label": "Failure Symmetry String 1",
+      "page": 8
+    },
+    "132.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No59",
+      "label": "ISO - Warning String 1",
+      "page": 8
+    },
+    "132.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No60",
+      "label": "ISO - Failure String 1",
+      "page": 8
+    },
+    "132.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No61",
+      "label": "ADC Channel Fault DC String 1",
+      "page": 8
+    },
+    "132.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No62",
+      "label": "65:Response Discharge Contactor 1 ismissing",
+      "page": 8
+    },
+    "132.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No63",
+      "label": "65:Response Shorting Contactor 1 is missing",
+      "page": 8
+    },
+    "132.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No64",
+      "label": "WR[1].STOER.WR_Warnungen.No64",
+      "page": 8
+    },
+    "133.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No49",
+      "label": "65:Response DC Contactor 2 missing",
+      "page": 8
+    },
+    "133.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No50",
+      "label": "Failure Symmetry String 2",
+      "page": 8
+    },
+    "133.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No51",
+      "label": "ISO - Warning String 2",
+      "page": 8
+    },
+    "133.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No52",
+      "label": "ISO - Failure String 2",
+      "page": 8
+    },
+    "133.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No53",
+      "label": "ADC Channel Fault DC String 2",
+      "page": 8
+    },
+    "133.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No54",
+      "label": "65:Response Discharge Contactor 2 ismissing",
+      "page": 8
+    },
+    "133.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No55",
+      "label": "65:Response Shorting Contactor 2 is missing",
+      "page": 8
+    },
+    "133.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No56",
+      "label": "WR[1].STOER.WR_Warnungen.No56",
+      "page": 8
+    },
+    "134.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No41",
+      "label": "65:Response DC Contactor 3 missing",
+      "page": 8
+    },
+    "134.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No42",
+      "label": "Failure Symmetry String 3",
+      "page": 8
+    },
+    "134.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No43",
+      "label": "ISO - Warning String 3",
+      "page": 8
+    },
+    "134.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No44",
+      "label": "ISO - Failure String 3",
+      "page": 8
+    },
+    "134.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No45",
+      "label": "ADC Channel Fault DC String 3",
+      "page": 8
+    },
+    "134.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No46",
+      "label": "65:Response Discharge Contactor 3 ismissing",
+      "page": 8
+    },
+    "134.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No47",
+      "label": "65:Response Shorting Contactor 3 is missing",
+      "page": 8
+    },
+    "134.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No48",
+      "label": "WR[1].STOER.WR_Warnungen.No48",
+      "page": 8
+    },
+    "135.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No33",
+      "label": "65:Response DC Contactor 4 missing",
+      "page": 8
+    },
+    "135.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No34",
+      "label": "Failure Symmetry String 4",
+      "page": 8
+    },
+    "135.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No35",
+      "label": "ISO - Warning String 4",
+      "page": 8
+    },
+    "135.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No36",
+      "label": "ISO - Failure String 4",
+      "page": 8
+    },
+    "135.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No37",
+      "label": "ADC Channel Fault DC String 4",
+      "page": 8
+    },
+    "135.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No38",
+      "label": "65:Response Discharge Contactor 4 ismissing",
+      "page": 8
+    },
+    "135.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No39",
+      "label": "65:Response Shorting Contactor 4 is missing",
+      "page": 8
+    },
+    "135.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No40",
+      "label": "WR[1].STOER.WR_Warnungen.No40",
+      "page": 8
+    },
+    "136.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No89",
+      "label": "65:Response DC Contactor 5 missing",
+      "page": 8
+    },
+    "136.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No90",
+      "label": "Failure Symmetry String 5",
+      "page": 8
+    },
+    "136.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No91",
+      "label": "ISO - Warning String 5",
+      "page": 8
+    },
+    "136.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No92",
+      "label": "ISO - Failure String 5",
+      "page": 8
+    },
+    "136.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No93",
+      "label": "ADC Channel Fault DC String 5",
+      "page": 8
+    },
+    "136.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No94",
+      "label": "65:Response Discharge Contactor 5 ismissing",
+      "page": 8
+    },
+    "136.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No95",
+      "label": "65:Response Shorting Contactor 5 is missing",
+      "page": 8
+    },
+    "136.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No96",
+      "label": "WR[1].STOER.WR_Warnungen.No96",
+      "page": 8
+    },
+    "137.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No81",
+      "label": "65:Response DC Contactor 6 missing",
+      "page": 8
+    },
+    "137.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No82",
+      "label": "Failure Symmetry String 6",
+      "page": 8
+    },
+    "137.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No83",
+      "label": "ISO - Warning String 6",
+      "page": 8
+    },
+    "137.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No84",
+      "label": "ISO - Failure String 6",
+      "page": 8
+    },
+    "137.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No85",
+      "label": "ADC Channel Fault DC String 6",
+      "page": 8
+    },
+    "137.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No86",
+      "label": "65:Response Discharge Contactor 6 ismissing",
+      "page": 9
+    },
+    "137.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No87",
+      "label": "65:Response Shorting Contactor 6 is missing",
+      "page": 9
+    },
+    "137.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No88",
+      "label": "WR[1].STOER.WR_Warnungen.No88",
+      "page": 9
+    },
+    "138.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No73",
+      "label": "65:Failure Fan Contactor 1",
+      "page": 9
+    },
+    "138.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No74",
+      "label": "1 = Thermal Contact Fan 1 ON",
+      "page": 9
+    },
+    "138.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No75",
+      "label": "65:Failure Fan Contactor 2",
+      "page": 9
+    },
+    "138.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No76",
+      "label": "1 = Thermal Contact Fan 2 ON",
+      "page": 9
+    },
+    "138.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No77",
+      "label": "65:Failure Fan Contactor 3",
+      "page": 9
+    },
+    "138.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No78",
+      "label": "1 = Thermal Contact Fan 3 ON",
+      "page": 9
+    },
+    "138.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No79",
+      "label": "65:Failure Fan Contactor 4",
+      "page": 9
+    },
+    "138.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No80",
+      "label": "1 = Thermal Contact Fan 4 ON",
+      "page": 9
+    },
+    "139.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No65",
+      "label": "65:Failure Fan Contactor 5",
+      "page": 9
+    },
+    "139.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No66",
+      "label": "1 = Thermal Contact Fan 5 ON",
+      "page": 9
+    },
+    "139.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No67",
+      "label": "65:Failure Fan Contactor 6",
+      "page": 9
+    },
+    "139.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No68",
+      "label": "1 = Thermal Contact fan 6 ON",
+      "page": 9
+    },
+    "139.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No69",
+      "label": "WR[1].STOER.WR_Warnungen.No69",
+      "page": 9
+    },
+    "139.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No70",
+      "label": "WR[1].STOER.WR_Warnungen.No70",
+      "page": 9
+    },
+    "139.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No71",
+      "label": "WR[1].STOER.WR_Warnungen.No71",
+      "page": 9
+    },
+    "139.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No72",
+      "label": "WR[1].STOER.WR_Warnungen.No72",
+      "page": 9
+    },
+    "140.0": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No121",
+      "label": "97: Fault Coupling Contactor 1",
+      "page": 9
+    },
+    "140.1": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No122",
+      "label": "97: Fault Coupling Contactor 2",
+      "page": 9
+    },
+    "140.2": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No123",
+      "label": "WR[1].STOER.WR_Warnungen.No123",
+      "page": 9
+    },
+    "140.3": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No124",
+      "label": "WR[1].STOER.WR_Warnungen.No124",
+      "page": 9
+    },
+    "140.4": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No125",
+      "label": "WR[1].STOER.WR_Warnungen.No125",
+      "page": 9
+    },
+    "140.5": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No126",
+      "label": "WR[1].STOER.WR_Warnungen.No126",
+      "page": 9
+    },
+    "140.6": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No127",
+      "label": "WR[1].STOER.WR_Warnungen.No127",
+      "page": 9
+    },
+    "140.7": {
+      "symbol": "WR[1].STOER.WR_Warnungen.No128",
+      "label": "WR[1].STOER.WR_Warnungen.No128",
+      "page": 9
+    },
+    "144.0": {
+      "symbol": "WR[1].STOER.WR_Alarme.No25",
+      "label": "12:System running at commissioning mode",
+      "page": 9
+    },
+    "144.1": {
+      "symbol": "WR[1].STOER.WR_Alarme.No26",
+      "label": "33:Inverter power unit temperature too high; 2nd stage, fan defectiv",
+      "page": 9
+    },
+    "144.2": {
+      "symbol": "WR[1].STOER.WR_Alarme.No27",
+      "label": "34:Fault in setting of parameters",
+      "page": 9
+    },
+    "144.3": {
+      "symbol": "WR[1].STOER.WR_Alarme.No28",
+      "label": "35:Wrong machine-readable product designation entered at initial progrom load",
+      "page": 9
+    },
+    "144.4": {
+      "symbol": "WR[1].STOER.WR_Alarme.No29",
+      "label": "36:Fast switch off 1 or AC-contactor defective (feedback is missing)",
+      "page": 9
+    },
+    "144.5": {
+      "symbol": "WR[1].STOER.WR_Alarme.No30",
+      "label": "37:Multiple restarts in series",
+      "page": 9
+    },
+    "144.6": {
+      "symbol": "WR[1].STOER.WR_Alarme.No31",
+      "label": "38:Fault Power Supply PCB",
+      "page": 9
+    },
+    "144.7": {
+      "symbol": "WR[1].STOER.WR_Alarme.No32",
+      "label": "39:Overvoltage at DC Circuit (UDCgg)",
+      "page": 9
+    },
+    "145.0": {
+      "symbol": "WR[1].STOER.WR_Alarme.No17",
+      "label": "40:Fast OFF Button pressed at customei",
+      "page": 9
+    },
+    "145.1": {
+      "symbol": "WR[1].STOER.WR_Alarme.No18",
+      "label": "41:DSP (digital signal processor at VeCon) disturbed",
+      "page": 9
+    },
+    "145.2": {
+      "symbol": "WR[1].STOER.WR_Alarme.No19",
+      "label": "43:Uce Monitor triggerd",
+      "page": 9
+    },
+    "145.3": {
+      "symbol": "WR[1].STOER.WR_Alarme.No20",
+      "label": "45:Fault Initial Program loading (contradictive bootstrapping parameters)",
+      "page": 9
+    },
+    "145.4": {
+      "symbol": "WR[1].STOER.WR_Alarme.No21",
+      "label": "47:Inverter i²t Supervision Overload(disturbing switching off); 2nd stage",
+      "page": 9
+    },
+    "145.5": {
+      "symbol": "WR[1].STOER.WR_Alarme.No22",
+      "label": "48:Reverse Power",
+      "page": 9
+    },
+    "145.6": {
+      "symbol": "WR[1].STOER.WR_Alarme.No23",
+      "label": "55:EPROM defective",
+      "page": 9
+    },
+    "145.7": {
+      "symbol": "WR[1].STOER.WR_Alarme.No24",
+      "label": "57:EPROM defective (checksum failure)",
+      "page": 9
+    },
+    "146.0": {
+      "symbol": "WR[1].STOER.WR_Alarme.No9",
+      "label": "58:Actual Value fraction",
+      "page": 9
+    },
+    "146.1": {
+      "symbol": "WR[1].STOER.WR_Alarme.No10",
+      "label": "59:Option Module faulty",
+      "page": 9
+    },
+    "146.2": {
+      "symbol": "WR[1].STOER.WR_Alarme.No11",
+      "label": "62:Response \"Inverter ON\" is missing",
+      "page": 9
+    },
+    "146.3": {
+      "symbol": "WR[1].STOER.WR_Alarme.No12",
+      "label": "63:DC Overcurrent or Wire Breakage",
+      "page": 9
+    },
+    "146.4": {
+      "symbol": "WR[1].STOER.WR_Alarme.No13",
+      "label": "65:Response AC Contactor is missing",
+      "page": 9
+    },
+    "146.5": {
+      "symbol": "WR[1].STOER.WR_Alarme.No14",
+      "label": "66:Inverter Group Fault Signal",
+      "page": 10
+    },
+    "146.6": {
+      "symbol": "WR[1].STOER.WR_Alarme.No15",
+      "label": "68:Grid Fault (MSD Signal)",
+      "page": 10
+    },
+    "146.7": {
+      "symbol": "WR[1].STOER.WR_Alarme.No16",
+      "label": "69:Grid Short Interruption (MSD Signal)",
+      "page": 10
+    },
+    "147.0": {
+      "symbol": "WR[1].STOER.WR_Alarme.No1",
+      "label": "93:Fast OFF Button Pressed",
+      "page": 10
+    },
+    "147.1": {
+      "symbol": "WR[1].STOER.WR_Alarme.No2",
+      "label": "94:Profibus Fault",
+      "page": 10
+    },
+    "147.2": {
+      "symbol": "WR[1].STOER.WR_Alarme.No3",
+      "label": "95:Frequency Fault",
+      "page": 10
+    },
+    "147.3": {
+      "symbol": "WR[1].STOER.WR_Alarme.No4",
+      "label": "96:AC over- or undervoltage",
+      "page": 10
+    },
+    "147.4": {
+      "symbol": "WR[1].STOER.WR_Alarme.No5",
+      "label": "96:Index 1",
+      "page": 10
+    },
+    "147.5": {
+      "symbol": "WR[1].STOER.WR_Alarme.No6",
+      "label": "96:Index 2",
+      "page": 10
+    },
+    "147.6": {
+      "symbol": "WR[1].STOER.WR_Alarme.No7",
+      "label": "96:Index 3",
+      "page": 10
+    },
+    "147.7": {
+      "symbol": "WR[1].STOER.WR_Alarme.No8",
+      "label": "96:Index 4",
+      "page": 10
+    },
+    "148.0": {
+      "symbol": "WR[1].STOER.WR_Alarme.No57",
+      "label": "96:Index 5",
+      "page": 10
+    },
+    "148.1": {
+      "symbol": "WR[1].STOER.WR_Alarme.No58",
+      "label": "96:Index 6",
+      "page": 10
+    },
+    "148.2": {
+      "symbol": "WR[1].STOER.WR_Alarme.No59",
+      "label": "Inverter Disabled",
+      "page": 10
+    },
+    "148.3": {
+      "symbol": "WR[1].STOER.WR_Alarme.No60",
+      "label": "Fault ISO",
+      "page": 10
+    },
+    "148.4": {
+      "symbol": "WR[1].STOER.WR_Alarme.No61",
+      "label": "ADC Channel Fault DC Shunt",
+      "page": 10
+    },
+    "148.5": {
+      "symbol": "WR[1].STOER.WR_Alarme.No62",
+      "label": "ADC Channel Fault Insulation Resistan ce",
+      "page": 10
+    },
+    "148.6": {
+      "symbol": "WR[1].STOER.WR_Alarme.No63",
+      "label": "WR[1].STOER.WR_Alarme.No63",
+      "page": 10
+    },
+    "148.7": {
+      "symbol": "WR[1].STOER.WR_Alarme.No64",
+      "label": "WR[1].STOER.WR_Alarme.No64",
+      "page": 10
+    },
+    "236.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No25",
+      "label": "1 = Local Switched OFF",
+      "page": 10
+    },
+    "236.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No26",
+      "label": "0 = Key Role AUTO; 1 = Key Role TEST",
+      "page": 10
+    },
+    "236.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No27",
+      "label": "1 = AC Contactor ON",
+      "page": 10
+    },
+    "236.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No28",
+      "label": "1 = Inverter ON",
+      "page": 10
+    },
+    "236.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No29",
+      "label": "1 = ISO Warning",
+      "page": 10
+    },
+    "236.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No30",
+      "label": "1 = DC Busbar Sectionalizer 1 (Contactor 1) ON",
+      "page": 10
+    },
+    "236.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No31",
+      "label": "WR[1].EVENT.WR_Events.No31",
+      "page": 10
+    },
+    "236.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No32",
+      "label": "WR[1].EVENT.WR_Events.No32",
+      "page": 10
+    },
+    "237.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No17",
+      "label": "WR[1].EVENT.WR_Events.No17",
+      "page": 10
+    },
+    "237.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No18",
+      "label": "WR[1].EVENT.WR_Events.No18",
+      "page": 10
+    },
+    "237.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No19",
+      "label": "WR[1].EVENT.WR_Events.No19",
+      "page": 10
+    },
+    "237.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No20",
+      "label": "WR[1].EVENT.WR_Events.No20",
+      "page": 10
+    },
+    "237.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No21",
+      "label": "WR[1].EVENT.WR_Events.No21",
+      "page": 10
+    },
+    "237.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No22",
+      "label": "WR[1].EVENT.WR_Events.No22",
+      "page": 10
+    },
+    "237.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No23",
+      "label": "WR[1].EVENT.WR_Events.No23",
+      "page": 10
+    },
+    "237.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No24",
+      "label": "WR[1].EVENT.WR_Events.No24",
+      "page": 10
+    },
+    "238.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No9",
+      "label": "WR[1].EVENT.WR_Events.No9",
+      "page": 10
+    },
+    "238.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No10",
+      "label": "WR[1].EVENT.WR_Events.No10",
+      "page": 10
+    },
+    "238.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No11",
+      "label": "WR[1].EVENT.WR_Events.No11",
+      "page": 10
+    },
+    "238.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No12",
+      "label": "WR[1].EVENT.WR_Events.No12",
+      "page": 10
+    },
+    "238.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No13",
+      "label": "WR[1].EVENT.WR_Events.No13",
+      "page": 10
+    },
+    "238.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No14",
+      "label": "WR[1].EVENT.WR_Events.No14",
+      "page": 10
+    },
+    "238.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No15",
+      "label": "WR[1].EVENT.WR_Events.No15",
+      "page": 10
+    },
+    "238.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No16",
+      "label": "WR[1].EVENT.WR_Events.No16",
+      "page": 10
+    },
+    "239.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No1",
+      "label": "WR[1].EVENT.WR_Events.No1",
+      "page": 10
+    },
+    "239.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No2",
+      "label": "WR[1].EVENT.WR_Events.No2",
+      "page": 10
+    },
+    "239.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No3",
+      "label": "WR[1].EVENT.WR_Events.No3",
+      "page": 10
+    },
+    "239.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No4",
+      "label": "WR[1].EVENT.WR_Events.No4",
+      "page": 10
+    },
+    "239.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No5",
+      "label": "WR[1].EVENT.WR_Events.No5",
+      "page": 10
+    },
+    "239.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No6",
+      "label": "WR[1].EVENT.WR_Events.No6",
+      "page": 10
+    },
+    "239.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No7",
+      "label": "WR[1].EVENT.WR_Events.No7",
+      "page": 11
+    },
+    "239.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No8",
+      "label": "WR[1].EVENT.WR_Events.No8",
+      "page": 11
+    },
+    "240.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No57",
+      "label": "1 = DC Busbar Sectionalizer 2 (Contactor 2) ON",
+      "page": 11
+    },
+    "240.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No58",
+      "label": "1 = DC Contactor 1 ON",
+      "page": 11
+    },
+    "240.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No59",
+      "label": "1 = Discharge Contactor 1 ON",
+      "page": 11
+    },
+    "240.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No60",
+      "label": "WR[1].EVENT.WR_Events.No60",
+      "page": 11
+    },
+    "240.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No61",
+      "label": "WR[1].EVENT.WR_Events.No61",
+      "page": 11
+    },
+    "240.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No62",
+      "label": "WR[1].EVENT.WR_Events.No62",
+      "page": 11
+    },
+    "240.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No63",
+      "label": "WR[1].EVENT.WR_Events.No63",
+      "page": 11
+    },
+    "240.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No64",
+      "label": "WR[1].EVENT.WR_Events.No64",
+      "page": 11
+    },
+    "241.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No49",
+      "label": "1 = Shorting Contactor 1 ON",
+      "page": 11
+    },
+    "241.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No50",
+      "label": "1 = DC Contactor 2 ON",
+      "page": 11
+    },
+    "241.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No51",
+      "label": "1 = Discharge Contactor 2 ON",
+      "page": 11
+    },
+    "241.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No52",
+      "label": "WR[1].EVENT.WR_Events.No52",
+      "page": 11
+    },
+    "241.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No53",
+      "label": "WR[1].EVENT.WR_Events.No53",
+      "page": 11
+    },
+    "241.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No54",
+      "label": "WR[1].EVENT.WR_Events.No54",
+      "page": 11
+    },
+    "241.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No55",
+      "label": "WR[1].EVENT.WR_Events.No55",
+      "page": 11
+    },
+    "241.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No56",
+      "label": "WR[1].EVENT.WR_Events.No56",
+      "page": 11
+    },
+    "242.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No41",
+      "label": "1 = Shorting Contactor 2 ON",
+      "page": 11
+    },
+    "242.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No42",
+      "label": "1 = Discharge Contactor 3 ON",
+      "page": 11
+    },
+    "242.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No43",
+      "label": "1 = Shorting Contactor 3 ON",
+      "page": 11
+    },
+    "242.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No44",
+      "label": "WR[1].EVENT.WR_Events.No44",
+      "page": 11
+    },
+    "242.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No45",
+      "label": "WR[1].EVENT.WR_Events.No45",
+      "page": 11
+    },
+    "242.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No46",
+      "label": "WR[1].EVENT.WR_Events.No46",
+      "page": 11
+    },
+    "242.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No47",
+      "label": "WR[1].EVENT.WR_Events.No47",
+      "page": 11
+    },
+    "242.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No48",
+      "label": "WR[1].EVENT.WR_Events.No48",
+      "page": 11
+    },
+    "243.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No33",
+      "label": "1 = DC Contactor 4 ON",
+      "page": 11
+    },
+    "243.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No34",
+      "label": "1 = Discharge Contactor 4 ON",
+      "page": 11
+    },
+    "243.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No35",
+      "label": "1 = Shorting Contactor 4 ON",
+      "page": 11
+    },
+    "243.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No36",
+      "label": "WR[1].EVENT.WR_Events.No36",
+      "page": 11
+    },
+    "243.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No37",
+      "label": "WR[1].EVENT.WR_Events.No37",
+      "page": 11
+    },
+    "243.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No38",
+      "label": "WR[1].EVENT.WR_Events.No38",
+      "page": 11
+    },
+    "243.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No39",
+      "label": "WR[1].EVENT.WR_Events.No39",
+      "page": 11
+    },
+    "243.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No40",
+      "label": "WR[1].EVENT.WR_Events.No40",
+      "page": 11
+    },
+    "244.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No89",
+      "label": "1 = DC Contactor 5 ON",
+      "page": 11
+    },
+    "244.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No90",
+      "label": "1 = Discharge Contactor 5 ON",
+      "page": 11
+    },
+    "244.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No91",
+      "label": "1 = Shorting Contactor 5 ON",
+      "page": 11
+    },
+    "244.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No92",
+      "label": "WR[1].EVENT.WR_Events.No92",
+      "page": 11
+    },
+    "244.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No93",
+      "label": "WR[1].EVENT.WR_Events.No93",
+      "page": 11
+    },
+    "244.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No94",
+      "label": "WR[1].EVENT.WR_Events.No94",
+      "page": 11
+    },
+    "244.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No95",
+      "label": "WR[1].EVENT.WR_Events.No95",
+      "page": 11
+    },
+    "244.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No96",
+      "label": "WR[1].EVENT.WR_Events.No96",
+      "page": 11
+    },
+    "245.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No81",
+      "label": "1 = DC Contactor 6 ON",
+      "page": 11
+    },
+    "245.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No82",
+      "label": "1 = Discharge Contactor 6 ON",
+      "page": 11
+    },
+    "245.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No83",
+      "label": "1 = Shorting Contactor 6 ON",
+      "page": 11
+    },
+    "245.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No84",
+      "label": "WR[1].EVENT.WR_Events.No84",
+      "page": 11
+    },
+    "245.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No85",
+      "label": "WR[1].EVENT.WR_Events.No85",
+      "page": 11
+    },
+    "245.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No86",
+      "label": "WR[1].EVENT.WR_Events.No86",
+      "page": 11
+    },
+    "245.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No87",
+      "label": "WR[1].EVENT.WR_Events.No87",
+      "page": 11
+    },
+    "245.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No88",
+      "label": "WR[1].EVENT.WR_Events.No88",
+      "page": 11
+    },
+    "246.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No73",
+      "label": "Container Fan Contactor 1 (1 = ON)",
+      "page": 11
+    },
+    "246.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No74",
+      "label": "Container Fan Contactor 2 (1 = ON)",
+      "page": 11
+    },
+    "246.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No75",
+      "label": "Container Fan Contactor 3 (1 = ON)",
+      "page": 11
+    },
+    "246.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No76",
+      "label": "Container Fan Contactor 4 (1 = ON)",
+      "page": 12
+    },
+    "246.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No77",
+      "label": "Container Fan Contactor 5 (1 = ON)",
+      "page": 12
+    },
+    "246.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No78",
+      "label": "Container Fan Contactor 6 (1 = ON)",
+      "page": 12
+    },
+    "246.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No79",
+      "label": "WR[1].EVENT.WR_Events.No79",
+      "page": 12
+    },
+    "246.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No80",
+      "label": "WR[1].EVENT.WR_Events.No80",
+      "page": 12
+    },
+    "247.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No65",
+      "label": "WR[1].EVENT.WR_Events.No65",
+      "page": 12
+    },
+    "247.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No66",
+      "label": "WR[1].EVENT.WR_Events.No66",
+      "page": 12
+    },
+    "247.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No67",
+      "label": "WR[1].EVENT.WR_Events.No67",
+      "page": 12
+    },
+    "247.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No68",
+      "label": "WR[1].EVENT.WR_Events.No68",
+      "page": 12
+    },
+    "247.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No69",
+      "label": "WR[1].EVENT.WR_Events.No69",
+      "page": 12
+    },
+    "247.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No70",
+      "label": "WR[1].EVENT.WR_Events.No70",
+      "page": 12
+    },
+    "247.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No71",
+      "label": "WR[1].EVENT.WR_Events.No71",
+      "page": 12
+    },
+    "247.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No72",
+      "label": "WR[1].EVENT.WR_Events.No72",
+      "page": 12
+    },
+    "248.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No121",
+      "label": "Coupling Contactor 1 ON",
+      "page": 12
+    },
+    "248.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No122",
+      "label": "Coupling Contactor 2 ON",
+      "page": 12
+    },
+    "248.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No123",
+      "label": "WR[1].EVENT.WR_Events.No123",
+      "page": 12
+    },
+    "248.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No124",
+      "label": "WR[1].EVENT.WR_Events.No124",
+      "page": 12
+    },
+    "248.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No125",
+      "label": "WR[1].EVENT.WR_Events.No125",
+      "page": 12
+    },
+    "248.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No126",
+      "label": "WR[1].EVENT.WR_Events.No126",
+      "page": 12
+    },
+    "248.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No127",
+      "label": "WR[1].EVENT.WR_Events.No127",
+      "page": 12
+    },
+    "248.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No128",
+      "label": "WR[1].EVENT.WR_Events.No128",
+      "page": 12
+    },
+    "249.0": {
+      "symbol": "WR[1].EVENT.WR_Events.No113",
+      "label": "WR[1].EVENT.WR_Events.No113",
+      "page": 12
+    },
+    "249.1": {
+      "symbol": "WR[1].EVENT.WR_Events.No114",
+      "label": "WR[1].EVENT.WR_Events.No114",
+      "page": 12
+    },
+    "249.2": {
+      "symbol": "WR[1].EVENT.WR_Events.No115",
+      "label": "WR[1].EVENT.WR_Events.No115",
+      "page": 12
+    },
+    "249.3": {
+      "symbol": "WR[1].EVENT.WR_Events.No116",
+      "label": "WR[1].EVENT.WR_Events.No116",
+      "page": 12
+    },
+    "249.4": {
+      "symbol": "WR[1].EVENT.WR_Events.No117",
+      "label": "WR[1].EVENT.WR_Events.No117",
+      "page": 12
+    },
+    "249.5": {
+      "symbol": "WR[1].EVENT.WR_Events.No118",
+      "label": "WR[1].EVENT.WR_Events.No118",
+      "page": 12
+    },
+    "249.6": {
+      "symbol": "WR[1].EVENT.WR_Events.No119",
+      "label": "WR[1].EVENT.WR_Events.No119",
+      "page": 12
+    },
+    "249.7": {
+      "symbol": "WR[1].EVENT.WR_Events.No119",
+      "label": "WR[1].EVENT.WR_Events.No119",
+      "page": 12
+    },
+    "256.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No25",
+      "label": "01:Inverter power unit overtemperature; 1st stage",
+      "page": 12
+    },
+    "256.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No26",
+      "label": "02:Grid fault",
+      "page": 12
+    },
+    "256.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No27",
+      "label": "03:Grid fault rectifier mains",
+      "page": 12
+    },
+    "256.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No28",
+      "label": "04:Inverter i²t supervision over load; 1st stage",
+      "page": 12
+    },
+    "256.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No29",
+      "label": "05:Undervoltage DC circuit",
+      "page": 12
+    },
+    "256.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No30",
+      "label": "06:Inverter overload at UPS bar",
+      "page": 12
+    },
+    "256.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No32",
+      "label": "14:Fan life span exceeded",
+      "page": 12
+    },
+    "257.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No17",
+      "label": "16:Inverter message 16 occupied",
+      "page": 12
+    },
+    "257.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No18",
+      "label": "42:Inverter message 42 occupied",
+      "page": 12
+    },
+    "257.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No19",
+      "label": "44:Inverter message 44 occupied",
+      "page": 12
+    },
+    "257.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No20",
+      "label": "46:Inverter message 46 occupied",
+      "page": 12
+    },
+    "257.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No21",
+      "label": "49:Undervoltage DC circuit (bypass contactor PV field - inverter open)",
+      "page": 12
+    },
+    "257.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No22",
+      "label": "56:Inverter message 56 occupied",
+      "page": 12
+    },
+    "257.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No23",
+      "label": "61:Inverter message 61 occupied",
+      "page": 12
+    },
+    "257.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No24",
+      "label": "64:Udc respectively Dudc/dt too high",
+      "page": 12
+    },
+    "258.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No9",
+      "label": "91:Fuse trip control",
+      "page": 12
+    },
+    "258.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No10",
+      "label": "92:Overvoltage protection (varistors)",
+      "page": 13
+    },
+    "258.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No11",
+      "label": "96:AC over- or undervoltage",
+      "page": 13
+    },
+    "258.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No12",
+      "label": "98:Failure symmetry",
+      "page": 13
+    },
+    "258.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No13",
+      "label": "DC Switch Disconnection trip",
+      "page": 13
+    },
+    "258.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No14",
+      "label": "AC Switch Disconnection trip",
+      "page": 13
+    },
+    "258.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No15",
+      "label": "DC Overvoltage",
+      "page": 13
+    },
+    "258.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No16",
+      "label": "AC Overvoltage",
+      "page": 13
+    },
+    "259.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No1",
+      "label": "WR[2].STOER.WR_Warnungen.No1",
+      "page": 13
+    },
+    "259.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No2",
+      "label": "WR[2].STOER.WR_Warnungen.No2",
+      "page": 13
+    },
+    "259.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No3",
+      "label": "WR[2].STOER.WR_Warnungen.No3",
+      "page": 13
+    },
+    "259.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No4",
+      "label": "WR[2].STOER.WR_Warnungen.No4",
+      "page": 13
+    },
+    "259.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No5",
+      "label": "WR[2].STOER.WR_Warnungen.No5",
+      "page": 13
+    },
+    "259.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No6",
+      "label": "WR[2].STOER.WR_Warnungen.No6",
+      "page": 13
+    },
+    "259.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No7",
+      "label": "WR[2].STOER.WR_Warnungen.No7",
+      "page": 13
+    },
+    "259.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No8",
+      "label": "WR[2].STOER.WR_Warnungen.No8",
+      "page": 13
+    },
+    "260.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No57",
+      "label": "65:Response DC Contactor 1 missing",
+      "page": 13
+    },
+    "260.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No58",
+      "label": "Failure Symmetry String 1",
+      "page": 13
+    },
+    "260.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No59",
+      "label": "ISO - Warning String 1",
+      "page": 13
+    },
+    "260.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No60",
+      "label": "ISO - Failure String 1",
+      "page": 13
+    },
+    "260.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No61",
+      "label": "ADC Channel Fault DC String 1",
+      "page": 13
+    },
+    "260.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No62",
+      "label": "65:Response Discharge Contactor 1 ismissing",
+      "page": 13
+    },
+    "260.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No63",
+      "label": "65:Response Shorting Contactor 1 is missing",
+      "page": 13
+    },
+    "260.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No64",
+      "label": "WR[2].STOER.WR_Warnungen.No64",
+      "page": 13
+    },
+    "261.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No49",
+      "label": "65:Response DC Contactor 2 missing",
+      "page": 13
+    },
+    "261.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No50",
+      "label": "Failure Symmetry String 2",
+      "page": 13
+    },
+    "261.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No59",
+      "label": "ISO - Warning String 1",
+      "page": 13
+    },
+    "261.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No60",
+      "label": "ISO - Failure String 1",
+      "page": 13
+    },
+    "261.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No61",
+      "label": "ADC Channel Fault DC String 1",
+      "page": 13
+    },
+    "261.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No62",
+      "label": "65:Response Discharge Contactor 1 ismissing",
+      "page": 13
+    },
+    "261.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No63",
+      "label": "65:Response Shorting Contactor 1 is missing",
+      "page": 13
+    },
+    "261.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No64",
+      "label": "WR[2].STOER.WR_Warnungen.No64",
+      "page": 13
+    },
+    "262.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No49",
+      "label": "65:Response DC Contactor 2 missing",
+      "page": 13
+    },
+    "262.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No50",
+      "label": "Failure Symmetry String 2",
+      "page": 13
+    },
+    "262.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No51",
+      "label": "ISO - Warning String 2",
+      "page": 13
+    },
+    "262.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No52",
+      "label": "ISO - Failure String 2",
+      "page": 13
+    },
+    "262.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No53",
+      "label": "ADC Channel Fault DC String 2",
+      "page": 13
+    },
+    "262.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No54",
+      "label": "65:Response Discharge Contactor 2 ismissing",
+      "page": 13
+    },
+    "262.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No55",
+      "label": "65:Response Shorting Contactor 2 is missing",
+      "page": 13
+    },
+    "262.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No56",
+      "label": "WR[2].STOER.WR_Warnungen.No56",
+      "page": 13
+    },
+    "263.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No41",
+      "label": "65:Response DC Contactor 3 missing",
+      "page": 13
+    },
+    "263.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No42",
+      "label": "Failure Symmetry String 3",
+      "page": 13
+    },
+    "263.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No43",
+      "label": "ISO - Warning String 3",
+      "page": 13
+    },
+    "263.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No44",
+      "label": "ISO - Failure String 3",
+      "page": 13
+    },
+    "263.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No45",
+      "label": "ADC Channel Fault DC String 3",
+      "page": 13
+    },
+    "263.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No46",
+      "label": "65:Response Discharge Contactor 3 ismissing",
+      "page": 13
+    },
+    "263.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No47",
+      "label": "65:Response Shorting Contactor 3 is missing",
+      "page": 13
+    },
+    "263.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No48",
+      "label": "WR[2].STOER.WR_Warnungen.No48",
+      "page": 13
+    },
+    "264.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No33",
+      "label": "65:Response DC Contactor 4 missing",
+      "page": 13
+    },
+    "264.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No34",
+      "label": "Failure Symmetry String 4",
+      "page": 13
+    },
+    "264.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No35",
+      "label": "ISO - Warning String 4",
+      "page": 13
+    },
+    "264.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No36",
+      "label": "ISO - Failure String 4",
+      "page": 13
+    },
+    "264.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No37",
+      "label": "ADC Channel Fault DC String 4",
+      "page": 13
+    },
+    "264.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No38",
+      "label": "65:Response Discharge Contactor 4 ismissing",
+      "page": 13
+    },
+    "264.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No39",
+      "label": "65:Response Shorting Contactor 4 is missing",
+      "page": 14
+    },
+    "264.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No40",
+      "label": "WR[2].STOER.WR_Warnungen.No40",
+      "page": 14
+    },
+    "265.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No89",
+      "label": "65:Response DC Contactor 5 missing",
+      "page": 14
+    },
+    "265.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No90",
+      "label": "Failure Symmetry String 5",
+      "page": 14
+    },
+    "265.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No91",
+      "label": "ISO - Warning String 5",
+      "page": 14
+    },
+    "265.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No92",
+      "label": "ISO - Failure String 5",
+      "page": 14
+    },
+    "265.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No93",
+      "label": "ADC Channel Fault DC String 5",
+      "page": 14
+    },
+    "265.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No94",
+      "label": "65:Response Discharge Contactor 5 ismissing",
+      "page": 14
+    },
+    "265.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No95",
+      "label": "65:Response Shorting Contactor 5 is missing",
+      "page": 14
+    },
+    "265.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No96",
+      "label": "WR[2].STOER.WR_Warnungen.No96",
+      "page": 14
+    },
+    "266.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No81",
+      "label": "65:Response DC Contactor 6 missing",
+      "page": 14
+    },
+    "266.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No82",
+      "label": "Failure Symmetry String 6",
+      "page": 14
+    },
+    "266.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No83",
+      "label": "ISO - Warning String 6",
+      "page": 14
+    },
+    "266.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No84",
+      "label": "ISO - Failure String 6",
+      "page": 14
+    },
+    "266.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No85",
+      "label": "ADC Channel Fault DC String 6",
+      "page": 14
+    },
+    "266.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No86",
+      "label": "65:Response Discharge Contactor 6 ismissing",
+      "page": 14
+    },
+    "266.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No87",
+      "label": "65:Response Shorting Contactor 6 is missing",
+      "page": 14
+    },
+    "266.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No88",
+      "label": "WR[2].STOER.WR_Warnungen.No88",
+      "page": 14
+    },
+    "267.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No73",
+      "label": "65:Failure Fan Contactor 1",
+      "page": 14
+    },
+    "267.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No74",
+      "label": "1 = Thermal Contact Fan 1 ON",
+      "page": 14
+    },
+    "267.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No75",
+      "label": "65:Failure Fan Contactor 2",
+      "page": 14
+    },
+    "267.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No76",
+      "label": "1 = Thermal Contact Fan 2 ON",
+      "page": 14
+    },
+    "267.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No77",
+      "label": "65:Failure Fan Contactor 3",
+      "page": 14
+    },
+    "267.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No78",
+      "label": "1 = Thermal Contact Fan 3 ON",
+      "page": 14
+    },
+    "267.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No79",
+      "label": "65:Failure Fan Contactor 4",
+      "page": 14
+    },
+    "267.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No80",
+      "label": "1 = Thermal Contact Fan 4 ON",
+      "page": 14
+    },
+    "268.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No65",
+      "label": "65:Failure Fan Contactor 5",
+      "page": 14
+    },
+    "268.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No66",
+      "label": "1 = Thermal Contact Fan 5 ON",
+      "page": 14
+    },
+    "268.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No67",
+      "label": "65:Failure Fan Contactor 6",
+      "page": 14
+    },
+    "268.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No68",
+      "label": "1 = Thermal Contact fan 6 ON",
+      "page": 14
+    },
+    "268.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No69",
+      "label": "WR[2].STOER.WR_Warnungen.No69",
+      "page": 14
+    },
+    "268.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No70",
+      "label": "WR[2].STOER.WR_Warnungen.No70",
+      "page": 14
+    },
+    "268.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No71",
+      "label": "WR[2].STOER.WR_Warnungen.No71",
+      "page": 14
+    },
+    "268.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No72",
+      "label": "WR[2].STOER.WR_Warnungen.No72",
+      "page": 14
+    },
+    "269.0": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No121",
+      "label": "97: Fault Coupling Contactor 1",
+      "page": 14
+    },
+    "269.1": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No122",
+      "label": "97: Fault Coupling Contactor 2",
+      "page": 14
+    },
+    "269.2": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No123",
+      "label": "WR[2].STOER.WR_Warnungen.No123",
+      "page": 14
+    },
+    "269.3": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No124",
+      "label": "WR[2].STOER.WR_Warnungen.No124",
+      "page": 14
+    },
+    "269.4": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No125",
+      "label": "WR[2].STOER.WR_Warnungen.No125",
+      "page": 14
+    },
+    "269.5": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No126",
+      "label": "WR[2].STOER.WR_Warnungen.No126",
+      "page": 14
+    },
+    "269.6": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No127",
+      "label": "WR[2].STOER.WR_Warnungen.No127",
+      "page": 14
+    },
+    "269.7": {
+      "symbol": "WR[2].STOER.WR_Warnungen.No128",
+      "label": "WR[2].STOER.WR_Warnungen.No128",
+      "page": 14
+    },
+    "272.0": {
+      "symbol": "WR[2].STOER.WR_Alarme.No25",
+      "label": "12:System running at commissioning mode",
+      "page": 14
+    },
+    "272.1": {
+      "symbol": "WR[2].STOER.WR_Alarme.No26",
+      "label": "33:Inverter power unit temperature too high; 2nd stage, fan defectiv",
+      "page": 14
+    },
+    "272.2": {
+      "symbol": "WR[2].STOER.WR_Alarme.No27",
+      "label": "34:Fault in setting of parameters",
+      "page": 14
+    },
+    "272.4": {
+      "symbol": "WR[2].STOER.WR_Alarme.No29",
+      "label": "36:Fast switch off 1 or AC-contactor defective (feedback is missing)",
+      "page": 14
+    },
+    "272.5": {
+      "symbol": "WR[2].STOER.WR_Alarme.No30",
+      "label": "37:Multiple restarts in series",
+      "page": 15
+    },
+    "272.6": {
+      "symbol": "WR[2].STOER.WR_Alarme.No31",
+      "label": "38:Fault Power Supply PCB",
+      "page": 15
+    },
+    "272.7": {
+      "symbol": "WR[2].STOER.WR_Alarme.No32",
+      "label": "39:Overvoltage at DC Circuit (UDCgg)",
+      "page": 15
+    },
+    "273.0": {
+      "symbol": "WR[2].STOER.WR_Alarme.No17",
+      "label": "40:Fast OFF Button pressed at customei",
+      "page": 15
+    },
+    "273.1": {
+      "symbol": "WR[2].STOER.WR_Alarme.No18",
+      "label": "41:DSP (digital signal processor at VeCon) disturbed",
+      "page": 15
+    },
+    "273.2": {
+      "symbol": "WR[2].STOER.WR_Alarme.No19",
+      "label": "43:Uce Monitor triggerd",
+      "page": 15
+    },
+    "273.3": {
+      "symbol": "WR[2].STOER.WR_Alarme.No20",
+      "label": "45:Fault Initial Program loading (contradictive bootstrapping parameters)",
+      "page": 15
+    },
+    "273.4": {
+      "symbol": "WR[2].STOER.WR_Alarme.No21",
+      "label": "47:Inverter i²t Supervision Overload(disturbing switching off); 2nd stage",
+      "page": 15
+    },
+    "273.5": {
+      "symbol": "WR[2].STOER.WR_Alarme.No22",
+      "label": "48:Reverse Power",
+      "page": 15
+    },
+    "273.6": {
+      "symbol": "WR[2].STOER.WR_Alarme.No23",
+      "label": "55:EPROM defective",
+      "page": 15
+    },
+    "273.7": {
+      "symbol": "WR[2].STOER.WR_Alarme.No24",
+      "label": "57:EPROM defective (checksum failure)",
+      "page": 15
+    },
+    "274.0": {
+      "symbol": "WR[2].STOER.WR_Alarme.No9",
+      "label": "58:Actual Value fraction",
+      "page": 15
+    },
+    "274.1": {
+      "symbol": "WR[2].STOER.WR_Alarme.No10",
+      "label": "59:Option Module faulty",
+      "page": 15
+    },
+    "274.2": {
+      "symbol": "WR[2].STOER.WR_Alarme.No11",
+      "label": "62:Response \"Inverter ON\" is missing",
+      "page": 15
+    },
+    "274.3": {
+      "symbol": "WR[2].STOER.WR_Alarme.No12",
+      "label": "63:DC Overcurrent or Wire Breakage",
+      "page": 15
+    },
+    "274.4": {
+      "symbol": "WR[2].STOER.WR_Alarme.No13",
+      "label": "65:Response AC Contactor is missing",
+      "page": 15
+    },
+    "274.5": {
+      "symbol": "WR[2].STOER.WR_Alarme.No14",
+      "label": "66:Inverter Group Fault Signal",
+      "page": 15
+    },
+    "274.6": {
+      "symbol": "WR[2].STOER.WR_Alarme.No15",
+      "label": "68:Grid Fault (MSD Signal)",
+      "page": 15
+    },
+    "274.7": {
+      "symbol": "WR[2].STOER.WR_Alarme.No16",
+      "label": "69:Grid Short Interruption (MSD Signal)",
+      "page": 15
+    },
+    "275.0": {
+      "symbol": "WR[2].STOER.WR_Alarme.No1",
+      "label": "93:Fast OFF Button Pressed",
+      "page": 15
+    },
+    "275.1": {
+      "symbol": "WR[2].STOER.WR_Alarme.No2",
+      "label": "94:Profibus Fault",
+      "page": 15
+    },
+    "275.2": {
+      "symbol": "WR[2].STOER.WR_Alarme.No3",
+      "label": "95:Frequency Fault",
+      "page": 15
+    },
+    "275.3": {
+      "symbol": "WR[2].STOER.WR_Alarme.No4",
+      "label": "96:AC over- or undervoltage",
+      "page": 15
+    },
+    "275.4": {
+      "symbol": "WR[2].STOER.WR_Alarme.No5",
+      "label": "96:Index 1",
+      "page": 15
+    },
+    "275.5": {
+      "symbol": "WR[2].STOER.WR_Alarme.No6",
+      "label": "96:Index 2",
+      "page": 15
+    },
+    "275.6": {
+      "symbol": "WR[2].STOER.WR_Alarme.No7",
+      "label": "96:Index 3",
+      "page": 15
+    },
+    "275.7": {
+      "symbol": "WR[2].STOER.WR_Alarme.No8",
+      "label": "96:Index 4",
+      "page": 15
+    },
+    "276.0": {
+      "symbol": "WR[2].STOER.WR_Alarme.No57",
+      "label": "96:Index 5",
+      "page": 15
+    },
+    "276.1": {
+      "symbol": "WR[2].STOER.WR_Alarme.No58",
+      "label": "96:Index 6",
+      "page": 15
+    },
+    "276.2": {
+      "symbol": "WR[2].STOER.WR_Alarme.No59",
+      "label": "Inverter Disabled",
+      "page": 15
+    },
+    "276.3": {
+      "symbol": "WR[2].STOER.WR_Alarme.No60",
+      "label": "Fault ISO",
+      "page": 15
+    },
+    "276.4": {
+      "symbol": "WR[2].STOER.WR_Alarme.No61",
+      "label": "ADC Channel Fault DC Shunt",
+      "page": 15
+    },
+    "276.5": {
+      "symbol": "WR[2].STOER.WR_Alarme.No62",
+      "label": "ADC Channel Fault Insulation Resistan ce",
+      "page": 15
+    },
+    "276.6": {
+      "symbol": "WR[2].STOER.WR_Alarme.No63",
+      "label": "WR[2].STOER.WR_Alarme.No63",
+      "page": 15
+    },
+    "276.7": {
+      "symbol": "WR[2].STOER.WR_Alarme.No64",
+      "label": "WR[2].STOER.WR_Alarme.No64",
+      "page": 15
+    },
+    "364.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No25",
+      "label": "1 = Local Switched OFF",
+      "page": 15
+    },
+    "364.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No26",
+      "label": "0 = Key Role AUTO; 1 = Key Role TEST",
+      "page": 15
+    },
+    "364.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No27",
+      "label": "1 = AC Contactor ON",
+      "page": 15
+    },
+    "364.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No28",
+      "label": "1 = Inverter ON",
+      "page": 15
+    },
+    "364.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No29",
+      "label": "1 = ISO Warning",
+      "page": 15
+    },
+    "364.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No31",
+      "label": "WR[2].EVENT.WR_Events.No31",
+      "page": 15
+    },
+    "364.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No32",
+      "label": "WR[2].EVENT.WR_Events.No32",
+      "page": 15
+    },
+    "365.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No17",
+      "label": "WR[2].EVENT.WR_Events.No17",
+      "page": 15
+    },
+    "365.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No18",
+      "label": "WR[2].EVENT.WR_Events.No18",
+      "page": 15
+    },
+    "365.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No19",
+      "label": "WR[2].EVENT.WR_Events.No19",
+      "page": 15
+    },
+    "365.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No20",
+      "label": "WR[2].EVENT.WR_Events.No20",
+      "page": 15
+    },
+    "365.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No21",
+      "label": "WR[2].EVENT.WR_Events.No21",
+      "page": 16
+    },
+    "365.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No22",
+      "label": "WR[2].EVENT.WR_Events.No22",
+      "page": 16
+    },
+    "365.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No23",
+      "label": "WR[2].EVENT.WR_Events.No23",
+      "page": 16
+    },
+    "365.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No24",
+      "label": "WR[2].EVENT.WR_Events.No24",
+      "page": 16
+    },
+    "366.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No9",
+      "label": "WR[2].EVENT.WR_Events.No9",
+      "page": 16
+    },
+    "366.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No10",
+      "label": "WR[2].EVENT.WR_Events.No10",
+      "page": 16
+    },
+    "366.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No11",
+      "label": "WR[2].EVENT.WR_Events.No11",
+      "page": 16
+    },
+    "366.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No12",
+      "label": "WR[2].EVENT.WR_Events.No12",
+      "page": 16
+    },
+    "366.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No13",
+      "label": "WR[2].EVENT.WR_Events.No13",
+      "page": 16
+    },
+    "366.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No14",
+      "label": "WR[2].EVENT.WR_Events.No14",
+      "page": 16
+    },
+    "366.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No15",
+      "label": "WR[2].EVENT.WR_Events.No15",
+      "page": 16
+    },
+    "366.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No16",
+      "label": "WR[2].EVENT.WR_Events.No16",
+      "page": 16
+    },
+    "367.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No1",
+      "label": "WR[2].EVENT.WR_Events.No1",
+      "page": 16
+    },
+    "367.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No2",
+      "label": "WR[2].EVENT.WR_Events.No2",
+      "page": 16
+    },
+    "367.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No3",
+      "label": "WR[2].EVENT.WR_Events.No3",
+      "page": 16
+    },
+    "367.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No4",
+      "label": "WR[2].EVENT.WR_Events.No4",
+      "page": 16
+    },
+    "367.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No5",
+      "label": "WR[2].EVENT.WR_Events.No5",
+      "page": 16
+    },
+    "367.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No6",
+      "label": "WR[2].EVENT.WR_Events.No6",
+      "page": 16
+    },
+    "367.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No7",
+      "label": "WR[2].EVENT.WR_Events.No7",
+      "page": 16
+    },
+    "367.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No8",
+      "label": "WR[2].EVENT.WR_Events.No8",
+      "page": 16
+    },
+    "368.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No57",
+      "label": "WR[2].EVENT.WR_Events.No57",
+      "page": 16
+    },
+    "368.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No58",
+      "label": "1 = DC Contactor 1 ON",
+      "page": 16
+    },
+    "368.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No59",
+      "label": "1 = Discharge Contactor 1 ON",
+      "page": 16
+    },
+    "368.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No60",
+      "label": "WR[2].EVENT.WR_Events.No60",
+      "page": 16
+    },
+    "368.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No61",
+      "label": "WR[2].EVENT.WR_Events.No61",
+      "page": 16
+    },
+    "368.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No62",
+      "label": "WR[2].EVENT.WR_Events.No62",
+      "page": 16
+    },
+    "368.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No63",
+      "label": "WR[2].EVENT.WR_Events.No63",
+      "page": 16
+    },
+    "368.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No64",
+      "label": "WR[2].EVENT.WR_Events.No64",
+      "page": 16
+    },
+    "369.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No56",
+      "label": "WR[2].EVENT.WR_Events.No56",
+      "page": 16
+    },
+    "369.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No50",
+      "label": "1 = DC Contactor 2 ON",
+      "page": 16
+    },
+    "369.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No51",
+      "label": "1 = Discharge Contactor 2 ON",
+      "page": 16
+    },
+    "369.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No52",
+      "label": "WR[2].EVENT.WR_Events.No52",
+      "page": 16
+    },
+    "369.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No53",
+      "label": "WR[2].EVENT.WR_Events.No53",
+      "page": 16
+    },
+    "369.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No54",
+      "label": "WR[2].EVENT.WR_Events.No54",
+      "page": 16
+    },
+    "369.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No55",
+      "label": "WR[2].EVENT.WR_Events.No55",
+      "page": 16
+    },
+    "370.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No41",
+      "label": "1 = Shorting Contactor 2 ON",
+      "page": 16
+    },
+    "370.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No42",
+      "label": "1 = Discharge Contactor 3 ON",
+      "page": 16
+    },
+    "370.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No43",
+      "label": "1 = Shorting Contactor 3 ON",
+      "page": 16
+    },
+    "370.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No44",
+      "label": "WR[2].EVENT.WR_Events.No44",
+      "page": 16
+    },
+    "370.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No45",
+      "label": "WR[2].EVENT.WR_Events.No45",
+      "page": 16
+    },
+    "370.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No46",
+      "label": "WR[2].EVENT.WR_Events.No46",
+      "page": 16
+    },
+    "370.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No47",
+      "label": "WR[2].EVENT.WR_Events.No47",
+      "page": 16
+    },
+    "370.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No48",
+      "label": "WR[2].EVENT.WR_Events.No48",
+      "page": 16
+    },
+    "371.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No33",
+      "label": "1 = DC Contactor 4 ON",
+      "page": 16
+    },
+    "371.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No34",
+      "label": "1 = Discharge Contactor 4 ON",
+      "page": 16
+    },
+    "371.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No35",
+      "label": "1 = Shorting Contactor 4 ON",
+      "page": 16
+    },
+    "371.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No36",
+      "label": "WR[2].EVENT.WR_Events.No36",
+      "page": 16
+    },
+    "371.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No37",
+      "label": "WR[2].EVENT.WR_Events.No37",
+      "page": 16
+    },
+    "371.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No38",
+      "label": "WR[2].EVENT.WR_Events.No38",
+      "page": 16
+    },
+    "371.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No39",
+      "label": "WR[2].EVENT.WR_Events.No39",
+      "page": 16
+    },
+    "371.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No40",
+      "label": "WR[2].EVENT.WR_Events.No40",
+      "page": 16
+    },
+    "372.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No89",
+      "label": "1 = DC Contactor 5 ON",
+      "page": 17
+    },
+    "372.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No90",
+      "label": "1 = Discharge Contactor 5 ON",
+      "page": 17
+    },
+    "372.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No91",
+      "label": "1 = Shorting Contactor 5 ON",
+      "page": 17
+    },
+    "372.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No92",
+      "label": "WR[2].EVENT.WR_Events.No92",
+      "page": 17
+    },
+    "372.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No93",
+      "label": "WR[2].EVENT.WR_Events.No93",
+      "page": 17
+    },
+    "372.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No94",
+      "label": "WR[2].EVENT.WR_Events.No94",
+      "page": 17
+    },
+    "372.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No95",
+      "label": "WR[2].EVENT.WR_Events.No95",
+      "page": 17
+    },
+    "372.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No96",
+      "label": "WR[2].EVENT.WR_Events.No96",
+      "page": 17
+    },
+    "373.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No81",
+      "label": "1 = DC Contactor 6 ON",
+      "page": 17
+    },
+    "373.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No82",
+      "label": "1 = Discharge Contactor 6 ON",
+      "page": 17
+    },
+    "373.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No83",
+      "label": "1 = Shorting Contactor 6 ON",
+      "page": 17
+    },
+    "373.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No84",
+      "label": "WR[2].EVENT.WR_Events.No84",
+      "page": 17
+    },
+    "373.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No85",
+      "label": "WR[2].EVENT.WR_Events.No85",
+      "page": 17
+    },
+    "373.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No86",
+      "label": "WR[2].EVENT.WR_Events.No86",
+      "page": 17
+    },
+    "373.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No87",
+      "label": "WR[2].EVENT.WR_Events.No87",
+      "page": 17
+    },
+    "373.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No88",
+      "label": "WR[2].EVENT.WR_Events.No88",
+      "page": 17
+    },
+    "374.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No73",
+      "label": "Container Fan Contactor 1 (1 = ON)",
+      "page": 17
+    },
+    "374.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No74",
+      "label": "Container Fan Contactor 2 (1 = ON)",
+      "page": 17
+    },
+    "374.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No75",
+      "label": "Container Fan Contactor 3 (1 = ON)",
+      "page": 17
+    },
+    "374.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No76",
+      "label": "Container Fan Contactor 4 (1 = ON)",
+      "page": 17
+    },
+    "374.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No77",
+      "label": "Container Fan Contactor 5 (1 = ON)",
+      "page": 17
+    },
+    "374.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No78",
+      "label": "Container Fan Contactor 6 (1 = ON)",
+      "page": 17
+    },
+    "374.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No79",
+      "label": "WR[2].EVENT.WR_Events.No79",
+      "page": 17
+    },
+    "374.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No80",
+      "label": "WR[2].EVENT.WR_Events.No80",
+      "page": 17
+    },
+    "375.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No65",
+      "label": "WR[2].EVENT.WR_Events.No65",
+      "page": 17
+    },
+    "375.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No66",
+      "label": "WR[2].EVENT.WR_Events.No66",
+      "page": 17
+    },
+    "375.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No67",
+      "label": "WR[2].EVENT.WR_Events.No67",
+      "page": 17
+    },
+    "375.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No68",
+      "label": "WR[2].EVENT.WR_Events.No68",
+      "page": 17
+    },
+    "375.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No69",
+      "label": "WR[2].EVENT.WR_Events.No69",
+      "page": 17
+    },
+    "375.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No70",
+      "label": "WR[2].EVENT.WR_Events.No70",
+      "page": 17
+    },
+    "375.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No71",
+      "label": "WR[2].EVENT.WR_Events.No71",
+      "page": 17
+    },
+    "375.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No72",
+      "label": "WR[2].EVENT.WR_Events.No72",
+      "page": 17
+    },
+    "376.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No121",
+      "label": "Coupling Contactor 1 ON",
+      "page": 17
+    },
+    "376.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No122",
+      "label": "Coupling Contactor 2 ON",
+      "page": 17
+    },
+    "376.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No123",
+      "label": "WR[2].EVENT.WR_Events.No123",
+      "page": 17
+    },
+    "376.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No124",
+      "label": "WR[2].EVENT.WR_Events.No124",
+      "page": 17
+    },
+    "376.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No125",
+      "label": "WR[2].EVENT.WR_Events.No125",
+      "page": 17
+    },
+    "376.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No126",
+      "label": "WR[2].EVENT.WR_Events.No126",
+      "page": 17
+    },
+    "376.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No127",
+      "label": "WR[2].EVENT.WR_Events.No127",
+      "page": 17
+    },
+    "376.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No128",
+      "label": "WR[2].EVENT.WR_Events.No128",
+      "page": 17
+    },
+    "377.0": {
+      "symbol": "WR[2].EVENT.WR_Events.No113",
+      "label": "WR[2].EVENT.WR_Events.No113",
+      "page": 17
+    },
+    "377.1": {
+      "symbol": "WR[2].EVENT.WR_Events.No114",
+      "label": "WR[2].EVENT.WR_Events.No114",
+      "page": 17
+    },
+    "377.2": {
+      "symbol": "WR[2].EVENT.WR_Events.No115",
+      "label": "WR[2].EVENT.WR_Events.No115",
+      "page": 17
+    },
+    "377.3": {
+      "symbol": "WR[2].EVENT.WR_Events.No116",
+      "label": "WR[2].EVENT.WR_Events.No116",
+      "page": 17
+    },
+    "377.4": {
+      "symbol": "WR[2].EVENT.WR_Events.No117",
+      "label": "WR[2].EVENT.WR_Events.No117",
+      "page": 17
+    },
+    "377.5": {
+      "symbol": "WR[2].EVENT.WR_Events.No118",
+      "label": "WR[2].EVENT.WR_Events.No118",
+      "page": 17
+    },
+    "377.6": {
+      "symbol": "WR[2].EVENT.WR_Events.No119",
+      "label": "WR[2].EVENT.WR_Events.No119",
+      "page": 17
+    },
+    "377.7": {
+      "symbol": "WR[2].EVENT.WR_Events.No119",
+      "label": "WR[2].EVENT.WR_Events.No119",
+      "page": 17
+    },
+    "384.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No25",
+      "label": "01:Inverter power unit overtemperature; 1st stage",
+      "page": 18
+    },
+    "384.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No26",
+      "label": "02:Grid fault",
+      "page": 18
+    },
+    "384.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No27",
+      "label": "03:Grid fault rectifier mains",
+      "page": 18
+    },
+    "384.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No28",
+      "label": "04:Inverter i²t supervision over load; 1st stage",
+      "page": 18
+    },
+    "384.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No29",
+      "label": "05:Undervoltage DC circuit",
+      "page": 18
+    },
+    "384.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No30",
+      "label": "06:Inverter overload at UPS bar",
+      "page": 18
+    },
+    "384.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No32",
+      "label": "14:Fan life span exceeded",
+      "page": 18
+    },
+    "385.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No17",
+      "label": "16:Inverter message 16 occupied",
+      "page": 18
+    },
+    "385.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No18",
+      "label": "42:Inverter message 42 occupied",
+      "page": 18
+    },
+    "385.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No19",
+      "label": "44:Inverter message 44 occupied",
+      "page": 18
+    },
+    "385.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No20",
+      "label": "46:Inverter message 46 occupied",
+      "page": 18
+    },
+    "385.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No21",
+      "label": "49:Undervoltage DC circuit (bypass contactor PV field - inverter open)",
+      "page": 18
+    },
+    "385.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No22",
+      "label": "56:Inverter message 56 occupied",
+      "page": 18
+    },
+    "385.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No23",
+      "label": "61:Inverter message 61 occupied",
+      "page": 18
+    },
+    "385.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No24",
+      "label": "64:Udc respectively Dudc/dt too high",
+      "page": 18
+    },
+    "386.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No9",
+      "label": "91:Fuse trip control",
+      "page": 18
+    },
+    "386.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No10",
+      "label": "92:Overvoltage protection (varistors)",
+      "page": 18
+    },
+    "386.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No11",
+      "label": "96:AC over- or undervoltage",
+      "page": 18
+    },
+    "386.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No12",
+      "label": "98:Failure symmetry",
+      "page": 18
+    },
+    "386.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No13",
+      "label": "DC Switch Disconnection trip",
+      "page": 18
+    },
+    "386.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No14",
+      "label": "AC Switch Disconnection trip",
+      "page": 18
+    },
+    "386.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No15",
+      "label": "DC Overvoltage",
+      "page": 18
+    },
+    "386.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No16",
+      "label": "AC Overvoltage",
+      "page": 18
+    },
+    "387.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No1",
+      "label": "WR[3].STOER.WR_Warnungen.No1",
+      "page": 18
+    },
+    "387.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No2",
+      "label": "WR[3].STOER.WR_Warnungen.No2",
+      "page": 18
+    },
+    "387.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No3",
+      "label": "WR[3].STOER.WR_Warnungen.No3",
+      "page": 18
+    },
+    "387.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No4",
+      "label": "WR[3].STOER.WR_Warnungen.No4",
+      "page": 18
+    },
+    "387.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No5",
+      "label": "WR[3].STOER.WR_Warnungen.No5",
+      "page": 18
+    },
+    "387.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No6",
+      "label": "WR[3].STOER.WR_Warnungen.No6",
+      "page": 18
+    },
+    "387.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No7",
+      "label": "WR[3].STOER.WR_Warnungen.No7",
+      "page": 18
+    },
+    "387.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No8",
+      "label": "WR[3].STOER.WR_Warnungen.No8",
+      "page": 18
+    },
+    "388.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No57",
+      "label": "65:Response DC Contactor 1 missing",
+      "page": 18
+    },
+    "388.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No58",
+      "label": "Failure Symmetry String 1",
+      "page": 18
+    },
+    "388.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No59",
+      "label": "ISO - Warning String 1",
+      "page": 18
+    },
+    "388.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No60",
+      "label": "ISO - Failure String 1",
+      "page": 18
+    },
+    "388.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No61",
+      "label": "ADC Channel Fault DC String 1",
+      "page": 18
+    },
+    "388.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No62",
+      "label": "65:Response Discharge Contactor 1 ismissing",
+      "page": 18
+    },
+    "388.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No63",
+      "label": "65:Response Shorting Contactor 1 is missing",
+      "page": 18
+    },
+    "388.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No64",
+      "label": "WR[3].STOER.WR_Warnungen.No64",
+      "page": 18
+    },
+    "389.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No49",
+      "label": "65:Response DC Contactor 2 missing",
+      "page": 18
+    },
+    "389.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No50",
+      "label": "Failure Symmetry String 2",
+      "page": 18
+    },
+    "389.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No59",
+      "label": "ISO - Warning String 1",
+      "page": 18
+    },
+    "389.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No60",
+      "label": "ISO - Failure String 1",
+      "page": 18
+    },
+    "389.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No61",
+      "label": "ADC Channel Fault DC String 1",
+      "page": 18
+    },
+    "389.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No62",
+      "label": "65:Response Discharge Contactor 1 ismissing",
+      "page": 18
+    },
+    "389.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No63",
+      "label": "65:Response Shorting Contactor 1 is missing",
+      "page": 18
+    },
+    "389.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No64",
+      "label": "WR[3].STOER.WR_Warnungen.No64",
+      "page": 18
+    },
+    "390.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No49",
+      "label": "65:Response DC Contactor 2 missing",
+      "page": 18
+    },
+    "390.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No50",
+      "label": "Failure Symmetry String 2",
+      "page": 18
+    },
+    "390.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No51",
+      "label": "ISO - Warning String 2",
+      "page": 18
+    },
+    "390.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No52",
+      "label": "ISO - Failure String 2",
+      "page": 19
+    },
+    "390.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No53",
+      "label": "ADC Channel Fault DC String 2",
+      "page": 19
+    },
+    "390.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No54",
+      "label": "65:Response Discharge Contactor 2 ismissing",
+      "page": 19
+    },
+    "390.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No55",
+      "label": "65:Response Shorting Contactor 2 is missing",
+      "page": 19
+    },
+    "390.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No56",
+      "label": "WR[3].STOER.WR_Warnungen.No56",
+      "page": 19
+    },
+    "391.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No41",
+      "label": "65:Response DC Contactor 3 missing",
+      "page": 19
+    },
+    "391.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No42",
+      "label": "Failure Symmetry String 3",
+      "page": 19
+    },
+    "391.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No43",
+      "label": "ISO - Warning String 3",
+      "page": 19
+    },
+    "391.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No44",
+      "label": "ISO - Failure String 3",
+      "page": 19
+    },
+    "391.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No45",
+      "label": "ADC Channel Fault DC String 3",
+      "page": 19
+    },
+    "391.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No46",
+      "label": "65:Response Discharge Contactor 3 ismissing",
+      "page": 19
+    },
+    "391.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No47",
+      "label": "65:Response Shorting Contactor 3 is missing",
+      "page": 19
+    },
+    "391.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No48",
+      "label": "WR[3].STOER.WR_Warnungen.No48",
+      "page": 19
+    },
+    "392.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No33",
+      "label": "65:Response DC Contactor 4 missing",
+      "page": 19
+    },
+    "392.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No34",
+      "label": "Failure Symmetry String 4",
+      "page": 19
+    },
+    "392.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No35",
+      "label": "ISO - Warning String 4",
+      "page": 19
+    },
+    "392.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No36",
+      "label": "ISO - Failure String 4",
+      "page": 19
+    },
+    "392.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No37",
+      "label": "ADC Channel Fault DC String 4",
+      "page": 19
+    },
+    "392.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No38",
+      "label": "65:Response Discharge Contactor 4 ismissing",
+      "page": 19
+    },
+    "392.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No39",
+      "label": "65:Response Shorting Contactor 4 is missing",
+      "page": 19
+    },
+    "392.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No40",
+      "label": "WR[3].STOER.WR_Warnungen.No40",
+      "page": 19
+    },
+    "393.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No89",
+      "label": "65:Response DC Contactor 5 missing",
+      "page": 19
+    },
+    "393.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No90",
+      "label": "Failure Symmetry String 5",
+      "page": 19
+    },
+    "393.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No91",
+      "label": "ISO - Warning String 5",
+      "page": 19
+    },
+    "393.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No92",
+      "label": "ISO - Failure String 5",
+      "page": 19
+    },
+    "393.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No93",
+      "label": "ADC Channel Fault DC String 5",
+      "page": 19
+    },
+    "393.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No94",
+      "label": "65:Response Discharge Contactor 5 ismissing",
+      "page": 19
+    },
+    "393.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No95",
+      "label": "65:Response Shorting Contactor 5 is missing",
+      "page": 19
+    },
+    "393.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No96",
+      "label": "WR[3].STOER.WR_Warnungen.No96",
+      "page": 19
+    },
+    "394.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No81",
+      "label": "65:Response DC Contactor 6 missing",
+      "page": 19
+    },
+    "394.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No82",
+      "label": "Failure Symmetry String 6",
+      "page": 19
+    },
+    "394.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No83",
+      "label": "ISO - Warning String 6",
+      "page": 19
+    },
+    "394.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No84",
+      "label": "ISO - Failure String 6",
+      "page": 19
+    },
+    "394.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No85",
+      "label": "ADC Channel Fault DC String 6",
+      "page": 19
+    },
+    "394.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No86",
+      "label": "65:Response Discharge Contactor 6 ismissing",
+      "page": 19
+    },
+    "394.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No87",
+      "label": "65:Response Shorting Contactor 6 is missing",
+      "page": 19
+    },
+    "394.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No88",
+      "label": "WR[3].STOER.WR_Warnungen.No88",
+      "page": 19
+    },
+    "395.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No73",
+      "label": "65:Failure Fan Contactor 1",
+      "page": 19
+    },
+    "395.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No74",
+      "label": "1 = Thermal Contact Fan 1 ON",
+      "page": 19
+    },
+    "395.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No75",
+      "label": "65:Failure Fan Contactor 2",
+      "page": 19
+    },
+    "395.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No76",
+      "label": "1 = Thermal Contact Fan 2 ON",
+      "page": 19
+    },
+    "395.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No77",
+      "label": "65:Failure Fan Contactor 3",
+      "page": 19
+    },
+    "395.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No78",
+      "label": "1 = Thermal Contact Fan 3 ON",
+      "page": 19
+    },
+    "395.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No79",
+      "label": "65:Failure Fan Contactor 4",
+      "page": 19
+    },
+    "395.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No80",
+      "label": "1 = Thermal Contact Fan 4 ON",
+      "page": 19
+    },
+    "396.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No65",
+      "label": "65:Failure Fan Contactor 5",
+      "page": 19
+    },
+    "396.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No66",
+      "label": "1 = Thermal Contact Fan 5 ON",
+      "page": 19
+    },
+    "396.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No67",
+      "label": "65:Failure Fan Contactor 6",
+      "page": 19
+    },
+    "396.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No68",
+      "label": "1 = Thermal Contact fan 6 ON",
+      "page": 19
+    },
+    "396.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No69",
+      "label": "WR[3].STOER.WR_Warnungen.No69",
+      "page": 19
+    },
+    "396.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No70",
+      "label": "WR[3].STOER.WR_Warnungen.No70",
+      "page": 19
+    },
+    "396.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No71",
+      "label": "WR[3].STOER.WR_Warnungen.No71",
+      "page": 19
+    },
+    "396.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No72",
+      "label": "WR[3].STOER.WR_Warnungen.No72",
+      "page": 19
+    },
+    "397.0": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No121",
+      "label": "97: Fault Coupling Contactor 1",
+      "page": 20
+    },
+    "397.1": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No122",
+      "label": "97: Fault Coupling Contactor 2",
+      "page": 20
+    },
+    "397.2": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No123",
+      "label": "WR[3].STOER.WR_Warnungen.No123",
+      "page": 20
+    },
+    "397.3": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No124",
+      "label": "WR[3].STOER.WR_Warnungen.No124",
+      "page": 20
+    },
+    "397.4": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No125",
+      "label": "WR[3].STOER.WR_Warnungen.No125",
+      "page": 20
+    },
+    "397.5": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No126",
+      "label": "WR[3].STOER.WR_Warnungen.No126",
+      "page": 20
+    },
+    "397.6": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No127",
+      "label": "WR[3].STOER.WR_Warnungen.No127",
+      "page": 20
+    },
+    "397.7": {
+      "symbol": "WR[3].STOER.WR_Warnungen.No128",
+      "label": "WR[3].STOER.WR_Warnungen.No128",
+      "page": 20
+    },
+    "400.0": {
+      "symbol": "WR[3].STOER.WR_Alarme.No25",
+      "label": "12:System running at commissioning mode",
+      "page": 20
+    },
+    "400.1": {
+      "symbol": "WR[3].STOER.WR_Alarme.No26",
+      "label": "33:Inverter power unit temperature too high; 2nd stage, fan defectiv",
+      "page": 20
+    },
+    "400.2": {
+      "symbol": "WR[3].STOER.WR_Alarme.No27",
+      "label": "34:Fault in setting of parameters",
+      "page": 20
+    },
+    "400.4": {
+      "symbol": "WR[3].STOER.WR_Alarme.No29",
+      "label": "36:Fast switch off 1 or AC-contactor defective (feedback is missing)",
+      "page": 20
+    },
+    "400.5": {
+      "symbol": "WR[3].STOER.WR_Alarme.No30",
+      "label": "37:Multiple restarts in series",
+      "page": 20
+    },
+    "400.6": {
+      "symbol": "WR[3].STOER.WR_Alarme.No31",
+      "label": "38:Fault Power Supply PCB",
+      "page": 20
+    },
+    "400.7": {
+      "symbol": "WR[3].STOER.WR_Alarme.No32",
+      "label": "39:Overvoltage at DC Circuit (UDCgg)",
+      "page": 20
+    },
+    "401.0": {
+      "symbol": "WR[3].STOER.WR_Alarme.No17",
+      "label": "40:Fast OFF Button pressed at customei",
+      "page": 20
+    },
+    "401.1": {
+      "symbol": "WR[3].STOER.WR_Alarme.No18",
+      "label": "41:DSP (digital signal processor at VeCon) disturbed",
+      "page": 20
+    },
+    "401.2": {
+      "symbol": "WR[3].STOER.WR_Alarme.No19",
+      "label": "43:Uce Monitor triggerd",
+      "page": 20
+    },
+    "401.3": {
+      "symbol": "WR[3].STOER.WR_Alarme.No20",
+      "label": "45:Fault Initial Program loading (contradictive bootstrapping parameters)",
+      "page": 20
+    },
+    "401.4": {
+      "symbol": "WR[3].STOER.WR_Alarme.No21",
+      "label": "47:Inverter i²t Supervision Overload(disturbing switching off); 2nd stage",
+      "page": 20
+    },
+    "401.5": {
+      "symbol": "WR[3].STOER.WR_Alarme.No22",
+      "label": "48:Reverse Power",
+      "page": 20
+    },
+    "401.6": {
+      "symbol": "WR[3].STOER.WR_Alarme.No23",
+      "label": "55:EPROM defective",
+      "page": 20
+    },
+    "401.7": {
+      "symbol": "WR[3].STOER.WR_Alarme.No24",
+      "label": "57:EPROM defective (checksum failure)",
+      "page": 20
+    },
+    "402.0": {
+      "symbol": "WR[3].STOER.WR_Alarme.No9",
+      "label": "58:Actual Value fraction",
+      "page": 20
+    },
+    "402.1": {
+      "symbol": "WR[3].STOER.WR_Alarme.No10",
+      "label": "59:Option Module faulty",
+      "page": 20
+    },
+    "402.2": {
+      "symbol": "WR[3].STOER.WR_Alarme.No11",
+      "label": "62:Response \"Inverter ON\" is missing",
+      "page": 20
+    },
+    "402.3": {
+      "symbol": "WR[3].STOER.WR_Alarme.No12",
+      "label": "63:DC Overcurrent or Wire Breakage",
+      "page": 20
+    },
+    "402.4": {
+      "symbol": "WR[3].STOER.WR_Alarme.No13",
+      "label": "65:Response AC Contactor is missing",
+      "page": 20
+    },
+    "402.5": {
+      "symbol": "WR[3].STOER.WR_Alarme.No14",
+      "label": "66:Inverter Group Fault Signal",
+      "page": 20
+    },
+    "402.6": {
+      "symbol": "WR[3].STOER.WR_Alarme.No15",
+      "label": "68:Grid Fault (MSD Signal)",
+      "page": 20
+    },
+    "402.7": {
+      "symbol": "WR[3].STOER.WR_Alarme.No16",
+      "label": "69:Grid Short Interruption (MSD Signal)",
+      "page": 20
+    },
+    "403.0": {
+      "symbol": "WR[3].STOER.WR_Alarme.No1",
+      "label": "93:Fast OFF Button Pressed",
+      "page": 20
+    },
+    "403.1": {
+      "symbol": "WR[3].STOER.WR_Alarme.No2",
+      "label": "94:Profibus Fault",
+      "page": 20
+    },
+    "403.2": {
+      "symbol": "WR[3].STOER.WR_Alarme.No3",
+      "label": "95:Frequency Fault",
+      "page": 20
+    },
+    "403.3": {
+      "symbol": "WR[3].STOER.WR_Alarme.No4",
+      "label": "96:AC over- or undervoltage",
+      "page": 20
+    },
+    "403.4": {
+      "symbol": "WR[3].STOER.WR_Alarme.No5",
+      "label": "96:Index 1",
+      "page": 20
+    },
+    "403.5": {
+      "symbol": "WR[3].STOER.WR_Alarme.No6",
+      "label": "96:Index 2",
+      "page": 20
+    },
+    "403.6": {
+      "symbol": "WR[3].STOER.WR_Alarme.No7",
+      "label": "96:Index 3",
+      "page": 20
+    },
+    "403.7": {
+      "symbol": "WR[3].STOER.WR_Alarme.No8",
+      "label": "96:Index 4",
+      "page": 20
+    },
+    "404.0": {
+      "symbol": "WR[3].STOER.WR_Alarme.No57",
+      "label": "96:Index 5",
+      "page": 20
+    },
+    "404.1": {
+      "symbol": "WR[3].STOER.WR_Alarme.No58",
+      "label": "96:Index 6",
+      "page": 20
+    },
+    "404.2": {
+      "symbol": "WR[3].STOER.WR_Alarme.No59",
+      "label": "Inverter Disabled",
+      "page": 20
+    },
+    "404.3": {
+      "symbol": "WR[3].STOER.WR_Alarme.No60",
+      "label": "Fault ISO",
+      "page": 20
+    },
+    "404.4": {
+      "symbol": "WR[3].STOER.WR_Alarme.No61",
+      "label": "ADC Channel Fault DC Shunt",
+      "page": 20
+    },
+    "404.5": {
+      "symbol": "WR[3].STOER.WR_Alarme.No62",
+      "label": "ADC Channel Fault Insulation Resistan ce",
+      "page": 20
+    },
+    "404.6": {
+      "symbol": "WR[3].STOER.WR_Alarme.No63",
+      "label": "WR[3].STOER.WR_Alarme.No63",
+      "page": 20
+    },
+    "404.7": {
+      "symbol": "WR[3].STOER.WR_Alarme.No64",
+      "label": "WR[3].STOER.WR_Alarme.No64",
+      "page": 21
+    },
+    "492.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No25",
+      "label": "1 = Local Switched OFF",
+      "page": 21
+    },
+    "492.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No26",
+      "label": "0 = Key Role AUTO; 1 = Key Role TEST",
+      "page": 21
+    },
+    "492.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No27",
+      "label": "1 = AC Contactor ON",
+      "page": 21
+    },
+    "492.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No28",
+      "label": "1 = Inverter ON",
+      "page": 21
+    },
+    "492.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No29",
+      "label": "1 = ISO Warning",
+      "page": 21
+    },
+    "492.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No31",
+      "label": "WR[3].EVENT.WR_Events.No31",
+      "page": 21
+    },
+    "492.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No32",
+      "label": "WR[3].EVENT.WR_Events.No32",
+      "page": 21
+    },
+    "493.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No17",
+      "label": "WR[3].EVENT.WR_Events.No17",
+      "page": 21
+    },
+    "493.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No18",
+      "label": "WR[3].EVENT.WR_Events.No18",
+      "page": 21
+    },
+    "493.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No19",
+      "label": "WR[3].EVENT.WR_Events.No19",
+      "page": 21
+    },
+    "493.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No20",
+      "label": "WR[3].EVENT.WR_Events.No20",
+      "page": 21
+    },
+    "493.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No21",
+      "label": "WR[3].EVENT.WR_Events.No21",
+      "page": 21
+    },
+    "493.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No22",
+      "label": "WR[3].EVENT.WR_Events.No22",
+      "page": 21
+    },
+    "493.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No23",
+      "label": "WR[3].EVENT.WR_Events.No23",
+      "page": 21
+    },
+    "493.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No24",
+      "label": "WR[3].EVENT.WR_Events.No24",
+      "page": 21
+    },
+    "494.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No9",
+      "label": "WR[3].EVENT.WR_Events.No9",
+      "page": 21
+    },
+    "494.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No10",
+      "label": "WR[3].EVENT.WR_Events.No10",
+      "page": 21
+    },
+    "494.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No11",
+      "label": "WR[3].EVENT.WR_Events.No11",
+      "page": 21
+    },
+    "494.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No12",
+      "label": "WR[3].EVENT.WR_Events.No12",
+      "page": 21
+    },
+    "494.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No13",
+      "label": "WR[3].EVENT.WR_Events.No13",
+      "page": 21
+    },
+    "494.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No14",
+      "label": "WR[3].EVENT.WR_Events.No14",
+      "page": 21
+    },
+    "494.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No15",
+      "label": "WR[3].EVENT.WR_Events.No15",
+      "page": 21
+    },
+    "494.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No16",
+      "label": "WR[3].EVENT.WR_Events.No16",
+      "page": 21
+    },
+    "495.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No1",
+      "label": "WR[3].EVENT.WR_Events.No1",
+      "page": 21
+    },
+    "495.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No2",
+      "label": "WR[3].EVENT.WR_Events.No2",
+      "page": 21
+    },
+    "495.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No3",
+      "label": "WR[3].EVENT.WR_Events.No3",
+      "page": 21
+    },
+    "495.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No4",
+      "label": "WR[3].EVENT.WR_Events.No4",
+      "page": 21
+    },
+    "495.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No5",
+      "label": "WR[3].EVENT.WR_Events.No5",
+      "page": 21
+    },
+    "495.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No6",
+      "label": "WR[3].EVENT.WR_Events.No6",
+      "page": 21
+    },
+    "495.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No7",
+      "label": "WR[3].EVENT.WR_Events.No7",
+      "page": 21
+    },
+    "495.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No8",
+      "label": "WR[3].EVENT.WR_Events.No8",
+      "page": 21
+    },
+    "496.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No58",
+      "label": "1 = DC Contactor 1 ON",
+      "page": 21
+    },
+    "496.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No59",
+      "label": "1 = Discharge Contactor 1 ON",
+      "page": 21
+    },
+    "496.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No60",
+      "label": "WR[3].EVENT.WR_Events.No60",
+      "page": 21
+    },
+    "496.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No61",
+      "label": "WR[3].EVENT.WR_Events.No61",
+      "page": 21
+    },
+    "496.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No62",
+      "label": "WR[3].EVENT.WR_Events.No62",
+      "page": 21
+    },
+    "496.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No63",
+      "label": "WR[3].EVENT.WR_Events.No63",
+      "page": 21
+    },
+    "496.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No64",
+      "label": "WR[3].EVENT.WR_Events.No64",
+      "page": 21
+    },
+    "497.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No49",
+      "label": "1 = Shorting Contactor 1 ON",
+      "page": 21
+    },
+    "497.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No50",
+      "label": "1 = DC Contactor 2 ON",
+      "page": 21
+    },
+    "497.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No51",
+      "label": "1 = Discharge Contactor 2 ON",
+      "page": 21
+    },
+    "497.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No52",
+      "label": "WR[3].EVENT.WR_Events.No52",
+      "page": 21
+    },
+    "497.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No53",
+      "label": "WR[3].EVENT.WR_Events.No53",
+      "page": 21
+    },
+    "497.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No54",
+      "label": "WR[3].EVENT.WR_Events.No54",
+      "page": 21
+    },
+    "497.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No55",
+      "label": "WR[3].EVENT.WR_Events.No55",
+      "page": 22
+    },
+    "497.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No56",
+      "label": "WR[3].EVENT.WR_Events.No56",
+      "page": 22
+    },
+    "498.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No41",
+      "label": "1 = Shorting Contactor 2 ON",
+      "page": 22
+    },
+    "498.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No42",
+      "label": "1 = Discharge Contactor 3 ON",
+      "page": 22
+    },
+    "498.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No43",
+      "label": "1 = Shorting Contactor 3 ON",
+      "page": 22
+    },
+    "498.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No44",
+      "label": "WR[3].EVENT.WR_Events.No44",
+      "page": 22
+    },
+    "498.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No45",
+      "label": "WR[3].EVENT.WR_Events.No45",
+      "page": 22
+    },
+    "498.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No46",
+      "label": "WR[3].EVENT.WR_Events.No46",
+      "page": 22
+    },
+    "498.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No47",
+      "label": "WR[3].EVENT.WR_Events.No47",
+      "page": 22
+    },
+    "498.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No48",
+      "label": "WR[3].EVENT.WR_Events.No48",
+      "page": 22
+    },
+    "499.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No33",
+      "label": "1 = DC Contactor 4 ON",
+      "page": 22
+    },
+    "499.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No34",
+      "label": "1 = Discharge Contactor 4 ON",
+      "page": 22
+    },
+    "499.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No35",
+      "label": "1 = Shorting Contactor 4 ON",
+      "page": 22
+    },
+    "499.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No36",
+      "label": "WR[3].EVENT.WR_Events.No36",
+      "page": 22
+    },
+    "499.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No37",
+      "label": "WR[3].EVENT.WR_Events.No37",
+      "page": 22
+    },
+    "499.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No38",
+      "label": "WR[3].EVENT.WR_Events.No38",
+      "page": 22
+    },
+    "499.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No39",
+      "label": "WR[3].EVENT.WR_Events.No39",
+      "page": 22
+    },
+    "499.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No40",
+      "label": "WR[3].EVENT.WR_Events.No40",
+      "page": 22
+    },
+    "500.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No89",
+      "label": "1 = DC Contactor 5 ON",
+      "page": 22
+    },
+    "500.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No90",
+      "label": "1 = Discharge Contactor 5 ON",
+      "page": 22
+    },
+    "500.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No91",
+      "label": "1 = Shorting Contactor 5 ON",
+      "page": 22
+    },
+    "500.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No92",
+      "label": "WR[3].EVENT.WR_Events.No92",
+      "page": 22
+    },
+    "500.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No93",
+      "label": "WR[3].EVENT.WR_Events.No93",
+      "page": 22
+    },
+    "500.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No94",
+      "label": "WR[3].EVENT.WR_Events.No94",
+      "page": 22
+    },
+    "500.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No95",
+      "label": "WR[3].EVENT.WR_Events.No95",
+      "page": 22
+    },
+    "500.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No96",
+      "label": "WR[3].EVENT.WR_Events.No96",
+      "page": 22
+    },
+    "502.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No73",
+      "label": "Container Fan Contactor 1 (1 = ON)",
+      "page": 22
+    },
+    "501.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No82",
+      "label": "1 = Discharge Contactor 6 ON",
+      "page": 22
+    },
+    "501.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No83",
+      "label": "1 = Shorting Contactor 6 ON",
+      "page": 22
+    },
+    "501.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No84",
+      "label": "WR[3].EVENT.WR_Events.No84",
+      "page": 22
+    },
+    "501.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No85",
+      "label": "WR[3].EVENT.WR_Events.No85",
+      "page": 22
+    },
+    "501.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No86",
+      "label": "WR[3].EVENT.WR_Events.No86",
+      "page": 22
+    },
+    "501.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No87",
+      "label": "WR[3].EVENT.WR_Events.No87",
+      "page": 22
+    },
+    "501.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No88",
+      "label": "WR[3].EVENT.WR_Events.No88",
+      "page": 22
+    },
+    "502.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No74",
+      "label": "Container Fan Contactor 2 (1 = ON)",
+      "page": 22
+    },
+    "502.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No75",
+      "label": "Container Fan Contactor 3 (1 = ON)",
+      "page": 22
+    },
+    "502.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No76",
+      "label": "Container Fan Contactor 4 (1 = ON)",
+      "page": 22
+    },
+    "502.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No77",
+      "label": "Container Fan Contactor 5 (1 = ON)",
+      "page": 22
+    },
+    "502.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No78",
+      "label": "Container Fan Contactor 6 (1 = ON)",
+      "page": 22
+    },
+    "502.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No79",
+      "label": "WR[3].EVENT.WR_Events.No79",
+      "page": 22
+    },
+    "502.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No80",
+      "label": "WR[3].EVENT.WR_Events.No80",
+      "page": 22
+    },
+    "503.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No65",
+      "label": "WR[3].EVENT.WR_Events.No65",
+      "page": 22
+    },
+    "503.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No66",
+      "label": "WR[3].EVENT.WR_Events.No66",
+      "page": 22
+    },
+    "503.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No67",
+      "label": "WR[3].EVENT.WR_Events.No67",
+      "page": 22
+    },
+    "503.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No68",
+      "label": "WR[3].EVENT.WR_Events.No68",
+      "page": 22
+    },
+    "503.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No69",
+      "label": "WR[3].EVENT.WR_Events.No69",
+      "page": 22
+    },
+    "503.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No70",
+      "label": "WR[3].EVENT.WR_Events.No70",
+      "page": 22
+    },
+    "503.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No71",
+      "label": "WR[3].EVENT.WR_Events.No71",
+      "page": 22
+    },
+    "503.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No72",
+      "label": "WR[3].EVENT.WR_Events.No72",
+      "page": 22
+    },
+    "504.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No121",
+      "label": "Coupling Contactor 1 ON",
+      "page": 22
+    },
+    "504.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No122",
+      "label": "Coupling Contactor 2 ON",
+      "page": 22
+    },
+    "504.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No123",
+      "label": "WR[3].EVENT.WR_Events.No123",
+      "page": 22
+    },
+    "504.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No124",
+      "label": "WR[3].EVENT.WR_Events.No124",
+      "page": 23
+    },
+    "504.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No125",
+      "label": "WR[3].EVENT.WR_Events.No125",
+      "page": 23
+    },
+    "504.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No126",
+      "label": "WR[3].EVENT.WR_Events.No126",
+      "page": 23
+    },
+    "504.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No127",
+      "label": "WR[3].EVENT.WR_Events.No127",
+      "page": 23
+    },
+    "504.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No128",
+      "label": "WR[3].EVENT.WR_Events.No128",
+      "page": 23
+    },
+    "505.0": {
+      "symbol": "WR[3].EVENT.WR_Events.No113",
+      "label": "WR[3].EVENT.WR_Events.No113",
+      "page": 23
+    },
+    "505.1": {
+      "symbol": "WR[3].EVENT.WR_Events.No114",
+      "label": "WR[3].EVENT.WR_Events.No114",
+      "page": 23
+    },
+    "505.2": {
+      "symbol": "WR[3].EVENT.WR_Events.No115",
+      "label": "WR[3].EVENT.WR_Events.No115",
+      "page": 23
+    },
+    "505.3": {
+      "symbol": "WR[3].EVENT.WR_Events.No116",
+      "label": "WR[3].EVENT.WR_Events.No116",
+      "page": 23
+    },
+    "505.4": {
+      "symbol": "WR[3].EVENT.WR_Events.No117",
+      "label": "WR[3].EVENT.WR_Events.No117",
+      "page": 23
+    },
+    "505.5": {
+      "symbol": "WR[3].EVENT.WR_Events.No118",
+      "label": "WR[3].EVENT.WR_Events.No118",
+      "page": 23
+    },
+    "505.6": {
+      "symbol": "WR[3].EVENT.WR_Events.No119",
+      "label": "WR[3].EVENT.WR_Events.No119",
+      "page": 23
+    },
+    "505.7": {
+      "symbol": "WR[3].EVENT.WR_Events.No119",
+      "label": "WR[3].EVENT.WR_Events.No119",
+      "page": 23
+    },
+    "512.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No25",
+      "label": "01:Inverter power unit overtemperature; 1st stage",
+      "page": 23
+    },
+    "512.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No26",
+      "label": "02:Grid fault",
+      "page": 23
+    },
+    "512.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No27",
+      "label": "03:Grid fault rectifier mains",
+      "page": 23
+    },
+    "512.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No28",
+      "label": "04:Inverter i²t supervision over load; 1st stage",
+      "page": 23
+    },
+    "512.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No29",
+      "label": "05:Undervoltage DC circuit",
+      "page": 23
+    },
+    "512.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No30",
+      "label": "06:Inverter overload at UPS bar",
+      "page": 23
+    },
+    "512.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No32",
+      "label": "14:Fan life span exceeded",
+      "page": 23
+    },
+    "513.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No17",
+      "label": "16:Inverter message 16 occupied",
+      "page": 23
+    },
+    "513.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No18",
+      "label": "42:Inverter message 42 occupied",
+      "page": 23
+    },
+    "513.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No19",
+      "label": "44:Inverter message 44 occupied",
+      "page": 23
+    },
+    "513.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No20",
+      "label": "46:Inverter message 46 occupied",
+      "page": 23
+    },
+    "513.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No21",
+      "label": "49:Undervoltage DC circuit (bypass contactor PV field - inverter open)",
+      "page": 23
+    },
+    "513.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No22",
+      "label": "56:Inverter message 56 occupied",
+      "page": 23
+    },
+    "513.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No23",
+      "label": "61:Inverter message 61 occupied",
+      "page": 23
+    },
+    "513.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No24",
+      "label": "64:Udc respectively Dudc/dt too high",
+      "page": 23
+    },
+    "514.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No9",
+      "label": "91:Fuse trip control",
+      "page": 23
+    },
+    "514.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No10",
+      "label": "92:Overvoltage protection (varistors)",
+      "page": 23
+    },
+    "514.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No11",
+      "label": "96:AC over- or undervoltage",
+      "page": 23
+    },
+    "514.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No12",
+      "label": "98:Failure symmetry",
+      "page": 23
+    },
+    "514.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No13",
+      "label": "DC Switch Disconnection trip",
+      "page": 23
+    },
+    "514.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No14",
+      "label": "AC Switch Disconnection trip",
+      "page": 23
+    },
+    "514.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No15",
+      "label": "DC Overvoltage",
+      "page": 23
+    },
+    "514.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No16",
+      "label": "AC Overvoltage",
+      "page": 23
+    },
+    "515.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No1",
+      "label": "WR[4].STOER.WR_Warnungen.No1",
+      "page": 23
+    },
+    "515.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No2",
+      "label": "WR[4].STOER.WR_Warnungen.No2",
+      "page": 23
+    },
+    "515.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No3",
+      "label": "WR[4].STOER.WR_Warnungen.No3",
+      "page": 23
+    },
+    "515.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No4",
+      "label": "WR[4].STOER.WR_Warnungen.No4",
+      "page": 23
+    },
+    "515.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No5",
+      "label": "WR[4].STOER.WR_Warnungen.No5",
+      "page": 23
+    },
+    "515.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No6",
+      "label": "WR[4].STOER.WR_Warnungen.No6",
+      "page": 23
+    },
+    "515.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No7",
+      "label": "WR[4].STOER.WR_Warnungen.No7",
+      "page": 23
+    },
+    "515.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No8",
+      "label": "WR[4].STOER.WR_Warnungen.No8",
+      "page": 23
+    },
+    "516.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No57",
+      "label": "65:Response DC Contactor 1 missing",
+      "page": 23
+    },
+    "516.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No58",
+      "label": "Failure Symmetry String 1",
+      "page": 24
+    },
+    "516.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No59",
+      "label": "ISO - Warning String 1",
+      "page": 24
+    },
+    "516.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No60",
+      "label": "ISO - Failure String 1",
+      "page": 24
+    },
+    "516.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No61",
+      "label": "ADC Channel Fault DC String 1",
+      "page": 24
+    },
+    "516.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No62",
+      "label": "65:Response Discharge Contactor 1 ismissing",
+      "page": 24
+    },
+    "516.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No63",
+      "label": "65:Response Shorting Contactor 1 is missing",
+      "page": 24
+    },
+    "516.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No64",
+      "label": "WR[4].STOER.WR_Warnungen.No64",
+      "page": 24
+    },
+    "517.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No49",
+      "label": "65:Response DC Contactor 2 missing",
+      "page": 24
+    },
+    "517.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No50",
+      "label": "Failure Symmetry String 2",
+      "page": 24
+    },
+    "517.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No59",
+      "label": "ISO - Warning String 1",
+      "page": 24
+    },
+    "517.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No60",
+      "label": "ISO - Failure String 1",
+      "page": 24
+    },
+    "517.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No61",
+      "label": "ADC Channel Fault DC String 1",
+      "page": 24
+    },
+    "517.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No62",
+      "label": "65:Response Discharge Contactor 1 ismissing",
+      "page": 24
+    },
+    "517.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No63",
+      "label": "65:Response Shorting Contactor 1 is missing",
+      "page": 24
+    },
+    "517.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No64",
+      "label": "WR[4].STOER.WR_Warnungen.No64",
+      "page": 24
+    },
+    "518.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No49",
+      "label": "65:Response DC Contactor 2 missing",
+      "page": 24
+    },
+    "518.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No50",
+      "label": "Failure Symmetry String 2",
+      "page": 24
+    },
+    "518.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No51",
+      "label": "ISO - Warning String 2",
+      "page": 24
+    },
+    "518.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No52",
+      "label": "ISO - Failure String 2",
+      "page": 24
+    },
+    "518.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No53",
+      "label": "ADC Channel Fault DC String 2",
+      "page": 24
+    },
+    "518.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No54",
+      "label": "65:Response Discharge Contactor 2 ismissing",
+      "page": 24
+    },
+    "518.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No55",
+      "label": "65:Response Shorting Contactor 2 is missing",
+      "page": 24
+    },
+    "518.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No56",
+      "label": "WR[4].STOER.WR_Warnungen.No56",
+      "page": 24
+    },
+    "519.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No41",
+      "label": "65:Response DC Contactor 3 missing",
+      "page": 24
+    },
+    "519.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No42",
+      "label": "Failure Symmetry String 3",
+      "page": 24
+    },
+    "519.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No43",
+      "label": "ISO - Warning String 3",
+      "page": 24
+    },
+    "519.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No44",
+      "label": "ISO - Failure String 3",
+      "page": 24
+    },
+    "519.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No45",
+      "label": "ADC Channel Fault DC String 3",
+      "page": 24
+    },
+    "519.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No46",
+      "label": "65:Response Discharge Contactor 3 ismissing",
+      "page": 24
+    },
+    "519.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No47",
+      "label": "65:Response Shorting Contactor 3 is missing",
+      "page": 24
+    },
+    "519.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No48",
+      "label": "WR[4].STOER.WR_Warnungen.No48",
+      "page": 24
+    },
+    "520.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No33",
+      "label": "65:Response DC Contactor 4 missing",
+      "page": 24
+    },
+    "520.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No34",
+      "label": "Failure Symmetry String 4",
+      "page": 24
+    },
+    "520.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No35",
+      "label": "ISO - Warning String 4",
+      "page": 24
+    },
+    "520.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No36",
+      "label": "ISO - Failure String 4",
+      "page": 24
+    },
+    "520.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No37",
+      "label": "ADC Channel Fault DC String 4",
+      "page": 24
+    },
+    "520.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No38",
+      "label": "65:Response Discharge Contactor 4 ismissing",
+      "page": 24
+    },
+    "520.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No39",
+      "label": "65:Response Shorting Contactor 4 is missing",
+      "page": 24
+    },
+    "520.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No40",
+      "label": "WR[4].STOER.WR_Warnungen.No40",
+      "page": 24
+    },
+    "521.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No89",
+      "label": "65:Response DC Contactor 5 missing",
+      "page": 24
+    },
+    "521.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No90",
+      "label": "Failure Symmetry String 5",
+      "page": 24
+    },
+    "521.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No91",
+      "label": "ISO - Warning String 5",
+      "page": 24
+    },
+    "521.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No92",
+      "label": "ISO - Failure String 5",
+      "page": 24
+    },
+    "521.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No93",
+      "label": "ADC Channel Fault DC String 5",
+      "page": 24
+    },
+    "521.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No94",
+      "label": "65:Response Discharge Contactor 5 ismissing",
+      "page": 24
+    },
+    "521.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No95",
+      "label": "65:Response Shorting Contactor 5 is missing",
+      "page": 24
+    },
+    "521.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No96",
+      "label": "WR[4].STOER.WR_Warnungen.No96",
+      "page": 24
+    },
+    "522.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No81",
+      "label": "65:Response DC Contactor 6 missing",
+      "page": 24
+    },
+    "522.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No82",
+      "label": "Failure Symmetry String 6",
+      "page": 24
+    },
+    "522.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No83",
+      "label": "ISO - Warning String 6",
+      "page": 24
+    },
+    "522.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No84",
+      "label": "ISO - Failure String 6",
+      "page": 24
+    },
+    "522.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No85",
+      "label": "ADC Channel Fault DC String 6",
+      "page": 24
+    },
+    "522.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No86",
+      "label": "65:Response Discharge Contactor 6 ismissing",
+      "page": 24
+    },
+    "522.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No87",
+      "label": "65:Response Shorting Contactor 6 is missing",
+      "page": 25
+    },
+    "522.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No88",
+      "label": "WR[4].STOER.WR_Warnungen.No88",
+      "page": 25
+    },
+    "523.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No73",
+      "label": "65:Failure Fan Contactor 1",
+      "page": 25
+    },
+    "523.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No74",
+      "label": "1 = Thermal Contact Fan 1 ON",
+      "page": 25
+    },
+    "523.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No75",
+      "label": "65:Failure Fan Contactor 2",
+      "page": 25
+    },
+    "523.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No76",
+      "label": "1 = Thermal Contact Fan 2 ON",
+      "page": 25
+    },
+    "523.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No77",
+      "label": "65:Failure Fan Contactor 3",
+      "page": 25
+    },
+    "523.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No78",
+      "label": "1 = Thermal Contact Fan 3 ON",
+      "page": 25
+    },
+    "523.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No79",
+      "label": "65:Failure Fan Contactor 4",
+      "page": 25
+    },
+    "523.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No80",
+      "label": "1 = Thermal Contact Fan 4 ON",
+      "page": 25
+    },
+    "524.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No65",
+      "label": "65:Failure Fan Contactor 5",
+      "page": 25
+    },
+    "524.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No66",
+      "label": "1 = Thermal Contact Fan 5 ON",
+      "page": 25
+    },
+    "524.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No67",
+      "label": "65:Failure Fan Contactor 6",
+      "page": 25
+    },
+    "524.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No68",
+      "label": "1 = Thermal Contact fan 6 ON",
+      "page": 25
+    },
+    "524.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No69",
+      "label": "WR[4].STOER.WR_Warnungen.No69",
+      "page": 25
+    },
+    "524.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No70",
+      "label": "WR[4].STOER.WR_Warnungen.No70",
+      "page": 25
+    },
+    "524.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No71",
+      "label": "WR[4].STOER.WR_Warnungen.No71",
+      "page": 25
+    },
+    "524.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No72",
+      "label": "WR[4].STOER.WR_Warnungen.No72",
+      "page": 25
+    },
+    "525.0": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No121",
+      "label": "97: Fault Coupling Contactor 1",
+      "page": 25
+    },
+    "525.1": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No122",
+      "label": "97: Fault Coupling Contactor 2",
+      "page": 25
+    },
+    "525.2": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No123",
+      "label": "WR[4].STOER.WR_Warnungen.No123",
+      "page": 25
+    },
+    "525.3": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No124",
+      "label": "WR[4].STOER.WR_Warnungen.No124",
+      "page": 25
+    },
+    "525.4": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No125",
+      "label": "WR[4].STOER.WR_Warnungen.No125",
+      "page": 25
+    },
+    "525.5": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No126",
+      "label": "WR[4].STOER.WR_Warnungen.No126",
+      "page": 25
+    },
+    "525.6": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No127",
+      "label": "WR[4].STOER.WR_Warnungen.No127",
+      "page": 25
+    },
+    "525.7": {
+      "symbol": "WR[4].STOER.WR_Warnungen.No128",
+      "label": "WR[4].STOER.WR_Warnungen.No128",
+      "page": 25
+    },
+    "528.0": {
+      "symbol": "WR[4].STOER.WR_Alarme.No25",
+      "label": "12:System running at commissioning mode",
+      "page": 25
+    },
+    "528.1": {
+      "symbol": "WR[4].STOER.WR_Alarme.No26",
+      "label": "33:Inverter power unit temperature too high; 2nd stage, fan defectiv",
+      "page": 25
+    },
+    "528.2": {
+      "symbol": "WR[4].STOER.WR_Alarme.No27",
+      "label": "34:Fault in setting of parameters",
+      "page": 25
+    },
+    "528.4": {
+      "symbol": "WR[4].STOER.WR_Alarme.No29",
+      "label": "36:Fast switch off 1 or AC-contactor defective (feedback is missing)",
+      "page": 25
+    },
+    "528.5": {
+      "symbol": "WR[4].STOER.WR_Alarme.No30",
+      "label": "37:Multiple restarts in series",
+      "page": 25
+    },
+    "528.6": {
+      "symbol": "WR[4].STOER.WR_Alarme.No31",
+      "label": "38:Fault Power Supply PCB",
+      "page": 25
+    },
+    "528.7": {
+      "symbol": "WR[4].STOER.WR_Alarme.No32",
+      "label": "39:Overvoltage at DC Circuit (UDCgg)",
+      "page": 25
+    },
+    "529.0": {
+      "symbol": "WR[4].STOER.WR_Alarme.No17",
+      "label": "40:Fast OFF Button pressed at customei",
+      "page": 25
+    },
+    "529.1": {
+      "symbol": "WR[4].STOER.WR_Alarme.No18",
+      "label": "41:DSP (digital signal processor at VeCon) disturbed",
+      "page": 25
+    },
+    "529.2": {
+      "symbol": "WR[4].STOER.WR_Alarme.No19",
+      "label": "43:Uce Monitor triggerd",
+      "page": 25
+    },
+    "529.3": {
+      "symbol": "WR[4].STOER.WR_Alarme.No20",
+      "label": "45:Fault Initial Program loading (contradictive bootstrapping parameters)",
+      "page": 25
+    },
+    "529.4": {
+      "symbol": "WR[4].STOER.WR_Alarme.No21",
+      "label": "47:Inverter i²t Supervision Overload(disturbing switching off); 2nd stage",
+      "page": 25
+    },
+    "529.5": {
+      "symbol": "WR[4].STOER.WR_Alarme.No22",
+      "label": "48:Reverse Power",
+      "page": 25
+    },
+    "529.6": {
+      "symbol": "WR[4].STOER.WR_Alarme.No23",
+      "label": "55:EPROM defective",
+      "page": 25
+    },
+    "529.7": {
+      "symbol": "WR[4].STOER.WR_Alarme.No24",
+      "label": "57:EPROM defective (checksum failure)",
+      "page": 25
+    },
+    "530.0": {
+      "symbol": "WR[4].STOER.WR_Alarme.No9",
+      "label": "58:Actual Value fraction",
+      "page": 25
+    },
+    "530.1": {
+      "symbol": "WR[4].STOER.WR_Alarme.No10",
+      "label": "59:Option Module faulty",
+      "page": 25
+    },
+    "530.2": {
+      "symbol": "WR[4].STOER.WR_Alarme.No11",
+      "label": "62:Response \"Inverter ON\" is missing",
+      "page": 25
+    },
+    "530.3": {
+      "symbol": "WR[4].STOER.WR_Alarme.No12",
+      "label": "63:DC Overcurrent or Wire Breakage",
+      "page": 25
+    },
+    "530.4": {
+      "symbol": "WR[4].STOER.WR_Alarme.No13",
+      "label": "65:Response AC Contactor is missing",
+      "page": 25
+    },
+    "530.5": {
+      "symbol": "WR[4].STOER.WR_Alarme.No14",
+      "label": "66:Inverter Group Fault Signal",
+      "page": 26
+    },
+    "530.6": {
+      "symbol": "WR[4].STOER.WR_Alarme.No15",
+      "label": "68:Grid Fault (MSD Signal)",
+      "page": 26
+    },
+    "530.7": {
+      "symbol": "WR[4].STOER.WR_Alarme.No16",
+      "label": "69:Grid Short Interruption (MSD Signal)",
+      "page": 26
+    },
+    "531.0": {
+      "symbol": "WR[4].STOER.WR_Alarme.No1",
+      "label": "93:Fast OFF Button Pressed",
+      "page": 26
+    },
+    "531.1": {
+      "symbol": "WR[4].STOER.WR_Alarme.No2",
+      "label": "94:Profibus Fault",
+      "page": 26
+    },
+    "531.2": {
+      "symbol": "WR[4].STOER.WR_Alarme.No3",
+      "label": "95:Frequency Fault",
+      "page": 26
+    },
+    "531.3": {
+      "symbol": "WR[4].STOER.WR_Alarme.No4",
+      "label": "96:AC over- or undervoltage",
+      "page": 26
+    },
+    "531.4": {
+      "symbol": "WR[4].STOER.WR_Alarme.No5",
+      "label": "96:Index 1",
+      "page": 26
+    },
+    "531.5": {
+      "symbol": "WR[4].STOER.WR_Alarme.No6",
+      "label": "96:Index 2",
+      "page": 26
+    },
+    "531.6": {
+      "symbol": "WR[4].STOER.WR_Alarme.No7",
+      "label": "96:Index 3",
+      "page": 26
+    },
+    "531.7": {
+      "symbol": "WR[4].STOER.WR_Alarme.No8",
+      "label": "96:Index 4",
+      "page": 26
+    },
+    "532.0": {
+      "symbol": "WR[4].STOER.WR_Alarme.No57",
+      "label": "96:Index 5",
+      "page": 26
+    },
+    "532.1": {
+      "symbol": "WR[4].STOER.WR_Alarme.No58",
+      "label": "96:Index 6",
+      "page": 26
+    },
+    "532.2": {
+      "symbol": "WR[4].STOER.WR_Alarme.No59",
+      "label": "Inverter Disabled",
+      "page": 26
+    },
+    "532.3": {
+      "symbol": "WR[4].STOER.WR_Alarme.No60",
+      "label": "Fault ISO",
+      "page": 26
+    },
+    "532.4": {
+      "symbol": "WR[4].STOER.WR_Alarme.No61",
+      "label": "ADC Channel Fault DC Shunt",
+      "page": 26
+    },
+    "532.5": {
+      "symbol": "WR[4].STOER.WR_Alarme.No62",
+      "label": "ADC Channel Fault Insulation Resistan ce",
+      "page": 26
+    },
+    "532.6": {
+      "symbol": "WR[4].STOER.WR_Alarme.No63",
+      "label": "WR[4].STOER.WR_Alarme.No63",
+      "page": 26
+    },
+    "532.7": {
+      "symbol": "WR[4].STOER.WR_Alarme.No64",
+      "label": "WR[4].STOER.WR_Alarme.No64",
+      "page": 26
+    },
+    "620.0": {
+      "symbol": "WR[4].EVENT.WR_Events.No25",
+      "label": "1 = Local Switched OFF",
+      "page": 26
+    },
+    "620.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No26",
+      "label": "0 = Key Role AUTO; 1 = Key Role TEST",
+      "page": 26
+    },
+    "620.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No27",
+      "label": "1 = AC Contactor ON",
+      "page": 26
+    },
+    "620.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No28",
+      "label": "1 = Inverter ON",
+      "page": 26
+    },
+    "620.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No29",
+      "label": "1 = ISO Warning",
+      "page": 26
+    },
+    "620.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No31",
+      "label": "WR[4].EVENT.WR_Events.No31",
+      "page": 26
+    },
+    "620.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No32",
+      "label": "WR[4].EVENT.WR_Events.No32",
+      "page": 26
+    },
+    "621.0": {
+      "symbol": "WR[4].EVENT.WR_Events.No17",
+      "label": "WR[4].EVENT.WR_Events.No17",
+      "page": 26
+    },
+    "621.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No18",
+      "label": "WR[4].EVENT.WR_Events.No18",
+      "page": 26
+    },
+    "621.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No19",
+      "label": "WR[4].EVENT.WR_Events.No19",
+      "page": 26
+    },
+    "621.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No20",
+      "label": "WR[4].EVENT.WR_Events.No20",
+      "page": 26
+    },
+    "621.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No21",
+      "label": "WR[4].EVENT.WR_Events.No21",
+      "page": 26
+    },
+    "621.5": {
+      "symbol": "WR[4].EVENT.WR_Events.No22",
+      "label": "WR[4].EVENT.WR_Events.No22",
+      "page": 26
+    },
+    "621.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No23",
+      "label": "WR[4].EVENT.WR_Events.No23",
+      "page": 26
+    },
+    "621.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No24",
+      "label": "WR[4].EVENT.WR_Events.No24",
+      "page": 26
+    },
+    "622.0": {
+      "symbol": "WR[4].EVENT.WR_Events.No9",
+      "label": "WR[4].EVENT.WR_Events.No9",
+      "page": 26
+    },
+    "622.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No10",
+      "label": "WR[4].EVENT.WR_Events.No10",
+      "page": 26
+    },
+    "622.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No11",
+      "label": "WR[4].EVENT.WR_Events.No11",
+      "page": 26
+    },
+    "622.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No12",
+      "label": "WR[4].EVENT.WR_Events.No12",
+      "page": 26
+    },
+    "622.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No13",
+      "label": "WR[4].EVENT.WR_Events.No13",
+      "page": 26
+    },
+    "622.5": {
+      "symbol": "WR[4].EVENT.WR_Events.No14",
+      "label": "WR[4].EVENT.WR_Events.No14",
+      "page": 26
+    },
+    "622.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No15",
+      "label": "WR[4].EVENT.WR_Events.No15",
+      "page": 26
+    },
+    "622.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No16",
+      "label": "WR[4].EVENT.WR_Events.No16",
+      "page": 26
+    },
+    "623.0": {
+      "symbol": "WR[4].EVENT.WR_Events.No1",
+      "label": "WR[4].EVENT.WR_Events.No1",
+      "page": 26
+    },
+    "623.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No2",
+      "label": "WR[4].EVENT.WR_Events.No2",
+      "page": 26
+    },
+    "623.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No3",
+      "label": "WR[4].EVENT.WR_Events.No3",
+      "page": 26
+    },
+    "623.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No4",
+      "label": "WR[4].EVENT.WR_Events.No4",
+      "page": 26
+    },
+    "623.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No5",
+      "label": "WR[4].EVENT.WR_Events.No5",
+      "page": 27
+    },
+    "623.5": {
+      "symbol": "WR[4].EVENT.WR_Events.No6",
+      "label": "WR[4].EVENT.WR_Events.No6",
+      "page": 27
+    },
+    "623.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No7",
+      "label": "WR[4].EVENT.WR_Events.No7",
+      "page": 27
+    },
+    "623.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No8",
+      "label": "WR[4].EVENT.WR_Events.No8",
+      "page": 27
+    },
+    "624.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No58",
+      "label": "1 = DC Contactor 1 ON",
+      "page": 27
+    },
+    "624.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No59",
+      "label": "1 = Discharge Contactor 1 ON",
+      "page": 27
+    },
+    "624.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No60",
+      "label": "WR[4].EVENT.WR_Events.No60",
+      "page": 27
+    },
+    "624.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No61",
+      "label": "WR[4].EVENT.WR_Events.No61",
+      "page": 27
+    },
+    "624.5": {
+      "symbol": "WR[4].EVENT.WR_Events.No62",
+      "label": "WR[4].EVENT.WR_Events.No62",
+      "page": 27
+    },
+    "624.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No63",
+      "label": "WR[4].EVENT.WR_Events.No63",
+      "page": 27
+    },
+    "624.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No64",
+      "label": "WR[4].EVENT.WR_Events.No64",
+      "page": 27
+    },
+    "625.0": {
+      "symbol": "WR[4].EVENT.WR_Events.No49",
+      "label": "1 = Shorting Contactor 1 ON",
+      "page": 27
+    },
+    "625.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No50",
+      "label": "1 = DC Contactor 2 ON",
+      "page": 27
+    },
+    "625.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No51",
+      "label": "1 = Discharge Contactor 2 ON",
+      "page": 27
+    },
+    "625.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No52",
+      "label": "WR[4].EVENT.WR_Events.No52",
+      "page": 27
+    },
+    "625.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No53",
+      "label": "WR[4].EVENT.WR_Events.No53",
+      "page": 27
+    },
+    "625.5": {
+      "symbol": "WR[4].EVENT.WR_Events.No54",
+      "label": "WR[4].EVENT.WR_Events.No54",
+      "page": 27
+    },
+    "625.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No55",
+      "label": "WR[4].EVENT.WR_Events.No55",
+      "page": 27
+    },
+    "625.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No56",
+      "label": "WR[4].EVENT.WR_Events.No56",
+      "page": 27
+    },
+    "626.0": {
+      "symbol": "WR[4].EVENT.WR_Events.No41",
+      "label": "1 = Shorting Contactor 2 ON",
+      "page": 27
+    },
+    "626.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No42",
+      "label": "1 = Discharge Contactor 3 ON",
+      "page": 27
+    },
+    "626.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No43",
+      "label": "1 = Shorting Contactor 3 ON",
+      "page": 27
+    },
+    "626.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No44",
+      "label": "WR[4].EVENT.WR_Events.No44",
+      "page": 27
+    },
+    "626.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No45",
+      "label": "WR[4].EVENT.WR_Events.No45",
+      "page": 27
+    },
+    "626.5": {
+      "symbol": "WR[4].EVENT.WR_Events.No46",
+      "label": "WR[4].EVENT.WR_Events.No46",
+      "page": 27
+    },
+    "626.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No47",
+      "label": "WR[4].EVENT.WR_Events.No47",
+      "page": 27
+    },
+    "626.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No48",
+      "label": "WR[4].EVENT.WR_Events.No48",
+      "page": 27
+    },
+    "627.0": {
+      "symbol": "WR[4].EVENT.WR_Events.No33",
+      "label": "1 = DC Contactor 4 ON",
+      "page": 27
+    },
+    "627.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No34",
+      "label": "1 = Discharge Contactor 4 ON",
+      "page": 27
+    },
+    "627.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No35",
+      "label": "1 = Shorting Contactor 4 ON",
+      "page": 27
+    },
+    "627.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No36",
+      "label": "WR[4].EVENT.WR_Events.No36",
+      "page": 27
+    },
+    "627.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No37",
+      "label": "WR[4].EVENT.WR_Events.No37",
+      "page": 27
+    },
+    "627.5": {
+      "symbol": "WR[4].EVENT.WR_Events.No38",
+      "label": "WR[4].EVENT.WR_Events.No38",
+      "page": 27
+    },
+    "627.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No39",
+      "label": "WR[4].EVENT.WR_Events.No39",
+      "page": 27
+    },
+    "627.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No40",
+      "label": "WR[4].EVENT.WR_Events.No40",
+      "page": 27
+    },
+    "628.0": {
+      "symbol": "WR[4].EVENT.WR_Events.No89",
+      "label": "1 = DC Contactor 5 ON",
+      "page": 27
+    },
+    "628.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No90",
+      "label": "1 = Discharge Contactor 5 ON",
+      "page": 27
+    },
+    "628.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No91",
+      "label": "1 = Shorting Contactor 5 ON",
+      "page": 27
+    },
+    "628.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No92",
+      "label": "WR[4].EVENT.WR_Events.No92",
+      "page": 27
+    },
+    "628.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No93",
+      "label": "WR[4].EVENT.WR_Events.No93",
+      "page": 27
+    },
+    "628.5": {
+      "symbol": "WR[4].EVENT.WR_Events.No94",
+      "label": "WR[4].EVENT.WR_Events.No94",
+      "page": 27
+    },
+    "628.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No95",
+      "label": "WR[4].EVENT.WR_Events.No95",
+      "page": 27
+    },
+    "628.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No96",
+      "label": "WR[4].EVENT.WR_Events.No96",
+      "page": 27
+    },
+    "629.0": {
+      "symbol": "WR[4].EVENT.WR_Events.No81",
+      "label": "1 = DC Contactor 6 ON",
+      "page": 27
+    },
+    "629.1": {
+      "symbol": "WR[4].EVENT.WR_Events.No82",
+      "label": "1 = Discharge Contactor 6 ON",
+      "page": 27
+    },
+    "629.2": {
+      "symbol": "WR[4].EVENT.WR_Events.No83",
+      "label": "1 = Shorting Contactor 6 ON",
+      "page": 27
+    },
+    "629.3": {
+      "symbol": "WR[4].EVENT.WR_Events.No84",
+      "label": "WR[4].EVENT.WR_Events.No84",
+      "page": 27
+    },
+    "629.4": {
+      "symbol": "WR[4].EVENT.WR_Events.No85",
+      "label": "WR[4].EVENT.WR_Events.No85",
+      "page": 27
+    },
+    "629.5": {
+      "symbol": "WR[4].EVENT.WR_Events.No86",
+      "label": "WR[4].EVENT.WR_Events.No86",
+      "page": 27
+    },
+    "629.6": {
+      "symbol": "WR[4].EVENT.WR_Events.No87",
+      "label": "WR[4].EVENT.WR_Events.No87",
+      "page": 27
+    },
+    "629.7": {
+      "symbol": "WR[4].EVENT.WR_Events.No88",
+      "label": "WR[4].EVENT.WR_Events.No88",
+      "page": 27
+    }
+  }
+}

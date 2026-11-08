@@ -128,6 +128,10 @@ class ActivePowerLimitReadbackResolver:
             observed_percent is not None
             and abs(observed_percent - desired_percent) <= 1.0
         )
+        enabled_key = resolution.telemetry_point.protocol_meta.get("readback_enabled_key")
+        if isinstance(enabled_key, str):
+            enabled = telemetry_by_key.get(enabled_key)
+            confirmed = confirmed and enabled is not None and enabled.quality == "valid" and enabled.value == 1
         return ActivePowerLimitReadbackEvaluation(
             supported=True,
             telemetry_key=resolution.telemetry_point.key,

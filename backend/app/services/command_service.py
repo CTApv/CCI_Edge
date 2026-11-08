@@ -110,7 +110,7 @@ class CommandService:
 
         return self._build_response(
             success=write_result.success,
-            message=self._build_command_message(device.protocol, write_result.success),
+            message=("Richiesta Reset allarmi ricevuta dal PLC; verificare gli allarmi ancora attivi." if write_result.success and write_result.diagnostics.get("ack_consumed") else "Riferimento scritto e mantenuto nel PLC; trasferimento al regolatore non confermato." if write_result.success and write_result.diagnostics.get("reference_persistent") and not write_result.diagnostics.get("regulator_input_confirmed") else write_result.error if device.protocol=="s7_tcp" and write_result.error else self._build_command_message(device.protocol, write_result.success)),
             device_id=device_id,
             command_key=command_key,
             diagnostics={
@@ -305,6 +305,8 @@ class CommandService:
             )
 
     def _build_command_message(self, protocol: str, success: bool) -> str:
+        if protocol == "s7_tcp":
+            return "Richiesta inviata al PLC; esecuzione fisica non confermata." if success else "Richiesta PLC non completata."
         if protocol in {"modbus_tcp", "sunspec"}:
             return "Modbus TCP command sent." if success else "Modbus TCP command failed."
         if protocol == "modbus_rtu":

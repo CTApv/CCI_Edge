@@ -1,4 +1,23 @@
+# PV Guardian v1.3
+
+Fronius Verto e Verto Plus sono disponibili nel catalogo standard e ricevono il
+riferimento esterno attraverso il normale dispatch di potenza di PV Guardian.
+La release comprende anche le modifiche SINVERT, con interfaccia dedicata separata.
+Vedere [note della release](docs/RELEASE_v1.3.md) e
+[configurazione Fronius](docs/FRONIUS_VERTO.md).
+
 # PV_GUARDIAN Edge
+
+## TEST SINVERT — release sperimentale
+
+Il ramo di test integra la dashboard SINVERT S7 nella base **v1.2.0-rc2**.
+È destinato al muletto IOT2050 e non costituisce una promozione della serie stabile.
+Selezionando un PLC SINVERT dall'elenco si apre la pagina dedicata, raggiungibile
+anche con `/sinvert.html?device=ID_DISPOSITIVO`.
+
+Installazione Docker ARM64 isolata, porte18080/18000 e dati separati:
+[Guida TEST SINVERT IOT2050](docs/TEST_SINVERT_IOT2050.md).
+La scala della modulazione e l'esecuzione fisica dei comandi restano da validare.
 
 Repository dell'app edge installata sui dispositivi PV_GUARDIAN.
 

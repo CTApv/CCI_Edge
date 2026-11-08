@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.schemas.device_schemas import DeviceResponse
 
@@ -9,6 +9,7 @@ OverviewValue = str | int | float | bool | None
 
 
 class DeviceOverviewMetrics(BaseModel):
+    physical_measurements_available: bool = True
     power_kw: float
     daily_energy_kwh: float
     total_energy_kwh: float
@@ -16,6 +17,9 @@ class DeviceOverviewMetrics(BaseModel):
 
 
 class DeviceOverviewDiagnostics(BaseModel):
+    sinvert: dict | None = None
+    failed_points: int = 0
+    read_errors: dict[str, str] = Field(default_factory=dict)
     last_poll_status: str
     response_time_ms: int
     retries: int

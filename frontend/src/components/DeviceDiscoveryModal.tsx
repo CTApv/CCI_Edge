@@ -62,6 +62,7 @@ type SerialDiscoveryForm = {
 };
 
 type TcpDiscoveryForm = {
+  protocol: string;
   interfaceAddress: string;
   hostStart: string;
   hostEnd: string;
@@ -99,6 +100,7 @@ const SERIAL_DEFAULTS: SerialDiscoveryForm = {
 };
 
 const TCP_DEFAULTS: TcpDiscoveryForm = {
+  protocol: "auto",
   interfaceAddress: "",
   hostStart: "",
   hostEnd: "",
@@ -348,7 +350,7 @@ function matchExistingTcpDevice(
       const host = findStringConnectionValue(device.connection_settings, "host");
       const port = findNumericConnectionValue(device.connection_settings, "port");
       const unitId = findNumericConnectionValue(device.connection_settings, "unit_id", ["slave_id"]);
-      return host === result.host && port === result.port && unitId === result.unit_id;
+      return host === result.host && port === result.port && (result.function === "s7" ? device.protocol === "s7_tcp" : unitId === result.unit_id);
     }) ?? null
   );
 }
@@ -501,6 +503,9 @@ function formatDiscoverySignatureLine(
   candidates: DiscoveryCandidateProfile[],
   result: DeviceDiscoveryRtuResult | DeviceDiscoveryTcpResult,
 ): string {
+  if (result.function === "s7") {
+    return `S7 | ${result.signature_label ?? "CPU e layout DB compatibili"}`;
+  }
   if ("signature_label" in result && typeof result.signature_label === "string" && result.signature_label) {
     return `Probe Aurora op ${result.register} | ${result.signature_label}`;
   }
@@ -586,12 +591,12 @@ function buildTcpPrefill(result: DeviceDiscoveryTcpResult): DeviceDiscoveryPrefi
     connectionSettings: {
       host: result.host,
       port: result.port,
-      unit_id: result.unit_id,
+      ...(protocol === "s7_tcp" ? { rack: result.rack ?? 0, slot: result.slot ?? 2 } : { unit_id: result.unit_id }),
       timeout_seconds: 5,
-      retries: 3,
+      retries: protocol === "s7_tcp" ? 0 : 3,
       poll_interval_seconds: 15,
     },
-    sourceLabel: `TCP | ${result.host}:${result.port} | unit ${result.unit_id}`,
+    sourceLabel: protocol === "s7_tcp" ? `S7 | ${result.host}:${result.port} | rack ${result.rack ?? 0} slot ${result.slot ?? 2}` : `TCP | ${result.host}:${result.port} | unit ${result.unit_id}`,
     candidateProfiles: candidates,
     candidateProfileCount: result.candidate_profile_count,
   };
@@ -937,7 +942,7 @@ export function DeviceDiscoveryModal({
     browseAbortControllerRef.current = controller;
     activeBrowseOperationIdRef.current = operationId;
     try {
-      const unitIds = buildIntegerRange(tcpForm.unitIdStart, tcpForm.unitIdEnd, 0, 247);
+      const unitIds = tcpForm.protocol === "s7_tcp" ? [0] : buildIntegerRange(tcpForm.unitIdStart, tcpForm.unitIdEnd, 0, 247);
       const portStart = Number(tcpForm.portStart);
       const portEnd = Number(tcpForm.portEnd);
       if (!Number.isInteger(portStart) || !Number.isInteger(portEnd)) {
@@ -969,8 +974,12 @@ export function DeviceDiscoveryModal({
         timeout_seconds: Number(tcpForm.timeoutSeconds),
         retries: Number(tcpForm.retries),
         unit_ids: unitIds,
+        preferred_brand: tcpForm.protocol === "s7_tcp" ? "SINVERT" : undefined,
       }, { signal: controller.signal });
       setTcpResults(response.results);
+      if (response.results.length === 0 && response.errors?.length) {
+        setScanError(response.errors.slice(0, 3).join("; "));
+      }
       setTcpSummary({
         requestCount: response.request_count,
         durationMs: response.duration_ms,
@@ -1270,6 +1279,26 @@ export function DeviceDiscoveryModal({
                     </select>
                   </label>
                   <label className="field">
+                    <span className="field-label">Protocollo di ricerca</span>
+                    <select className="field-control" value={tcpForm.protocol} disabled={runningTab !== null}
+                      onChange={(event) => {
+                        const selected = event.currentTarget.value;
+                        const known = existingDevices.find((device) => device.protocol === "s7_tcp");
+                        const knownHost = known?.connection_settings.host;
+                        setTcpForm((current) => ({ ...current, protocol: selected,
+                          portStart: selected === "s7_tcp" ? "102" : "502",
+                          portEnd: selected === "s7_tcp" ? "102" : "502",
+                          timeoutSeconds: selected === "s7_tcp" ? "2" : current.timeoutSeconds,
+                          retries: selected === "s7_tcp" ? "1" : current.retries,
+                          ...(selected === "s7_tcp" && typeof knownHost === "string"
+                            ? { hostStart: knownHost, hostEnd: knownHost } : {}),
+                        }));
+                      }}>
+                      <option value="auto">Modbus TCP / S7 secondo porta</option>
+                      <option value="s7_tcp">SINVERT tramite PLC S7</option>
+                    </select>
+                  </label>
+                  <label className="field">
                     <span className="field-label">IP iniziale</span>
                     <input
                       className="field-control"
@@ -1486,7 +1515,9 @@ export function DeviceDiscoveryModal({
                               const endpointLabel =
                                 item.kind === "serial"
                                   ? `RS485 | ${getSerialPortDisplayName((result as DeviceDiscoveryRtuResult).port)} | unit ${result.unit_id}`
-                                  : `TCP | ${(result as DeviceDiscoveryTcpResult).host}:${result.port} | unit ${result.unit_id}`;
+                                  : result.function === "s7"
+                                    ? `S7 | ${(result as DeviceDiscoveryTcpResult).host}:${result.port} | rack ${(result as DeviceDiscoveryTcpResult).rack ?? 0} slot ${(result as DeviceDiscoveryTcpResult).slot ?? 2}`
+                                    : `TCP | ${(result as DeviceDiscoveryTcpResult).host}:${result.port} | unit ${result.unit_id}`;
                               return (
                                 <article
                                   key={resultKey}

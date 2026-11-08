@@ -14,6 +14,7 @@ import {
   type DevicePowerHistoryResponse,
 } from "../api";
 import { AdvancedHistoryDrawer } from "./AdvancedHistoryDrawer";
+import { SinvertMonitorPanel } from "./SinvertMonitorPanel";
 import {
   PowerHistoryChart,
   type PowerHistoryChartSeries,
@@ -163,6 +164,7 @@ type DeviceCommandCardProps = {
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   emphasis?: boolean;
   submitLabel?: string;
+  blockedReason?: string;
 };
 
 function DeviceCommandCard({
@@ -175,7 +177,10 @@ function DeviceCommandCard({
   onSubmit,
   emphasis = false,
   submitLabel = "Invia comando",
+  blockedReason,
 }: DeviceCommandCardProps) {
+  const isSinvertPulse = command.key === "sinvert_on_request" || command.key === "sinvert_off_request";
+  const isFixedCommand = command.min_value !== null && command.min_value === command.max_value;
   const isActivePowerLimit = command.key === "active_power_limit";
   const label = isActivePowerLimit
     ? "Setpoint potenza attiva"
@@ -186,25 +191,25 @@ function DeviceCommandCard({
       className={`detail-command-card ${emphasis ? "detail-command-card--emphasis" : ""}`}
     >
       <form className="command-form" onSubmit={onSubmit}>
-        <label className="field">
+        {isSinvertPulse || isFixedCommand ? <span className="field-label">{label}</span> : <label className="field">
           <span className="field-label">{label}</span>
           <input
             className="field-control"
             type="number"
             min={command.min_value ?? undefined}
             max={command.max_value ?? undefined}
-            step={command.step ?? undefined}
+            step={command.key === "sinvert_power_reference_raw" ? "any" : command.step ?? undefined}
             value={value}
             onChange={(event) => onValueChange(event.currentTarget.value)}
-            placeholder={command.max_value?.toString() ?? command.unit ?? "valore"}
-            disabled={loading}
+            placeholder={command.key === "sinvert_power_reference_raw" ? (blockedReason ? "Invio disabilitato: limite locale 0" : "Riferimento PLC grezzo") : command.max_value?.toString() ?? command.unit ?? "valore"}
+            disabled={loading || Boolean(blockedReason)}
           />
-        </label>
-        <button className="action-button" type="submit" disabled={loading}>
-          {loading ? "Invio..." : submitLabel}
+        </label>}
+        <button className="action-button" type="submit" disabled={loading || Boolean(blockedReason)}>
+          {loading ? "Invio..." : isFixedCommand ? label : isSinvertPulse ? (command.key === "sinvert_on_request" ? "Invia richiesta ON" : "Invia richiesta OFF") : command.key === "sinvert_power_reference_raw" ? "Invia riferimento PLC" : submitLabel}
         </button>
       </form>
-      <p className="detail-empty">{buildCommandRangeNote(command)}</p>
+      <p className="detail-empty">{blockedReason ?? (isSinvertPulse ? "Richiesta collettiva alle posizioni del PLC." : command.key === "sinvert_power_reference_raw" ? `Valore PLC grezzo: da 0 a ${command.max_value ?? 0}. Unità fisica da confermare; non è una percentuale.` : buildCommandRangeNote(command))}</p>
       {errorMessage ? <div className="panel-state panel-state--error">{errorMessage}</div> : null}
       {result ? (
         <div
@@ -216,13 +221,20 @@ function DeviceCommandCard({
           <strong className="command-feedback-message">
             {translateCommandMessage(result.message)}
           </strong>
-          <div className="command-feedback-meta">
+          {command.key.startsWith("sinvert_") ? <>
+            <p>{result.diagnostics.write_attempted ? "Scrittura tentata" : "Nessuna scrittura eseguita"}
+              {result.diagnostics.write_accepted ? " · accettata dal protocollo S7" : ""}
+              {result.diagnostics.copied ? " · copia DB944 confermata" : ""}
+              {result.diagnostics.regulator_input_confirmed ? " · ingresso FB570 confermato" : ""}.
+              Esecuzione fisica non confermata.</p>
+            <details><summary>Dettagli tecnici dell’esito</summary><pre>{JSON.stringify(result.diagnostics, null, 2)}</pre></details>
+          </> : <div className="command-feedback-meta">
             {Object.entries(result.diagnostics).map(([key, diagnosticValue]) => (
               <span key={key} className="command-feedback-chip">
                 {key}: {formatDetailValue(diagnosticValue)}
               </span>
             ))}
-          </div>
+          </div>}
         </div>
       ) : null}
     </article>
@@ -253,7 +265,8 @@ function formatTelemetryValue(point: DeviceOverviewTelemetryPoint): string {
   return point.unit ? `${point.display_value} ${point.unit}` : point.display_value;
 }
 
-function formatMetricValue(value: number, unit: string): string {
+function formatMetricValue(value: number, unit: string, available = true): string {
+  if (!available) return "--";
   return `${metricFormatter.format(value)} ${unit}`;
 }
 
@@ -412,7 +425,9 @@ export function DeviceDetailPanel({
       return;
     }
 
-    const trimmedValue = (commandValues[command.key] ?? "").trim();
+    const trimmedValue = command.key === "sinvert_on_request" || command.key === "sinvert_off_request"
+      ? "1" : command.min_value !== null && command.min_value === command.max_value
+        ? String(command.min_value) : (commandValues[command.key] ?? "").trim();
     const numericValue = Number(trimmedValue);
     if (!trimmedValue || !Number.isFinite(numericValue)) {
       setCommandResults((current) => {
@@ -573,7 +588,7 @@ export function DeviceDetailPanel({
               <div className="detail-hero-side">
                 <div className="detail-hero-power">
                   <span className="detail-hero-power-label">Potenza attuale</span>
-                  <strong>{formatMetricValue(overview.metrics.power_kw, "kW")}</strong>
+                  <strong>{formatMetricValue(overview.metrics.power_kw, "kW", overview.metrics.physical_measurements_available !== false)}</strong>
                 </div>
                 {showPrimaryPowerCommand ? (
                   <div className="detail-primary-command">
@@ -601,23 +616,24 @@ export function DeviceDetailPanel({
               </div>
             </section>
 
+            {device.protocol === "s7_tcp" && (showLiveSections || showCommandSection) ? <SinvertMonitorPanel key={device.device_id} overview={overview} onSettingsSaved={() => void loadDeviceDetail(false)} /> : null}
             {showLiveSections ? (
               <>
                 <section className="detail-section">
                   <div className="detail-kpi-grid">
                     <DetailKpiCard
                       label="Energia giornaliera"
-                      value={formatMetricValue(overview.metrics.daily_energy_kwh, "kWh")}
+                      value={formatMetricValue(overview.metrics.daily_energy_kwh, "kWh", overview.metrics.physical_measurements_available !== false)}
                       note="Ultimo overview disponibile"
                     />
                     <DetailKpiCard
                       label="Energia totale"
-                      value={formatMetricValue(overview.metrics.total_energy_kwh, "kWh")}
+                      value={formatMetricValue(overview.metrics.total_energy_kwh, "kWh", overview.metrics.physical_measurements_available !== false)}
                       note="Valore cumulato disponibile"
                     />
                     <DetailKpiCard
                       label="Temperatura"
-                      value={formatMetricValue(overview.metrics.temperature_c, "C")}
+                      value={formatMetricValue(overview.metrics.temperature_c, "C", overview.metrics.physical_measurements_available !== false)}
                       note="Lettura termica istantanea"
                     />
                     <DetailKpiCard
@@ -636,7 +652,11 @@ export function DeviceDetailPanel({
               </>
             ) : null}
 
-            {showHistorySection ? (
+            {showHistorySection && device.protocol === "s7_tcp" ? <section className="detail-section">
+              <h3 className="detail-section-title">Storico potenza SINVERT non attivo</h3>
+              <p>Questo profilo non registra ancora uno storico energetico: qualità e riscontro fisico delle misure sono da validare. I valori disponibili sono nella sezione Monitoraggio SINVERT.</p>
+            </section> : null}
+            {showHistorySection && device.protocol !== "s7_tcp" ? (
             <section className="detail-section">
               <div className="detail-section-head">
                 <div>
@@ -821,14 +841,14 @@ export function DeviceDetailPanel({
                 <div className="detail-progressive-head">
                   <div>
                     <p className="panel-kicker">Comandi avanzati</p>
-                    <h3 className="detail-section-title">Altri comandi disponibili</h3>
+                    <h3 className="detail-section-title">{device.protocol === "s7_tcp" ? "Collaudo SINVERT" : "Altri comandi disponibili"}</h3>
                     <p className="detail-progressive-copy">
-                      Il setpoint di potenza attiva resta sempre in primo piano. Gli altri
+                      {device.protocol === "s7_tcp" ? "ON/OFF agiscono sulle posizioni gestite dall'intero PLC. Il riferimento di potenza usa valori PLC con scala fisica da confermare." : <>Il setpoint di potenza attiva resta sempre in primo piano. Gli altri
                       comandi sono raccolti qui per evitare errori e mantenere la vista piu'
-                      semplice durante l'uso normale.
+                      semplice durante l'uso normale.</>}
                     </p>
                   </div>
-                  {secondaryCommands.length > 0 ? (
+                  {secondaryCommands.length > 0 && device.protocol !== "s7_tcp" ? (
                     <button
                       className="secondary-button detail-progressive-toggle"
                       type="button"
@@ -839,12 +859,19 @@ export function DeviceDetailPanel({
                   ) : null}
                 </div>
                 {secondaryCommands.length > 0 ? (
-                  showAdvancedCommands ? (
+                  showAdvancedCommands || device.protocol === "s7_tcp" ? (
                     <div className="detail-command-stack">
                       {secondaryCommands.map((command) => (
                         <DeviceCommandCard
                           key={command.key}
-                          command={command}
+                          command={command.key === "sinvert_power_reference_raw" ? { ...command,
+                            max_value: Math.min(command.max_value ?? 1000000, Number(device.connection_settings.sinvert_reference_max_raw ?? 0)),
+                          } : command}
+                          blockedReason={device.protocol !== "s7_tcp" ? undefined
+                            : device.connection_settings.sinvert_write_mode !== "commissioning"
+                              ? "Nelle impostazioni del dispositivo abilitare Comandi SINVERT: Collaudo manuale."
+                              : command.key === "sinvert_power_reference_raw" && !(Number(device.connection_settings.sinvert_reference_max_raw) > 0)
+                                ? "Impostare il massimo riferimento PLC per il collaudo nelle impostazioni." : undefined}
                           value={commandValues[command.key] ?? ""}
                           loading={commandLoadingKey === command.key}
                           errorMessage={commandErrors[command.key] ?? null}
