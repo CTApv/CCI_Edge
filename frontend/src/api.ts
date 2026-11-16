@@ -1189,3 +1189,13 @@ export type SinvertBenchStatus = { active: boolean; remaining_seconds: number };
 export const getSinvertBench = (id: string) => request<SinvertBenchStatus>(`/devices/${id}/sinvert/bench`);
 export const setSinvertBench = (id: string, enabled: boolean, confirmed: boolean) => request<SinvertBenchStatus>(`/devices/${id}/sinvert/bench`, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({enabled,cpu_only_confirmed:confirmed})});
 export const sinvertTraceUrl = (id: string) => `${API_BASE_URL}/devices/${encodeURIComponent(id)}/sinvert/trace.zip`;
+
+export type SinvertNativeStatus = {
+  active: boolean; state: string; remaining_seconds: number; raw_value?: number;
+  error?: string | null; cleanup_error?: string | null; sent_count?: number;
+  feedback?: { regulator_input_confirmed: boolean; watchdog_healthy: boolean };
+};
+export const getSinvertNative = (id: string) => request<SinvertNativeStatus>(`/devices/${id}/sinvert/native`);
+export const startSinvertNative = (id: string, value: number, cpuOnly: boolean, confirmed: boolean) =>
+  request<SinvertNativeStatus>(`/devices/${id}/sinvert/native/start`, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({value,cpu_only:cpuOnly,exclusive_control_confirmed:confirmed})});
+export const stopSinvertNative = (id: string) => request<SinvertNativeStatus>(`/devices/${id}/sinvert/native/stop`, {method:"POST"});

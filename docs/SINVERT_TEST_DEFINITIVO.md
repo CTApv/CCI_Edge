@@ -1,8 +1,26 @@
 # test sinvert definitivo
 
-Prerelease `v1.3.1-test-sinvert-definitivo`, basata su PV Guardian v1.3.
+Prerelease `v1.3.2-test-sinvert-definitivo`, basata su PV Guardian v1.3.
 
-Include la dashboard di collaudo SINVERT, le funzioni già presenti in v1.3 e lo strumento di prova finita del canale nativo ISO-on-TCP. Non avvia un mittente ciclico al riavvio del gateway e non modifica automaticamente il programma o i consensi del PLC.
+Include la dashboard di collaudo SINVERT, il mittente nativo ISO-on-TCP con watchdog e lo strumento separato di prova finita. La sessione nativa viene avviata esplicitamente dall'operatore e non riparte al riavvio del gateway. Non modifica il programma, M55, il selettore remoto, le uscite o i parametri di rampa/fallback del PLC.
+
+## Sessione nativa nell'app (nuovo in v1.3.2)
+
+Nella scheda **Collaudo**, usare **Canale nativo e watchdog**:
+
+1. Abilitare il profilo di collaudo, configurare un limite locale appropriato e inserire il riferimento PLC iniziale nel campo potenza. La scala kW/% resta da confermare.
+2. Per il banco CPU+CP, dichiarare e attivare la sessione "sola CPU". Con inverter o periferiche collegati, questa modalita deve essere disattivata: il percorso di campo richiede M55 e DB3.0.7 validi, oltre ai controlli del programma verificato.
+3. Verificare che il canale sia di proprieta esclusiva di PV Guardian: nessun altro SCADA/mittente nativo o comando HMI/TEST. Confermare la casella e premere **Avvia con il riferimento inserito**. Questo pulsante scrive il riferimento iniziale e abilita esplicitamente DB100.DBX135.0/.1, salvandone il valore precedente.
+4. L'avvio riesce solo se sorgente DB511.DBD32, copia DB944.DBD32 e ingresso DB570.DBD2 corrispondono al REAL inviato e il watchdog/canale DB600 non presenta errori. Dopo l'avvio, **Invia potenza** usa lo stesso mittente nativo, non una scrittura diretta S7.
+5. **Ferma canale nativo** termina la trasmissione e ripristina soltanto i due bit di copia precedenti, preservando gli altri bit. Non ripristina un vecchio riferimento e non invia ON/OFF. OFF resta disponibile e tenta prima l'arresto del canale. Per ON, Reset o comandi HMI/TEST occorre prima fermarlo: un vecchio telegramma non deve annullare o ripetere impulsi HMI.
+
+La sessione dura al massimo 10 minuti anche se si chiude la pagina. Non viene rinnovata dai polling del browser, da un nuovo setpoint o da un riavvio. Scadenza del banco, disabilitazione del profilo, variazione dell'endpoint, perdita dei consensi, conflitti sul buffer, errori di lettura/ricezione o cadenza oltre 3,5 secondi arrestano il mittente senza riconnessione automatica. Il programma viene verificato prima dell'avvio e periodicamente durante la sessione. Gli aggiornamenti usano una connessione S7 dedicata con il lock dell'endpoint, senza ripetere a ogni clic l'intera preparazione che potrebbe ritardare il watchdog.
+
+Il trasporto invia un telegramma di 64 byte ogni circa 0,8 secondi e legge il feedback tramite S7. Sono accettati soltanto telegrammi con campi di comando neutri e altri campi gia allineati alla copia; viene modificato il solo riferimento A. Non si coordinano mittenti esterni con un lock distribuito: il controllo esclusivo deve essere garantito dall'operatore e le modifiche rilevate provocano l'arresto.
+
+Un errore nella sessione nativa non causa un ripiego automatico su scritture dirette S7. Il percorso S7 storico resta compatibile per i client API che non hanno mai aperto una sessione nativa nel processo corrente; la dashboard richiede sempre l'avvio nativo esplicito prima di inviare potenza.
+
+Un arresto ordinato ripristina subito i bit di copia; con bit originariamente disattivi puo interrompere anche la chiamata del watchdog PLC. Il test di perdita del mittente deve invece lasciare attive ricezione e copie e verificare il watchdog dopo il silenzio. La risposta fisica, la selezione del riferimento e il comportamento di fallback vanno provati sull'inverter muletto.
 
 ## Risultati verificati il 16 novembre 2026
 
@@ -44,8 +62,8 @@ Lo strumento verifica identità e metadati del programma, assenza dei comandi at
 
 Il riferimento cambia soltanto di +1/+2 rispetto al valore iniziale, senza attribuire unità fisiche. Il codice non forza I4.0, M55, uscite o fallback. Un'interruzione forzata del processo può impedire il ripristino: verificare il journal e i valori PLC prima di proseguire.
 
-## Confine con il controllo nell'app
+## Verifica della nuova integrazione sul banco
 
-Il pulsante di riferimento dell'app continua a usare il percorso S7 di collaudo esistente. La sua scrittura non alimenta da sola il watchdog AG_RECV. Questa release non lo sostituisce con un servizio nativo permanente: il telegramma contiene anche comandi HMI, che devono essere coordinati prima di introdurre un nuovo proprietario ciclico del canale.
+Il servizio applicativo nativo e il percorso dei comandi dell'app sono stati provati sulla CPU+CP verificata: riferimenti 450, 451, 452 e ritorno a 450 confermati all'ingresso del regolatore, con watchdog valido. Simulando il blocco del mittente senza disabilitare le copie, il watchdog e scaduto dopo circa 5 secondi. Al termine, buffer, campi HMI coinvolti e bit di copia sono stati ripristinati e riletti. Nessun inverter era collegato; il riferimento dopo selezione/rampa e rimasto a 2500.
 
 La prima verifica su inverter deve confermare consenso remoto, selezione del riferimento, scala fisica e risposta misurata, compreso il comportamento in perdita di comunicazione.

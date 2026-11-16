@@ -110,7 +110,7 @@ class CommandService:
 
         return self._build_response(
             success=write_result.success,
-            message=("Richiesta Reset allarmi ricevuta dal PLC; verificare gli allarmi ancora attivi." if write_result.success and write_result.diagnostics.get("ack_consumed") else "Riferimento scritto e mantenuto nel PLC; trasferimento al regolatore non confermato." if write_result.success and write_result.diagnostics.get("reference_persistent") and not write_result.diagnostics.get("regulator_input_confirmed") else write_result.error if device.protocol=="s7_tcp" and write_result.error else self._build_command_message(device.protocol, write_result.success)),
+            message=("Riferimento nativo confermato all'ingresso del regolatore; watchdog valido. Applicazione fisica da verificare." if write_result.success and write_result.diagnostics.get("reference_transport")=="iso_on_tcp" else "Richiesta Reset allarmi ricevuta dal PLC; verificare gli allarmi ancora attivi." if write_result.success and write_result.diagnostics.get("ack_consumed") else "Riferimento scritto e mantenuto nel PLC; trasferimento al regolatore non confermato." if write_result.success and write_result.diagnostics.get("reference_persistent") and not write_result.diagnostics.get("regulator_input_confirmed") else write_result.error if device.protocol=="s7_tcp" and write_result.error else self._build_command_message(device.protocol, write_result.success)),
             device_id=device_id,
             command_key=command_key,
             diagnostics={

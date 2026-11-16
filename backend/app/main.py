@@ -36,6 +36,8 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     try:
         yield
     finally:
+        from app.services.sinvert_native_service import sinvert_native_service
+        sinvert_native_service.stop_all()
         polling_engine.stop()
         fleet_dispatch_service.stop()
         hsm_bridge_service.stop()

@@ -28,6 +28,35 @@ class SinvertS7CommandService:
             f.write(json.dumps(row,ensure_ascii=False,allow_nan=False)+'\n');f.flush();os.fsync(f.fileno())
 
     def write(self,device,point,value,*,dry_run=False):
+        from app.services.sinvert_native_service import sinvert_native_service
+        native = sinvert_native_service.status(device)
+        if point.key=='sinvert_power_reference_raw' and native.get('active'):
+            diag={'write_attempted':False,'write_accepted':False,'reference_transport':'iso_on_tcp',
+                  'physical_execution_confirmed':False,'dry_run':dry_run,'commissioning':True,'stub_mode':False}
+            try:
+                if point.protocol_meta.get('driver')!='sinvert_s7_commissioning':
+                    raise ValueError('Comando SINVERT non valido.')
+                diag['write_attempted']=not dry_run
+                native=sinvert_native_service.submit_reference(device,value,dry_run=dry_run)
+                diag.update(native_session_active=native['active'],native_remaining_seconds=native['remaining_seconds'],
+                    write_accepted=not dry_run,raw_value=value,reference_persistent=True,
+                    stage='preflight_passed' if dry_run else 'native_reference_confirmed',**native.get('feedback',{}))
+                return SinvertCommandResult(True,diag)
+            except Exception as exc:
+                diag.update(stage='uncertain' if diag['write_attempted'] else 'blocked')
+                return SinvertCommandResult(False,diag,str(exc))
+        if point.key=='sinvert_power_reference_raw' and not dry_run and native.get('owner_device_id') and not native.get('active'):
+            return SinvertCommandResult(False,{'write_attempted':False,'stage':'blocked','physical_execution_confirmed':False},
+                'Sessione nativa arrestata o in errore: riavviarla esplicitamente. Nessuna scrittura S7 di ripiego.')
+        if native.get('state') in {'starting','active','stopping'} and point.key!='sinvert_power_reference_raw':
+            if not dry_run and point.key=='sinvert_off_request':
+                try:sinvert_native_service.stop(device)
+                except Exception as exc:
+                    # OFF must still be attempted through its independent S7 path.
+                    native['stop_error']=str(exc)
+            elif point.key!='sinvert_off_request':
+                return SinvertCommandResult(False,{'write_attempted':False,'stage':'blocked','physical_execution_confirmed':False},
+                    'Canale nativo attivo: fermarlo prima di inviare comandi HMI/ON. OFF resta disponibile.')
         for attempt in range(2):
             result=self._write_once(device,point,value,dry_run=dry_run)
             result.diagnostics['preparation_attempts']=attempt+1
@@ -199,7 +228,20 @@ class SinvertS7CommandService:
             elif power:
                 encoded=struct.pack('>f',value)
                 diag['write_attempted']=True
-                client.db_write(511,32,bytearray(encoded));diag['write_accepted']=True
+                from app.services.sinvert_native_service import sinvert_native_service
+                native=sinvert_native_service.status(device)
+                if native.get('active'):
+                    diag['reference_transport']='iso_on_tcp'
+                    native=sinvert_native_service.update(device,client,value)
+                    diag.update(native_session_active=native['active'],native_remaining_seconds=native['remaining_seconds'])
+                else:
+                    # Keep the legacy path for existing API clients. The native
+                    # dashboard requires an explicitly started native session.
+                    if native.get('owner_device_id'):
+                        raise ValueError('Sessione nativa non attiva: nessuna scrittura S7 di ripiego.')
+                    diag['reference_transport']='s7_direct_legacy'
+                    client.db_write(511,32,bytearray(encoded))
+                diag['write_accepted']=True
                 copied=False;input_confirmed=False
                 for _ in range(6):
                     copied=read(944,32,4)==encoded
