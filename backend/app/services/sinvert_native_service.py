@@ -18,6 +18,10 @@ from app.catalog.sinvert_s7_catalog import COMMISSIONING_MODEL
 from app.services.sinvert_s7_service import sinvert_s7_service
 
 
+class NativeBusyError(TimeoutError):
+    """Preparation failed before any reference frame could be sent."""
+
+
 class NativeChannel:
     def __init__(self, host, port, socket_factory=socket.create_connection):
         self.sock = socket_factory((host, port), .6)
@@ -325,8 +329,8 @@ class SinvertNativeService:
         if not session or session.device.device_id != device.device_id:
             raise ValueError('Il dispositivo non possiede il canale nativo.')
         endpoint = sinvert_s7_service.endpoint_lock(*session.identity)
-        if not endpoint.acquire(timeout=.5):
-            raise TimeoutError('Endpoint occupato: riferimento non inviato.')
+        if not endpoint.acquire(timeout=2):
+            raise NativeBusyError('Endpoint occupato: riferimento non inviato.')
         try:
             if dry_run:
                 with session.lock:

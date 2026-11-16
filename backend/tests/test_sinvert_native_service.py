@@ -7,7 +7,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from app.catalog.sinvert_s7_catalog import COMMISSIONING_MODEL, build_sinvert_s7_models
-from app.services.sinvert_native_service import NativeChannel, SinvertNativeService
+from app.services.sinvert_native_service import NativeBusyError, NativeChannel, SinvertNativeService
 from app.services.sinvert_s7_command_service import SinvertS7CommandService
 
 
@@ -204,6 +204,27 @@ class NativeTests(unittest.TestCase):
                 result = commands.write(self.device, point, 452)
                 self.assertFalse(result.success)
                 self.assertFalse(result.diagnostics['write_attempted'])
+
+    def test_native_command_waits_for_poll_and_reports_busy_as_no_write(self):
+        from threading import Thread,Event
+        from app.services.sinvert_s7_service import sinvert_s7_service
+        self.service.start(self.device,450,bench=True)
+        endpoint=sinvert_s7_service.endpoint_lock(*self.service.identity(self.device))
+        ready=Event()
+        def polling():
+            with endpoint:
+                ready.set();time.sleep(.7)
+        thread=Thread(target=polling);thread.start();ready.wait(1)
+        status=self.service.submit_reference(self.device,451)
+        thread.join(1)
+        self.assertTrue(status['active'])
+        self.assertEqual(self.plc.dbs[511][32:36],struct.pack('>f',451))
+        point=next(p for p in build_sinvert_s7_models()[1].command_points if p.key=='sinvert_power_reference_raw')
+        with patch('app.services.sinvert_native_service.sinvert_native_service',self.service),patch.object(self.service,'submit_reference',side_effect=NativeBusyError('busy')):
+            result=SinvertS7CommandService().write(self.device,point,452)
+        self.assertFalse(result.success)
+        self.assertFalse(result.diagnostics['write_attempted'])
+        self.assertEqual(result.diagnostics['stage'],'blocked')
 
     def test_hmi_on_are_blocked_but_off_stops_native_then_uses_independent_s7(self):
         self.service.start(self.device, 450, bench=True)

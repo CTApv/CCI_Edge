@@ -28,7 +28,7 @@ class SinvertS7CommandService:
             f.write(json.dumps(row,ensure_ascii=False,allow_nan=False)+'\n');f.flush();os.fsync(f.fileno())
 
     def write(self,device,point,value,*,dry_run=False):
-        from app.services.sinvert_native_service import sinvert_native_service
+        from app.services.sinvert_native_service import NativeBusyError,sinvert_native_service
         native = sinvert_native_service.status(device)
         if point.key=='sinvert_power_reference_raw' and native.get('active'):
             diag={'write_attempted':False,'write_accepted':False,'reference_transport':'iso_on_tcp',
@@ -43,6 +43,7 @@ class SinvertS7CommandService:
                     stage='preflight_passed' if dry_run else 'native_reference_confirmed',**native.get('feedback',{}))
                 return SinvertCommandResult(True,diag)
             except Exception as exc:
+                if isinstance(exc,NativeBusyError):diag['write_attempted']=False
                 diag.update(stage='uncertain' if diag['write_attempted'] else 'blocked')
                 return SinvertCommandResult(False,diag,str(exc))
         if point.key=='sinvert_power_reference_raw' and not dry_run and native.get('owner_device_id') and not native.get('active'):
