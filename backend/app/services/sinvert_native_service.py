@@ -190,6 +190,8 @@ class SinvertNativeService:
                 raise ValueError('Banco non piu isolato: consensi/uscite presenti.')
         elif not mk(55)[0] & 15 or not read(3, 0, 1)[0] & 128:
             raise ValueError('Consensi PLC assenti: trasmissione interrotta.')
+        if not session.bench and (mk(34)[0] & 15 or read(64, 26, 1)[0] & 15):
+            raise ValueError('Sequenza o richiesta PLC in corso: riferimento non inviato.')
         # Neutral telegram must not silently clear an HMI pulse or TEST mode.
         if read(402, 0, 2) != bytes(2) or read(402, 10, 4) != bytes(4) or any(read(402, o, 1)[0] & 3 for o in (842, 1036, 1230, 1424)):
             raise ValueError('Comando HMI o selettore TEST attivo: fermare il canale nativo prima di usarlo.')

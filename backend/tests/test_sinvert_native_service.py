@@ -168,6 +168,17 @@ class NativeTests(unittest.TestCase):
         self.plc.mk[55] = 0
         self.assertEqual(self.wait_stopped()['state'], 'fault')
 
+    def test_field_sequence_and_pending_stop_prevent_native_start(self):
+        self.bench_mock.return_value={'active':False}
+        self.plc.mk[55]=1
+        self.plc.mk[34]=8
+        with self.assertRaisesRegex(ValueError,'Sequenza'):self.service.start(self.device,450,bench=False)
+        self.plc.mk[34]=0
+        self.plc.dbs[64][26]=4
+        with self.assertRaisesRegex(ValueError,'Sequenza'):self.service.start(self.device,450,bench=False)
+        self.assertEqual(self.plc.writes,[])
+        self.assertEqual(self.channel.frames,[])
+
     def test_read_only_profile_and_invalid_values_fail_before_connection(self):
         for value in (float('nan'), float('inf'), -1, 1001, True):
             with self.assertRaises(ValueError): self.service.start(self.device, value, bench=True)

@@ -1,10 +1,10 @@
 # test sinvert definitivo
 
-Prerelease `v1.3.2-test-sinvert-definitivo`, basata su PV Guardian v1.3.
+Prerelease `v1.3.3-test-sinvert-definitivo`, basata su PV Guardian v1.3.
 
 Include la dashboard di collaudo SINVERT, il mittente nativo ISO-on-TCP con watchdog e lo strumento separato di prova finita. La sessione nativa viene avviata esplicitamente dall'operatore e non riparte al riavvio del gateway. Non modifica il programma, M55, il selettore remoto, le uscite o i parametri di rampa/fallback del PLC.
 
-## Sessione nativa nell'app (nuovo in v1.3.2)
+## Sessione nativa nell'app (nuovo in v1.3.3)
 
 Nella scheda **Collaudo**, usare **Canale nativo e watchdog**:
 
