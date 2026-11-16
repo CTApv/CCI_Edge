@@ -15,16 +15,18 @@ if not args.tag.startswith('v') or 'test-sinvert' not in args.tag:
 sha=subprocess.check_output(['git','rev-parse',f'{args.tag}^{{commit}}'],cwd=root,text=True).strip()
 args.out.mkdir(parents=True,exist_ok=True)
 archive=args.out/f'pv-guardian-TEST-SINVERT-{args.tag}.tar.gz'
-subprocess.run(['git','archive','--format=tar.gz','--prefix=pv-guardian-test-sinvert/',
+definitivo=args.tag.endswith('test-sinvert-definitivo')
+prefix=[] if definitivo else ['--prefix=pv-guardian-test-sinvert/']
+subprocess.run(['git','archive','--format=tar.gz',*prefix,
                 '-o',str(archive.resolve()),args.tag],cwd=root,check=True)
 digest=hashlib.sha256(archive.read_bytes()).hexdigest()
 (args.out/'SHA256SUMS').write_text(f'{digest}  {archive.name}\n',encoding='utf8')
-manifest={'name':'TEST SINVERT','version':args.tag,'commit':sha,'base':'v1.2.0-rc2',
+manifest={'name':'test sinvert definitivo' if definitivo else 'TEST SINVERT','version':args.tag,'commit':sha,'base':'v1.3' if definitivo else 'v1.2.0-rc2',
           'prerelease':True,'platform':'linux/arm64','archive':archive.name,'sha256':digest,
           'images':{'backend':f'ghcr.io/ctapv/pv-guardian-edge-backend:{args.tag}',
                     'web':f'ghcr.io/ctapv/pv-guardian-edge-web:{args.tag}'},
-          'installation':'deployment/sinvert/manage-test-sinvert.sh',
-          'default_web_port':18080,'default_api_port':18000,
+          'installation':'deployment/docker/deploy-compose-release.sh' if definitivo else 'deployment/sinvert/manage-test-sinvert.sh',
+          'default_web_port':80 if definitivo else 18080,'default_api_port':8000 if definitivo else 18000,
           'field_control_validated':False}
 (args.out/'release-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8')
 print(json.dumps({'archive':str(archive),'commit':sha,'sha256':digest}))

@@ -41,7 +41,7 @@ jobs:
         run: |
           python -m pip install -r requirements.txt
           python -m unittest discover -s tests
-          python -m compileall -q app tests
+          python -m compileall -q app tests tools
       - name: Frontend build and SINVERT state checks
         working-directory: frontend
         run: |
@@ -87,7 +87,9 @@ jobs:
             version="${GITHUB_REF_NAME}"
           fi
           label="${version}-${GITHUB_REF_NAME}-${GITHUB_SHA::12}"
-          if [[ "${version}" == *test-sinvert* ]]; then
+          if [[ "${version}" == *test-sinvert-definitivo* ]]; then
+            label="TEST SINVERT DEFINITIVO-${version}-${GITHUB_SHA::12}"
+          elif [[ "${version}" == *test-sinvert* ]]; then
             label="TEST SINVERT-${version}-${GITHUB_SHA::12}"
           fi
           echo "version=${version}" >> "${GITHUB_OUTPUT}"
@@ -156,3 +158,26 @@ jobs:
         with:
           name: image-manifest-${{ matrix.component }}
           path: image-manifest.json
+
+      - name: Export verified ARM64 image for LAN installation
+        env:
+          IMAGE: ${{ matrix.image }}
+          DIGEST: ${{ steps.publish.outputs.digest }}
+          VERSION: ${{ steps.build_meta.outputs.version }}
+          COMPONENT: ${{ matrix.component }}
+        run: |
+          docker pull --platform linux/arm64 "${IMAGE}@${DIGEST}"
+          docker tag "${IMAGE}@${DIGEST}" "${IMAGE}:${VERSION}"
+          test "$(docker image inspect "${IMAGE}:${VERSION}" --format '{{.Architecture}}')" = arm64
+          archive="pv-guardian-${COMPONENT}-${VERSION}-arm64.docker.tar.gz"
+          docker image inspect "${IMAGE}:${VERSION}" > "${COMPONENT}-image-inspect.json"
+          docker save "${IMAGE}:${VERSION}" | gzip > "$archive"
+          sha256sum "$archive" > "${COMPONENT}-SHA256SUMS"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: image-archive-${{ matrix.component }}
+          path: |
+            pv-guardian-*-arm64.docker.tar.gz
+            *-image-inspect.json
+            *-SHA256SUMS
+          retention-days: 7
