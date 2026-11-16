@@ -19,9 +19,12 @@ def main():
     import socket
     import struct
     import time
+    import sys
 
     import snap7
     from snap7.type import Areas, Block, WordLen
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from app.services.sinvert_plc_state import cpu_state
 
     base = Path(__file__).resolve().parent
     out = args.output_dir / ('native_watchdog_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
@@ -109,7 +112,7 @@ def main():
         for attempt in range(3):
             try:
                 c.connect('192.168.0.245', 0, 2)
-                j['state'] = c.get_cpu_state()
+                j['state'] = cpu_state(c)
                 break
             except Exception as exc:
                 j.setdefault('preparation_read_errors', []).append(str(exc))

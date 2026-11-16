@@ -27,6 +27,9 @@ class Plc:
     def connect(self, *args, **kwargs): pass
     def disconnect(self): pass
     def get_cpu_state(self): return 'S7CpuStatusRun'
+    def read_szl(self, szl, index):
+        if (szl,index)!=(0x0424,0):raise AssertionError('Wrong SZL')
+        return SimpleNamespace(Header=SimpleNamespace(LengthDR=8),Data=b'\0\4\0\1\0\0\0\x08')
     def get_cpu_info(self): return SimpleNamespace(ModuleTypeName=b'CPU 315-2 DP')
     def get_block_info(self, kind, n): return SimpleNamespace(CheckSum=self.checksum)
     def db_read(self, db, offset, size): return self.dbs[db][offset:offset+size]
@@ -107,6 +110,13 @@ class NativeTests(unittest.TestCase):
         self.plc.dbs[402][842] = 2
         with self.assertRaisesRegex(ValueError, 'HMI'): self.service.start(self.device, 450, bench=True)
         self.assertEqual(self.plc.writes, [])
+
+    def test_real_stop_state_blocks_native_even_if_legacy_api_claims_run(self):
+        self.plc.read_szl=lambda *a:SimpleNamespace(Header=SimpleNamespace(LengthDR=8),Data=b'\0\4\0\1\0\0\0\x04')
+        with self.assertRaisesRegex(ValueError,'CPU non in RUN'):
+            self.service.start(self.device,450,bench=True)
+        self.assertEqual(self.plc.writes,[])
+        self.assertEqual(self.channel.frames,[])
 
     def test_command_telegram_and_non_reference_changes_are_not_replayed(self):
         self.plc.dbs[511][14] = 1
@@ -298,3 +308,25 @@ class NativeRouteTests(unittest.TestCase):
             native_stop('device')
             service.stop.assert_called_once_with(device)
             get.assert_called_with('device')
+
+
+class CpuStateTests(unittest.TestCase):
+    def test_real_szl_state_does_not_use_placeholder_get_cpu_state(self):
+        from app.services.sinvert_plc_state import cpu_state,require_cpu_run
+        for value,expected in [(8,'S7CpuStatusRun'),(4,'S7CpuStatusStop'),(3,'S7CpuStatusStop'),(0,'S7CpuStatusUnknown')]:
+            client=Mock()
+            client.read_szl.return_value=SimpleNamespace(Header=SimpleNamespace(LengthDR=8),Data=b'\0\4\0\1\0\0\0'+bytes([value]))
+            self.assertEqual(cpu_state(client),expected)
+            client.get_cpu_state.assert_not_called()
+            client.read_szl.assert_called_with(0x0424,0)
+            if value!=8:
+                with self.assertRaises(ValueError):require_cpu_run(client)
+
+    def test_short_malformed_and_refused_szl_never_mean_run(self):
+        from app.services.sinvert_plc_state import require_cpu_run
+        for data in [b'',b'\0'*7,b'\0\x14\0\x01\0\0\0\x08']:
+            client=Mock()
+            client.read_szl.return_value=SimpleNamespace(Header=SimpleNamespace(LengthDR=len(data)),Data=data)
+            with self.assertRaises(ValueError):require_cpu_run(client)
+        client.read_szl.side_effect=ConnectionError('refused')
+        with self.assertRaises(ConnectionError):require_cpu_run(client)

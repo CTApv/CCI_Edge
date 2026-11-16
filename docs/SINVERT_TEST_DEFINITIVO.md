@@ -1,10 +1,10 @@
 # test sinvert definitivo
 
-Prerelease `v1.3.4-test-sinvert-definitivo`, basata su PV Guardian v1.3.
+Prerelease `v1.3.5-test-sinvert-definitivo`, basata su PV Guardian v1.3.
 
 Include la dashboard di collaudo SINVERT, il mittente nativo ISO-on-TCP con watchdog e lo strumento separato di prova finita. La sessione nativa viene avviata esplicitamente dall'operatore e non riparte al riavvio del gateway. Non modifica il programma, M55, il selettore remoto, le uscite o i parametri di rampa/fallback del PLC.
 
-## Sessione nativa nell'app (nuovo in v1.3.4)
+## Sessione nativa nell'app (nuovo in v1.3.5)
 
 Nella scheda **Collaudo**, usare **Canale nativo e watchdog**:
 
@@ -15,6 +15,8 @@ Nella scheda **Collaudo**, usare **Canale nativo e watchdog**:
 5. **Ferma canale nativo** termina la trasmissione e ripristina soltanto i due bit di copia precedenti, preservando gli altri bit. Non ripristina un vecchio riferimento e non invia ON/OFF. OFF resta disponibile e tenta prima l'arresto del canale. Per ON, Reset o comandi HMI/TEST occorre prima fermarlo: un vecchio telegramma non deve annullare o ripetere impulsi HMI.
 
 La sessione dura al massimo 10 minuti anche se si chiude la pagina. Non viene rinnovata dai polling del browser, da un nuovo setpoint o da un riavvio. Scadenza del banco, disabilitazione del profilo, variazione dell'endpoint, perdita dei consensi, conflitti sul buffer, errori di lettura/ricezione o cadenza oltre 3,5 secondi arrestano il mittente senza riconnessione automatica. Il programma viene verificato prima dell'avvio e periodicamente durante la sessione. Gli aggiornamenti attendono fino a 2 secondi il lock dell'endpoint per convivere con il polling; se l'endpoint resta occupato, la risposta specifica che non e stato inviato alcun riferimento. Usano una connessione S7 dedicata, senza ripetere a ogni clic l'intera preparazione che potrebbe ritardare il watchdog.
+
+Lo stato RUN viene verificato leggendo SZL 0424, indice 0, con controllo della struttura e del codice operativo reale. Non viene usato `get_cpu_state()` di python-snap7 3.3.1, che costruisce una richiesta provvisoria e restituisce RUN come valore predefinito. Una risposta mancante o non valida blocca il controllo; STOP e stati intermedi non autorizzano invii. Il formato segue [Snap7 opGetPlcStatus](https://github.com/SCADACS/snap7/blob/master/src/core/s7_micro_client.cpp).
 
 Il trasporto invia un telegramma di 64 byte ogni circa 0,8 secondi e legge il feedback tramite S7. Sono accettati soltanto telegrammi con campi di comando neutri e altri campi gia allineati alla copia; viene modificato il solo riferimento A. Non si coordinano mittenti esterni con un lock distribuito: il controllo esclusivo deve essere garantito dall'operatore e le modifiche rilevate provocano l'arresto.
 

@@ -16,6 +16,7 @@ import time
 
 from app.catalog.sinvert_s7_catalog import COMMISSIONING_MODEL
 from app.services.sinvert_s7_service import sinvert_s7_service
+from app.services.sinvert_plc_state import require_cpu_run
 
 
 class NativeBusyError(TimeoutError):
@@ -148,8 +149,7 @@ class SinvertNativeService:
     def _verify_program(self, client):
         from snap7.type import Block
         reference = self.reference or json.loads((Path(__file__).parent.parent / 'catalog/sinvert_s7_command_reference.json').read_text())
-        if client.get_cpu_state() != 'S7CpuStatusRun':
-            raise ValueError('CPU non in RUN.')
+        require_cpu_run(client)
         if client.get_cpu_info().ModuleTypeName.decode('latin1').strip('\0 ') != reference['cpu_module']:
             raise ValueError('Tipo CPU diverso dal profilo verificato.')
         for name, expected in reference['blocks'].items():
@@ -183,8 +183,7 @@ class SinvertNativeService:
         from snap7.type import Areas
         read = lambda db, offset, n: self._read(client, db, offset, n)
         mk = lambda offset, n=1: bytes(client.read_area(Areas.MK, 0, offset, n))
-        if client.get_cpu_state() != 'S7CpuStatusRun':
-            raise ValueError('CPU non in RUN: trasmissione interrotta.')
+        require_cpu_run(client)
         if not read(100, 3, 1)[0] & 16 or not 1 <= int.from_bytes(read(100, 6, 2), 'big') <= 32:
             raise ValueError('Configurazione M/TL non valida.')
         if mk(0)[0] & 16 or mk(23)[0] & 2:

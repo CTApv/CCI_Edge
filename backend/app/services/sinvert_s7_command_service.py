@@ -7,6 +7,7 @@ import json,math,struct,time,os
 
 from app.catalog.sinvert_s7_catalog import COMMISSIONING_MODEL,COMMISSIONING_COMMANDS,HMI_COMMANDS
 from app.services.sinvert_s7_service import sinvert_s7_service
+from app.services.sinvert_plc_state import require_cpu_run
 
 
 @dataclass(frozen=True)
@@ -117,7 +118,8 @@ class SinvertS7CommandService:
                 sock=getattr(connection,'socket',None)
                 if sock is not None:sock.settimeout(timeout)
             diag['operation_phase']='identity'
-            if client.get_cpu_state()!='S7CpuStatusRun':raise ValueError('CPU non in RUN: nessuna scrittura eseguita.')
+            require_cpu_run(client)
+            diag['cpu_state_source']='szl_0424'
             info=client.get_cpu_info()
             module=info.ModuleTypeName.decode('latin1').strip('\0 ')
             if module!=reference['cpu_module']:raise ValueError('Tipo CPU diverso dal programma verificato.')

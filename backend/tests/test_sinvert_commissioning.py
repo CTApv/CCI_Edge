@@ -25,6 +25,9 @@ class ControlClient:
     def connect(self,*args,**kwargs):pass
     def disconnect(self):self.closed=True
     def get_cpu_state(self):return 'S7CpuStatusRun'
+    def read_szl(self,szl,index):
+        assert (szl,index)==(0x0424,0)
+        return SimpleNamespace(Header=SimpleNamespace(LengthDR=8),Data=b'\0\4\0\1\0\0\0\x08')
     def get_cpu_info(self):return SimpleNamespace(ModuleTypeName=b'CPU 315-2 DP',SerialNumber=b'test')
     def get_block_info(self,kind,number):return SimpleNamespace(MC7Size=1292,CheckSum=self.checksum)
     def db_read(self,db,offset,n):return self.dbs[db][offset:offset+n]
