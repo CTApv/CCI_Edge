@@ -45,7 +45,7 @@ function GroupCard({ group, fresh, select }: { group: Group; fresh: boolean; sel
 type Outcome = { result: CommandResponse; at: string; kind: "check" | "send" };
 const tabs: { key: Tab; label: string; icon: string }[] = [
   {key:"overview",label:"Panoramica",icon:"grid"}, {key:"alarms",label:"Allarmi e avvisi",icon:"alert"},
-  {key:"commissioning",label:"Collaudo",icon:"settings"}, {key:"diagnostics",label:"Diagnostica",icon:"chip"},
+  {key:"diagnostics",label:"Diagnostica",icon:"chip"}, {key:"commissioning",label:"Collaudo",icon:"settings"},
 ];
 
 export function SinvertDashboard() {
@@ -201,18 +201,18 @@ export function SinvertDashboard() {
 
   return <div className="sv-shell">
     <aside className="sv-sidebar">
-      <a className="sv-brand" href="/sinvert.html"><span className="sv-brand-mark"><Icon name="bolt" size={24}/></span><span>PV Guardian<small>CONTROL WORKSPACE</small></span></a>
-      <div className="sv-workspace-label">VERSIONE DI COLLAUDO <span>TEST</span></div>
+      <a className="sv-brand" href="/" aria-label="Torna alla dashboard PV Guardian"><picture><source media="(max-width: 1050px)" srcSet="/favicon_cta.png"/><img src="/logo_HBA_STE.png" alt="HBA e STE"/></picture><span>PV Guardian<small>Supervisione fotovoltaica</small></span></a>
+      <div className="sv-workspace-label">DISPOSITIVO <span>SINVERT</span></div>
       <nav aria-label="Navigazione SINVERT">{tabs.map(item => <button key={item.key} className={tab === item.key ? "active" : ""} aria-current={tab === item.key ? "page" : undefined} onClick={() => setTab(item.key)}><Icon name={item.icon}/>{item.label}{item.key === "alarms" && alarms.length > 0 && <em>{alarms.length}</em>}</button>)}</nav>
       <div className="sv-sidebar-divider"/>
       <p className="sv-nav-caption">CONNESSIONE SELEZIONATA</p>
       <div className="sv-plc-tile"><Icon name="chip"/><div><strong>PLC SINVERT</strong><span>{String(device?.connection_settings.host ?? "Nessun PLC")}</span></div><i className={`sv-dot sv-dot--${fresh ? "ok" : "muted"}`}/></div>
-      <div className="sv-sidebar-bottom"><div><Icon name="lock" size={16}/><span>TEST SINVERT DEFINITIVO | IOT2050</span></div><p>Comandi rapidi disponibili quando il profilo di collaudo è abilitato.</p><a href="/">Apri PV Guardian <Icon name="arrow" size={16}/></a></div>
+      <div className="sv-sidebar-bottom"><div><Icon name="lock" size={16}/><span>Controllo e diagnostica</span></div><p>Comandi rapidi disponibili quando il profilo di collaudo è abilitato.</p><a href="/">Torna alla dashboard <Icon name="arrow" size={16}/></a></div>
     </aside>
     <div className="sv-workspace">
-      <header className="sv-topbar"><div><span className="sv-breadcrumb">Dispositivi di campo</span><span>/</span><strong>SINVERT</strong><span className="sv-preview">TEST SINVERT DEFINITIVO</span></div><div><span className="sv-live"><i className={`sv-dot sv-dot--${fresh ? "ok" : "muted"}`}/>{fresh ? "Dati dal PLC" : "Dati da verificare"}</span><span className="sv-avatar">PV</span></div></header>
+      <header className="sv-topbar"><div><a className="sv-breadcrumb" href="/">PV Guardian</a><span>/</span><strong>SINVERT</strong><span className="sv-preview">Profilo di collaudo</span></div><div><span className="sv-live"><i className={`sv-dot sv-dot--${fresh ? "ok" : "muted"}`}/>{fresh ? "Dati dal PLC" : "Dati da verificare"}</span><span className="sv-avatar">PV</span></div></header>
       <main className="sv-main">
-        <div className="sv-page-heading"><div><div className="sv-eyebrow">SUPERVISIONE E CONTROLLO</div><h1>{tabs.find(item => item.key === tab)?.label === "Panoramica" ? "Controllo SINVERT" : tabs.find(item => item.key === tab)?.label}</h1><p>Un solo punto di controllo. Stato dei gruppi, disponibilità e richieste al PLC.</p></div><div className="sv-page-actions"><span><Icon name="clock" size={15}/>{timestamp(overview?.diagnostics.last_valid_data_at)}</span><button className="sv-button sv-button--white" disabled={loading || !selected} onClick={() => void fetchData(selected)}><Icon name="refresh" size={16}/>Aggiorna</button></div></div>
+        <div className="sv-page-heading"><div><div className="sv-eyebrow">SUPERVISIONE E CONTROLLO</div><h1>{tabs.find(item => item.key === tab)?.label === "Panoramica" ? "Dettaglio SINVERT" : tabs.find(item => item.key === tab)?.label}</h1><p>Un solo punto di controllo. Stato dei gruppi, disponibilità e richieste al PLC.</p></div><div className="sv-page-actions"><span><Icon name="clock" size={15}/>{timestamp(overview?.diagnostics.last_valid_data_at)}</span><button className="sv-button sv-button--white" disabled={loading || !selected} onClick={() => void fetchData(selected)}><Icon name="refresh" size={16}/>Aggiorna</button></div></div>
         {devices.length > 1 && <label className="sv-selector">PLC da visualizzare<select value={selected} disabled={Boolean(busy)} onChange={event => setSelected(event.target.value)}>{devices.map(item => <option value={item.device_id} key={item.device_id}>{item.name}</option>)}</select></label>}
         {loadError && <div className="sv-notice sv-notice--bad" role="alert"><Icon name="alert"/><div><strong>Acquisizione non disponibile</strong><p>{loadError} Gli ultimi valori non sono un consenso operativo.</p></div></div>}
         {loading && !overview ? <Empty>Acquisizione dello stato del PLC…</Empty> : !device ? <Empty>Nessun dispositivo SINVERT configurato. Aggiungi il PLC in PV Guardian per visualizzarlo qui.</Empty> : !monitor ? <Empty>Diagnostica SINVERT non disponibile. Attendere il prossimo campione o verificare il profilo del dispositivo.</Empty> : <>
@@ -243,11 +243,11 @@ export function SinvertDashboard() {
 
           {(outcome || actionError) && <section className="sv-panel sv-outcome" aria-live="polite"><div className="sv-panel-heading"><h2>Ultima operazione</h2><span>{outcome ? timestamp(outcome.at) : ""}</span></div>{actionError ? <div className="sv-notice sv-notice--bad"><Icon name="alert"/><p>{actionError}</p></div> : outcome && <><div className="sv-outcome-title"><Badge tone={outcome.result.success ? "ok" : "warn"}>{outcome.kind === "check" ? "Verifica in sola lettura" : "Richiesta al PLC"}</Badge><strong>{commandNames[outcome.result.command] ?? outcome.result.command}</strong></div><p>{outcome.kind === "check" ? outcome.result.success ? "Controlli superati. Nessun comando è stato inviato." : outcome.result.message : outcome.result.message}</p><div className="sv-result-steps"><span className={outcome.result.diagnostics.write_accepted ? "done" : ""}><Icon name={outcome.result.diagnostics.write_accepted ? "check" : "clock"} size={16}/>Accettazione S7</span><Icon name="arrow" size={15}/><span className={outcome.result.diagnostics.request_consumed || outcome.result.diagnostics.regulator_input_confirmed ? "done" : ""}><Icon name={outcome.result.diagnostics.request_consumed || outcome.result.diagnostics.regulator_input_confirmed ? "check" : "clock"} size={16}/>Elaborazione PLC</span><Icon name="arrow" size={15}/><span><Icon name="clock" size={16}/>Riscontro fisico non confermato</span></div><details className="sv-details"><summary>Dettagli tecnici dell'esito</summary><pre>{JSON.stringify(outcome.result.diagnostics,null,2)}</pre></details></>}</section>}
         </>}
-        <footer className="sv-footer"><span><i className="sv-dot sv-dot--ok"/>PV Guardian Lab · SINVERT</span><span>TEST SINVERT · integrazione definitiva da valutare</span><span>{timestamp(overview?.diagnostics.last_valid_data_at)} · nessun dato simulato</span></footer>
+        <footer className="sv-footer"><span><i className="sv-dot sv-dot--ok"/>PV Guardian · SINVERT</span><span>Profilo di collaudo · riscontro fisico da validare</span><span>{timestamp(overview?.diagnostics.last_valid_data_at)} · nessun dato simulato</span></footer>
       </main>
     </div>
     <nav className="sv-mobile-nav" aria-label="Navigazione mobile SINVERT">{tabs.map(item => <button key={item.key} className={tab === item.key ? "active" : ""} aria-current={tab === item.key ? "page" : undefined} onClick={() => setTab(item.key)}><Icon name={item.icon} size={20}/>{item.label}</button>)}</nav>
-    {busy && <div className="sv-working" role="status"><Icon name="refresh" size={17}/>{commandNames[busy] ?? "Operazione"} ? controlli in corso?</div>}
+    {busy && <div className="sv-working" role="status"><Icon name="refresh" size={17}/>{commandNames[busy] ?? "Operazione"} · controlli in corso…</div>}
 
   </div>;
 }

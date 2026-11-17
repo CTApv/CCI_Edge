@@ -1,6 +1,8 @@
 # test sinvert definitivo
 
-Prerelease `v1.3.5-test-sinvert-definitivo`, basata su PV Guardian v1.3.
+Prerelease `v1.3.6-test-sinvert-definitivo`, basata su PV Guardian v1.3.
+
+La vista SINVERT usa ora la stessa base grafica di PV Guardian: colori e tipografia condivisi in `frontend/src/theme.css`, superfici e pulsanti coerenti, logo HBA/STE e ritorno alla dashboard. Panoramica e allarmi restano separati dalle viste tecniche Diagnostica e Collaudo. Sono conservati i link diretti al dispositivo e alla scheda selezionata, con navigazione mobile. Questo aggiornamento grafico mantiene il comportamento dei driver, dei consensi e del watchdog della v1.3.5; non attribuisce alle posizioni PLC una topologia master/slave ancora da verificare.
 
 Include la dashboard di collaudo SINVERT, il mittente nativo ISO-on-TCP con watchdog e lo strumento separato di prova finita. La sessione nativa viene avviata esplicitamente dall'operatore e non riparte al riavvio del gateway. Non modifica il programma, M55, il selettore remoto, le uscite o i parametri di rampa/fallback del PLC.
 
