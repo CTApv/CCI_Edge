@@ -1,4 +1,5 @@
 from app.models.inverter_model import InverterModel, InverterPoint
+from app.catalog.xantrex_gt500_catalog import build_xantrex_gt500_models
 from app.services.xantrex_modbus_service import XANTREX_GT_DRIVER
 
 
@@ -339,6 +340,8 @@ def build_xantrex_gt_models(protocol: str, transport: str) -> list[InverterModel
             ],
             telemetry_points=build_xantrex_gt_telemetry(),
             command_points=build_xantrex_gt_commands(),
+            catalog_meta={"verification_status": "legacy_scope", "field_tested": False,
+                "notes": "Profilo legacy GT via gateway/Xanbus. Non usare per GT500 E, MVX, 480 o 600: selezionare la sottofamiglia dedicata."},
         )
         for model in XANTREX_GT_MODELS
-    ]
+    ] + build_xantrex_gt500_models(protocol, transport)

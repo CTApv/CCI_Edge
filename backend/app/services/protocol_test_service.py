@@ -356,6 +356,10 @@ class ProtocolTestService:
             )
 
         catalog_model = self._find_catalog_model(payload)
+        if catalog_model is not None and catalog_model.catalog_meta.get("operational") is False:
+            return ProtocolTestResponse(success=False, protocol=payload.protocol, transport=payload.transport,
+                message="Sottofamiglia GT500 non operativa: mappa Modbus da acquisire.",
+                diagnostics={"stub_mode": False, "stage": "profile", "request_attempted": False})
         connection_settings = self._merge_connection_settings(catalog_model, payload)
         required_settings = rule.required_settings_by_transport.get(payload.transport, ())
         missing_settings = self._missing_required_settings(connection_settings, required_settings)
@@ -782,7 +786,9 @@ class ProtocolTestService:
             success=True,
             protocol=payload.protocol,
             transport=payload.transport,
-            message="Profile-aware connection test passed.",
+            message=("Diagnostica gateway disponibile; identita inverter e potenza non confermate."
+                if catalog_model.catalog_meta.get("scope") == "diagnostics_only"
+                else "Profile-aware connection test passed."),
             diagnostics={
                 **diagnostics,
                 "stage": "profile",
@@ -1800,6 +1806,8 @@ class ProtocolTestService:
     ) -> tuple[_DiscoveryDescriptor, ...]:
         grouped: dict[tuple[int, ModbusScanFunction], list[tuple[str, str, str, str]]] = {}
         for inverter_model in get_inverter_catalog():
+            if inverter_model.catalog_meta.get("discovery_enabled") is False or inverter_model.catalog_meta.get("operational") is False:
+                continue
             if inverter_model.transport != transport:
                 continue
             if inverter_model.protocol not in allowed_protocols:

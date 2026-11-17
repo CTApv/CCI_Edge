@@ -253,16 +253,12 @@ class DeviceService:
         protocol: str,
         transport: str,
     ) -> None:
-        if (
-            inverter_profile_resolver.find_catalog_model(
-                brand=brand,
-                model=model,
-                protocol=protocol,
-                transport=transport,
-            )
-            is None
-        ):
+        profile = inverter_profile_resolver.find_catalog_model(
+            brand=brand, model=model, protocol=protocol, transport=transport)
+        if profile is None:
             raise ValueError("Il profilo selezionato non e disponibile nel catalogo inverter.")
+        if profile.catalog_meta.get("operational") is False:
+            raise ValueError("Sottofamiglia GT500 presente a catalogo ma non operativa: mappa Modbus da acquisire.")
 
     def _ensure_unique_endpoint_unit(
         self,
