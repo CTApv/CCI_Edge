@@ -1,3 +1,5 @@
+from app.catalog.fimer_pvs_catalog import PVS_DRIVER
+from app.services.fimer_pvs_service import fimer_pvs_service, is_pvs_device
 from app.catalog.xantrex_gt500_catalog import GT500_GATEWAY_DRIVER, GT500_E_MODELS, is_gt500_family
 from app.services.xantrex_gt500_service import xantrex_gt500_service
 from app.services.fronius_sunspec_service import FRONIUS_DRIVER, fronius_sunspec_service
@@ -133,6 +135,8 @@ class InverterIoService:
         device: DeviceResponse,
         inverter_model: InverterModel,
     ) -> TelemetryReadResult:
+        if is_pvs_device(device):
+            return self._read_telemetry_points(device, inverter_model, [p for p in inverter_model.telemetry_points if p.key in {"operating_state", "active_power_kw"}])
         if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
             # Always validate the complete gateway diagnostic block, including
             # link health; the generic synthetic probe has no canonical mapping.
@@ -168,6 +172,9 @@ class InverterIoService:
         inverter_model: InverterModel,
         points: list[InverterPoint],
     ) -> TelemetryReadResult:
+        if is_pvs_device(device):
+            values = fimer_pvs_service.read_points(device, points)
+            return TelemetryReadResult(self._apply_point_scaling(points, values), PVS_DRIVER)
         if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
             if device.model not in GT500_E_MODELS:
                 raise ValueError("Sottofamiglia GT500 non operativa: mappa Modbus da acquisire.")
@@ -195,6 +202,9 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if is_pvs_device(device):
+            result = fimer_pvs_service.write(device, point, value)
+            return CommandWriteResult(result.success, result.diagnostics, result.error)
         if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
             return CommandWriteResult(False, {"stub_mode": False, "stage": "profile", "write_attempted": False},
                 "Comandi GT500 non abilitati: mappa e rilettura da verificare.")
@@ -232,6 +242,8 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> tuple[object, ...] | None:
+        if is_pvs_device(device):
+            return None
         if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
             return None
         if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
@@ -293,6 +305,8 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if is_pvs_device(device):
+            return CommandWriteResult(False, {"stub_mode": False, "write_attempted": False, "broadcast": True}, "PVS richiede identificazione e rilettura; broadcast escluso.")
         if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
             return CommandWriteResult(False, {"stub_mode": False, "stage": "profile", "write_attempted": False},
                 "Broadcast GT500 non abilitato.")

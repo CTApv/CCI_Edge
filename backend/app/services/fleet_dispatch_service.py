@@ -1200,10 +1200,12 @@ class FleetDispatchService:
             )
             return control_state, self._build_dispatch_result(control_state)
 
+        refresh_due = self._pvs_refresh_due(device, previous_state)
         if (
             preserved_fields["last_dispatch_at"] is not None
             and preserved_fields["last_sent_percent"] == desired_percent
             and readback.supported
+            and not refresh_due
         ):
             if readback.fresh and readback.confirmed:
                 control_state = FleetDeviceControlState(
@@ -1308,7 +1310,7 @@ class FleetDispatchService:
                 },
             )
 
-        if not self._should_attempt_dispatch(previous_state, desired_percent, desired_updated_at):
+        if not refresh_due and not self._should_attempt_dispatch(previous_state, desired_percent, desired_updated_at):
             control_state = FleetDeviceControlState(
                 device_id=device.device_id,
                 name=device.name,
@@ -1492,6 +1494,19 @@ class FleetDispatchService:
             control_state=control_state,
             diagnostics=diagnostics,
         )
+
+    def _pvs_refresh_due(self, device, previous_state) -> bool:
+        from app.services.fimer_pvs_service import is_pvs_device
+        if not is_pvs_device(device) or previous_state is None:
+            return False
+        try:
+            sent = datetime.fromisoformat(previous_state.last_dispatch_at)
+            if sent.tzinfo is None:
+                return True
+            age = (datetime.now(UTC) - sent).total_seconds()
+            return age < 0 or age >= 45
+        except (ValueError, TypeError):
+            return True
 
     def _should_attempt_dispatch(
         self,

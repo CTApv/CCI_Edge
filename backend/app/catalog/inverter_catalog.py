@@ -1,3 +1,4 @@
+from app.catalog.fimer_pvs_catalog import build_fimer_pvs_models
 from app.catalog.fronius_verto_catalog import build_fronius_verto_models
 from app.models.inverter_model import InverterModel, InverterPoint
 from app.catalog.aurora_catalog import build_aurora_models
@@ -3565,6 +3566,7 @@ INVERTER_CATALOG: list[InverterModel] = [
 
 
 INVERTER_CATALOG += build_sinvert_s7_models()
+INVERTER_CATALOG += build_fimer_pvs_models("modbus_tcp", "tcp") + build_fimer_pvs_models("modbus_rtu", "serial")
 
 
 def get_inverter_catalog() -> list[InverterModel]:

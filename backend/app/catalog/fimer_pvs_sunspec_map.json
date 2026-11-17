@@ -1,0 +1,1137 @@
+{
+  "source_url": "https://www.fimer.com/sites/default/files/SUNSPEC_PVS-100_120_PICS_Rev_005.zip",
+  "source_version": "Rev 005, 2021-02-15",
+  "source_sha256": "78a48c453d1bb5ea899e3e3dfc41d81026bd8d87fc48adb6fc63d24148351ec1",
+  "models": {
+    "1": {
+      "reference_address": 40002,
+      "fields": {
+        "ID": {
+          "offset": 0,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "L": {
+          "offset": 1,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "Mn": {
+          "offset": 2,
+          "length": 16,
+          "datatype": "string",
+          "unit": null
+        },
+        "Md": {
+          "offset": 18,
+          "length": 16,
+          "datatype": "string",
+          "unit": null
+        },
+        "Opt": {
+          "offset": 34,
+          "length": 8,
+          "datatype": "string",
+          "unit": null
+        },
+        "Vr": {
+          "offset": 42,
+          "length": 8,
+          "datatype": "string",
+          "unit": null
+        },
+        "Number": {
+          "offset": 50,
+          "length": 16,
+          "datatype": "string",
+          "unit": null
+        },
+        "Address": {
+          "offset": 66,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "Pad": {
+          "offset": 67,
+          "length": 1,
+          "datatype": "pad",
+          "unit": null
+        }
+      },
+      "reference_length": 66
+    },
+    "103": {
+      "reference_address": 40070,
+      "fields": {
+        "ID": {
+          "offset": 0,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "L": {
+          "offset": 1,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "A": {
+          "offset": 2,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 6
+        },
+        "AphA": {
+          "offset": 3,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 6
+        },
+        "AphB": {
+          "offset": 4,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 6
+        },
+        "AphC": {
+          "offset": 5,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 6
+        },
+        "A_SF": {
+          "offset": 6,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "PPVphAB": {
+          "offset": 7,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 13
+        },
+        "PPVphBC": {
+          "offset": 8,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 13
+        },
+        "PPVphCA": {
+          "offset": 9,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 13
+        },
+        "PhVphA": {
+          "offset": 10,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 13
+        },
+        "PhVphB": {
+          "offset": 11,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 13
+        },
+        "PhVphC": {
+          "offset": 12,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 13
+        },
+        "V_SF": {
+          "offset": 13,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "W": {
+          "offset": 14,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "W",
+          "sf_offset": 15
+        },
+        "W_SF": {
+          "offset": 15,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "Hz": {
+          "offset": 16,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Hz",
+          "sf_offset": 17
+        },
+        "Hz_SF": {
+          "offset": 17,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "VA": {
+          "offset": 18,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "VA",
+          "sf_offset": 19
+        },
+        "VA_SF": {
+          "offset": 19,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "Var": {
+          "offset": 20,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "var",
+          "sf_offset": 21
+        },
+        "VAr_SF": {
+          "offset": 21,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "PF": {
+          "offset": 22,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "Pct",
+          "sf_offset": 23
+        },
+        "PF_SF": {
+          "offset": 23,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "WH": {
+          "offset": 24,
+          "length": 2,
+          "datatype": "acc32",
+          "unit": "Wh",
+          "sf_offset": 26
+        },
+        "WH_SF": {
+          "offset": 26,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "DCA": {
+          "offset": 27,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 28
+        },
+        "DCA_SF": {
+          "offset": 28,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "DCW": {
+          "offset": 31,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "W",
+          "sf_offset": 32
+        },
+        "DCW_SF": {
+          "offset": 32,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "TmpCab": {
+          "offset": 33,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "C",
+          "sf_offset": 37
+        },
+        "TmpSnk": {
+          "offset": 34,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "C",
+          "sf_offset": 37
+        },
+        "TmpOt": {
+          "offset": 36,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "C",
+          "sf_offset": 37
+        },
+        "Tmp_SF": {
+          "offset": 37,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "St": {
+          "offset": 38,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "StVnd": {
+          "offset": 39,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "Evt1": {
+          "offset": 40,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "Evt2": {
+          "offset": 42,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "EvtVnd1": {
+          "offset": 44,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "EvtVnd2": {
+          "offset": 46,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "EvtVnd3": {
+          "offset": 48,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "EvtVnd4": {
+          "offset": 50,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        }
+      },
+      "reference_length": 50
+    },
+    "120": {
+      "reference_address": 40122,
+      "fields": {
+        "ID": {
+          "offset": 0,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "L": {
+          "offset": 1,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "DERTyp": {
+          "offset": 2,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "WRtg": {
+          "offset": 3,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "W",
+          "sf_offset": 4
+        },
+        "WRtg_SF": {
+          "offset": 4,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "VARtg": {
+          "offset": 5,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "VA",
+          "sf_offset": 6
+        },
+        "VARtg_SF": {
+          "offset": 6,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "VArRtgQ1": {
+          "offset": 7,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "var",
+          "sf_offset": 11
+        },
+        "VArRtgQ2": {
+          "offset": 8,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "var",
+          "sf_offset": 11
+        },
+        "VArRtgQ3": {
+          "offset": 9,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "var",
+          "sf_offset": 11
+        },
+        "VArRtgQ4": {
+          "offset": 10,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "var",
+          "sf_offset": 11
+        },
+        "VArRtg_SF": {
+          "offset": 11,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "ARtg": {
+          "offset": 12,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 13
+        },
+        "ARtg_SF": {
+          "offset": 13,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "PFRtgQ1": {
+          "offset": 14,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "cos()",
+          "sf_offset": 18
+        },
+        "PFRtgQ2": {
+          "offset": 15,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "cos()",
+          "sf_offset": 18
+        },
+        "PFRtgQ3": {
+          "offset": 16,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "cos()",
+          "sf_offset": 18
+        },
+        "PFRtgQ4": {
+          "offset": 17,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "cos()",
+          "sf_offset": 18
+        },
+        "PFRtg_SF": {
+          "offset": 18,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "Pad": {
+          "offset": 27,
+          "length": 1,
+          "datatype": "pad",
+          "unit": null
+        }
+      },
+      "reference_length": 26
+    },
+    "121": {
+      "reference_address": 40150,
+      "fields": {
+        "ID": {
+          "offset": 0,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "L": {
+          "offset": 1,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "WMax": {
+          "offset": 2,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "W",
+          "sf_offset": 22
+        },
+        "VAMax": {
+          "offset": 7,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "VA",
+          "sf_offset": 26
+        },
+        "VArMaxQ1": {
+          "offset": 8,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "var",
+          "sf_offset": 27
+        },
+        "VArMaxQ2": {
+          "offset": 9,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "var",
+          "sf_offset": 27
+        },
+        "VArMaxQ3": {
+          "offset": 10,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "var",
+          "sf_offset": 27
+        },
+        "VArMaxQ4": {
+          "offset": 11,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "var",
+          "sf_offset": 27
+        },
+        "WGra": {
+          "offset": 12,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "% WMax/sec",
+          "sf_offset": 28
+        },
+        "WMax_SF": {
+          "offset": 22,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "VAMax_SF": {
+          "offset": 26,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "VArMax_SF": {
+          "offset": 27,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "WGra_SF": {
+          "offset": 28,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        }
+      },
+      "reference_length": 30
+    },
+    "122": {
+      "reference_address": 40182,
+      "fields": {
+        "ID": {
+          "offset": 0,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "L": {
+          "offset": 1,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "PVConn": {
+          "offset": 2,
+          "length": 1,
+          "datatype": "bitfield16",
+          "unit": null
+        },
+        "StorConn": {
+          "offset": 3,
+          "length": 1,
+          "datatype": "bitfield16",
+          "unit": null
+        },
+        "ECPConn": {
+          "offset": 4,
+          "length": 1,
+          "datatype": "bitfield16",
+          "unit": null
+        },
+        "ActWh": {
+          "offset": 5,
+          "length": 4,
+          "datatype": "acc64",
+          "unit": "Wh"
+        },
+        "ActVAh": {
+          "offset": 9,
+          "length": 4,
+          "datatype": "acc64",
+          "unit": "VAh"
+        },
+        "StSetLimMsk": {
+          "offset": 33,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "StActCtl": {
+          "offset": 35,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": 0
+        },
+        "Tms": {
+          "offset": 41,
+          "length": 2,
+          "datatype": "uint32",
+          "unit": "Secs"
+        },
+        "RtSt": {
+          "offset": 43,
+          "length": 1,
+          "datatype": "bitfield16",
+          "unit": null
+        },
+        "Ris": {
+          "offset": 44,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "ohms",
+          "sf_offset": 45
+        },
+        "Ris_SF": {
+          "offset": 45,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        }
+      },
+      "reference_length": 44
+    },
+    "123": {
+      "reference_address": 40228,
+      "fields": {
+        "ID": {
+          "offset": 0,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "L": {
+          "offset": 1,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "Conn_WinTms": {
+          "offset": 2,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "Conn_RvrtTms": {
+          "offset": 3,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "Conn": {
+          "offset": 4,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "WMaxLimPct": {
+          "offset": 5,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "% WMax",
+          "sf_offset": 23
+        },
+        "WMaxLimPct_WinTms": {
+          "offset": 6,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "WMaxLimPct_RvrtTms": {
+          "offset": 7,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "WMaxLimPct_RmpTms": {
+          "offset": 8,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "WMaxLim_Ena": {
+          "offset": 9,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "OutPFSet": {
+          "offset": 10,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "cos()",
+          "sf_offset": 24
+        },
+        "OutPFSet_WinTms": {
+          "offset": 11,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "OutPFSet_RvrtTms": {
+          "offset": 12,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "OutPFSet_RmpTms": {
+          "offset": 13,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "OutPFSet_Ena": {
+          "offset": 14,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "VArWMaxPct": {
+          "offset": 15,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "% WMax",
+          "sf_offset": 25
+        },
+        "VArMaxPct": {
+          "offset": 16,
+          "length": 1,
+          "datatype": "int16",
+          "unit": "% VArMax",
+          "sf_offset": 25
+        },
+        "VArPct_WinTms": {
+          "offset": 18,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "VArPct_RvrtTms": {
+          "offset": 19,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "VArPct_RmpTms": {
+          "offset": 20,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "Secs"
+        },
+        "VArPct_Mod": {
+          "offset": 21,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "VArPct_Ena": {
+          "offset": 22,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "WMaxLimPct_SF": {
+          "offset": 23,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "OutPFSet_SF": {
+          "offset": 24,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "VArPct_SF": {
+          "offset": 25,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        }
+      },
+      "reference_length": 24
+    },
+    "160": {
+      "reference_address": 41104,
+      "fields": {
+        "ID": {
+          "offset": 0,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "L": {
+          "offset": 1,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "DCA_SF": {
+          "offset": 2,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "DCV_SF": {
+          "offset": 3,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "DCW_SF": {
+          "offset": 4,
+          "length": 1,
+          "datatype": "sunssf",
+          "unit": null
+        },
+        "Evt": {
+          "offset": 6,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "N": {
+          "offset": 8,
+          "length": 1,
+          "datatype": "count",
+          "unit": null
+        },
+        "module/1/ID": {
+          "offset": 10,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "module/1/IDStr": {
+          "offset": 11,
+          "length": 8,
+          "datatype": "string",
+          "unit": null
+        },
+        "module/1/DCA": {
+          "offset": 19,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 2
+        },
+        "module/1/DCV": {
+          "offset": 20,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 3
+        },
+        "module/1/DCW": {
+          "offset": 21,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "W",
+          "sf_offset": 4
+        },
+        "module/1/DCSt": {
+          "offset": 27,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "module/1/DCEvt": {
+          "offset": 28,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "module/2/ID": {
+          "offset": 30,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "module/2/IDStr": {
+          "offset": 31,
+          "length": 8,
+          "datatype": "string",
+          "unit": null
+        },
+        "module/2/DCA": {
+          "offset": 39,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 2
+        },
+        "module/2/DCV": {
+          "offset": 40,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 3
+        },
+        "module/2/DCW": {
+          "offset": 41,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "W",
+          "sf_offset": 4
+        },
+        "module/2/DCSt": {
+          "offset": 47,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "module/2/DCEvt": {
+          "offset": 48,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "module/3/ID": {
+          "offset": 50,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "module/3/IDStr": {
+          "offset": 51,
+          "length": 8,
+          "datatype": "string",
+          "unit": null
+        },
+        "module/3/DCA": {
+          "offset": 59,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 2
+        },
+        "module/3/DCV": {
+          "offset": 60,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 3
+        },
+        "module/3/DCW": {
+          "offset": 61,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "W",
+          "sf_offset": 4
+        },
+        "module/3/DCSt": {
+          "offset": 67,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "module/3/DCEvt": {
+          "offset": 68,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "module/4/ID": {
+          "offset": 70,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "module/4/IDStr": {
+          "offset": 71,
+          "length": 8,
+          "datatype": "string",
+          "unit": null
+        },
+        "module/4/DCA": {
+          "offset": 79,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 2
+        },
+        "module/4/DCV": {
+          "offset": 80,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 3
+        },
+        "module/4/DCW": {
+          "offset": 81,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "W",
+          "sf_offset": 4
+        },
+        "module/4/DCSt": {
+          "offset": 87,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "module/4/DCEvt": {
+          "offset": 88,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "module/5/ID": {
+          "offset": 90,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "module/5/IDStr": {
+          "offset": 91,
+          "length": 8,
+          "datatype": "string",
+          "unit": null
+        },
+        "module/5/DCA": {
+          "offset": 99,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 2
+        },
+        "module/5/DCV": {
+          "offset": 100,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 3
+        },
+        "module/5/DCW": {
+          "offset": 101,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "W",
+          "sf_offset": 4
+        },
+        "module/5/DCSt": {
+          "offset": 107,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "module/5/DCEvt": {
+          "offset": 108,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        },
+        "module/6/ID": {
+          "offset": 110,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": null
+        },
+        "module/6/IDStr": {
+          "offset": 111,
+          "length": 8,
+          "datatype": "string",
+          "unit": null
+        },
+        "module/6/DCA": {
+          "offset": 119,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "A",
+          "sf_offset": 2
+        },
+        "module/6/DCV": {
+          "offset": 120,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "V",
+          "sf_offset": 3
+        },
+        "module/6/DCW": {
+          "offset": 121,
+          "length": 1,
+          "datatype": "uint16",
+          "unit": "W",
+          "sf_offset": 4
+        },
+        "module/6/DCSt": {
+          "offset": 127,
+          "length": 1,
+          "datatype": "enum16",
+          "unit": null
+        },
+        "module/6/DCEvt": {
+          "offset": 128,
+          "length": 2,
+          "datatype": "bitfield32",
+          "unit": null
+        }
+      },
+      "reference_length": 128
+    }
+  }
+}

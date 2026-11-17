@@ -9,7 +9,7 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-DEFAULT_APP_VERSION = "v1.4.1"
+DEFAULT_APP_VERSION = "v1.4.2"
 _VIRTUAL_INTERFACE_PREFIXES = ("br-", "docker", "tailscale", "veth", "virbr", "zt")
 _BUILD_METADATA_NAMES = {
     "PV_EDGE_MANAGER_VERSION",
