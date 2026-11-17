@@ -12,6 +12,8 @@ from app.core.connection_settings import (
     get_write_timeout_seconds,
 )
 from app.models.inverter_model import InverterModel, InverterPoint
+from app.catalog.sungrow_catalog import SG110CX_POWER_DRIVER
+from app.services.sungrow_sg110cx_service import sungrow_sg110cx_service
 from app.schemas.device_schemas import DeviceResponse
 from app.services.aurora_service import (
     AURORA_DRIVER,
@@ -182,6 +184,9 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
+            result = sungrow_sg110cx_service.write(device, point, value)
+            return CommandWriteResult(result.success, result.diagnostics, result.error)
         if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
             try:
                 result = fronius_sunspec_service.write_point(device, point, value)
@@ -213,6 +218,8 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> tuple[object, ...] | None:
+        if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
+            return None
         if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
             return None
         if device.protocol not in {"modbus_rtu", "modbus_tcp"}:
@@ -270,6 +277,9 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
+            return CommandWriteResult(False, {'stub_mode': False, 'broadcast': True, 'stage': 'profile'},
+                'SG110CX Premium richiede identita e rilettura: broadcast non supportato.')
         if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
             return CommandWriteResult(False, {"stub_mode": False, "stage": "profile", "broadcast": True},
                 "Fronius SunSpec richiede comandi indirizzati con verifica; broadcast disabilitato.")
@@ -1963,6 +1973,9 @@ class InverterIoService:
         for point in points:
             raw_value = raw_values.get(point.key)
             if raw_value is None:
+                continue
+            if raw_value in point.protocol_meta.get("raw_invalid_values", []):
+                scaled_values[point.key] = None
                 continue
 
             if not isinstance(raw_value, (int, float)):

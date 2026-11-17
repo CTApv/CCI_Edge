@@ -1,11 +1,17 @@
+from dataclasses import replace
 from app.models.inverter_model import InverterModel, InverterPoint
 
 
 SUNGROW_BRAND = "SUNGROW"
+SG110CX_PREMIUM_MODEL = "SG110CX Premium"
+SG110CX_POWER_DRIVER = "sungrow_sg110cx_power"
+SG110CX_TYPE_CODE = 0x2C06
+SUNGROW_PROTOCOL_URL = "https://shop.kpenergy.se/globalassets/product-sheets/inverters/sungrow/130675/ti_20230117_communication-protocol-of--residential-and-commerical-pv-grid-connected-inverter_v1.1.53_en.pdf"
 SUNGROW_MODELS = (
     "PV Grid-Connected String Inverter V1.1",
     "SG KTL/KTL-M/HV String Inverter",
     "SG CX/RT/HX String Inverter",
+    SG110CX_PREMIUM_MODEL,
 )
 
 SUNGROW_WORK_STATE_MAP = {
@@ -24,6 +30,7 @@ SUNGROW_WORK_STATE_MAP = {
 }
 
 SUNGROW_DEVICE_TYPE_MAP = {
+    SG110CX_TYPE_CODE: "SG110CX",
     0x010F: "SG60KTL",
     0x0136: "SG60KU",
     0x0134: "SG33KTL-M",
@@ -84,6 +91,15 @@ def telemetry_point(
         "section": section,
         "manual_register": register,
     }
+    # Sungrow V1.1.53 section 4: low 16-bit word first, bytes big-endian.
+    # Sentinels are raw values and must be removed before unit scaling.
+    invalid = {"uint16": 0xFFFF, "int16": 0x7FFF,
+               "uint32": 0xFFFFFFFF, "int32": 0x7FFFFFFF}
+    if datatype in invalid:
+        protocol_meta["raw_invalid_values"] = [invalid[datatype]]
+    if datatype in {"uint32", "int32"}:
+        datatype += "_swapped"
+        protocol_meta.update(word_order="low_first", byte_order="big")
     if summary_metric is not None:
         protocol_meta["summary_metric"] = summary_metric
     if enum_map is not None:
@@ -154,7 +170,7 @@ def command_point(
     )
 
 
-def build_sungrow_telemetry() -> list[InverterPoint]:
+def build_sungrow_telemetry(model: str | None = None) -> list[InverterPoint]:
     points = [
         telemetry_point("protocol_number", "Protocol number", 4950, 2, "uint32", visible=False, section="Identity"),
         telemetry_point("protocol_version", "Protocol version", 4952, 2, "uint32", visible=False, section="Identity"),
@@ -215,16 +231,47 @@ def build_sungrow_telemetry() -> list[InverterPoint]:
         )
         for index in range(1, 19)
     )
+    if model == SG110CX_PREMIUM_MODEL:
+        # Appendix 5: SG110CX has nine MPPTs, two strings each. The reserved
+        # gap after MPPT8 must not be mistaken for MPPT9.
+        for index, voltage_register in [(5, 5117), (6, 5119), (7, 5121), (8, 5123), (9, 5130)]:
+            points.extend([
+                telemetry_point(f"pv{index}_voltage_v", f"DC voltage {index}", voltage_register, 1,
+                    "uint16", scale=0.1, unit="V", section="PV input", optional_block=True),
+                telemetry_point(f"pv{index}_current_a", f"DC current {index}", voltage_register+1, 1,
+                    "uint16", scale=0.1, unit="A", section="PV input", optional_block=True),
+            ])
+        points.append(telemetry_point("active_power_regulation_setpoint_kw", "Active power regulation setpoint",
+            5077, 2, "uint32", scale=0.001, unit="kW", section="Power control", optional_block=True))
+        points = [replace(p, visible=True) if p.key in {"device_type_code", "serial_number", "arm_software_version", "dsp_software_version"} else p for p in points]
+        points = [replace(p, protocol_meta={**p.protocol_meta, "readback_enabled_key": "active_power_limit_switch",
+            "readback_enabled_value": 0xAA}) if p.key == "active_power_limit_pct" else p for p in points]
     return points
 
 
-def build_sungrow_commands() -> list[InverterPoint]:
-    return [
+def build_sungrow_commands(model: str | None = None) -> list[InverterPoint]:
+    points = [
         command_point("start_stop", "Start/Stop", 5006, "uint16", section="Operation", enum_map=SUNGROW_START_STOP_MAP),
         command_point("active_power_limit_enable", "Power limitation switch", 5007, "uint16", section="Power control", enum_map=SUNGROW_POWER_LIMIT_SWITCH_MAP),
         command_point("active_power_limit", "Power limitation setting", 5008, "uint16", scale=0.1, unit="%", section="Power control", min_value=0.0, max_value=110.0, step=0.1),
         command_point("power_factor_setting", "Power factor setting", 5019, "int16", scale=0.001, section="Reactive power control", min_value=-1.0, max_value=1.0, step=0.001),
     ]
+    if model == SG110CX_PREMIUM_MODEL:
+        points = [replace(p, protocol_meta={**p.protocol_meta, "driver": SG110CX_POWER_DRIVER,
+            "expected_device_type": SG110CX_TYPE_CODE,
+            **({"enum_map": {0xCF: "Start", 0xCE: "Stop"}} if p.key == "start_stop" else {})}) for p in points]
+    return points
+
+
+def catalog_meta(model: str) -> dict[str, object]:
+    if model != SG110CX_PREMIUM_MODEL:
+        return {}
+    return {"verification_status": "documented_not_field_tested", "field_tested": False,
+        "source_document": "Sungrow Communication Protocol of PV Grid-Connected String Inverters",
+        "source_version": "V1.1.53 (2023-01-13)", "source_url": SUNGROW_PROTOCOL_URL,
+        "last_reviewed_at": "2026-11-17", "device_type_code": SG110CX_TYPE_CODE,
+        "mppt_count": 9, "string_count": 18,
+        "notes": "SG110CX Premium, not SG110CX-P2. Ethernet depends on installed accessories. Hardware validation pending."}
 
 
 def build_sungrow_models(protocol: str, transport: str) -> list[InverterModel]:
@@ -253,11 +300,12 @@ def build_sungrow_models(protocol: str, transport: str) -> list[InverterModel]:
                     "modbus tcp",
                     "grid-tied telemetry",
                     "active power control",
-                    "broadcast write",
+                    *([] if model == SG110CX_PREMIUM_MODEL else ["broadcast write"]),
                     "string current monitoring",
                 ],
-                telemetry_points=build_sungrow_telemetry(),
-                command_points=build_sungrow_commands(),
+                telemetry_points=build_sungrow_telemetry(model),
+                command_points=build_sungrow_commands(model),
+                catalog_meta=catalog_meta(model),
             )
             for model in SUNGROW_MODELS
         ]
@@ -291,11 +339,12 @@ def build_sungrow_models(protocol: str, transport: str) -> list[InverterModel]:
                 "modbus rtu",
                 "grid-tied telemetry",
                 "active power control",
-                "broadcast write",
+                *([] if model == SG110CX_PREMIUM_MODEL else ["broadcast write"]),
                 "string current monitoring",
             ],
-            telemetry_points=build_sungrow_telemetry(),
-            command_points=build_sungrow_commands(),
+            telemetry_points=build_sungrow_telemetry(model),
+            command_points=build_sungrow_commands(model),
+            catalog_meta=catalog_meta(model),
         )
         for model in SUNGROW_MODELS
     ]

@@ -31,7 +31,7 @@ class SungrowCatalogTests(unittest.TestCase):
 
         self.assertEqual(telemetry_points["total_energy_kwh"].address, input_addr(5004))
         self.assertEqual(telemetry_points["total_energy_kwh"].length, 2)
-        self.assertEqual(telemetry_points["total_energy_kwh"].datatype, "uint32")
+        self.assertEqual(telemetry_points["total_energy_kwh"].datatype, "uint32_swapped")
         self.assertEqual(telemetry_points["total_energy_kwh"].unit, "kWh")
 
         self.assertEqual(telemetry_points["temperature_c"].address, input_addr(5008))
