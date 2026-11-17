@@ -83,6 +83,7 @@ class InverterProfileResolver:
                 resolved_parent.command_points,
                 inverter_model.command_points,
             ),
+            catalog_meta=dict(inverter_model.catalog_meta),
             alarm_points=self._merge_points(
                 resolved_parent.alarm_points,
                 inverter_model.alarm_points,
@@ -112,6 +113,7 @@ class InverterProfileResolver:
                 **(defaults_override if isinstance(defaults_override, dict) else {}),
             },
             features=list(inverter_model.features),
+            catalog_meta=dict(inverter_model.catalog_meta),
             telemetry_points=self._apply_point_overrides(
                 inverter_model.telemetry_points,
                 telemetry_override,

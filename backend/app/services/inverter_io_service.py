@@ -1,3 +1,5 @@
+from app.catalog.xantrex_gt500_catalog import GT500_GATEWAY_DRIVER, GT500_E_MODELS, is_gt500_family
+from app.services.xantrex_gt500_service import xantrex_gt500_service
 from app.services.fronius_sunspec_service import FRONIUS_DRIVER, fronius_sunspec_service
 from dataclasses import dataclass
 from struct import pack, unpack
@@ -131,6 +133,10 @@ class InverterIoService:
         device: DeviceResponse,
         inverter_model: InverterModel,
     ) -> TelemetryReadResult:
+        if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
+            # Always validate the complete gateway diagnostic block, including
+            # link health; the generic synthetic probe has no canonical mapping.
+            return self.read_telemetry(device, inverter_model)
         if any(p.protocol_meta.get("driver") == FRONIUS_DRIVER for p in inverter_model.telemetry_points):
             return self._read_telemetry_points(device, inverter_model,
                 [p for p in inverter_model.telemetry_points if p.key in {"operating_state", "active_power_kw"}])
@@ -162,6 +168,11 @@ class InverterIoService:
         inverter_model: InverterModel,
         points: list[InverterPoint],
     ) -> TelemetryReadResult:
+        if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
+            if device.model not in GT500_E_MODELS:
+                raise ValueError("Sottofamiglia GT500 non operativa: mappa Modbus da acquisire.")
+            values = xantrex_gt500_service.read_points(device, points)
+            return TelemetryReadResult(values, GT500_GATEWAY_DRIVER)
         if any(p.protocol_meta.get("driver") == FRONIUS_DRIVER for p in points):
             raw_values = fronius_sunspec_service.read_points(device, points)
             return TelemetryReadResult(self._apply_point_scaling(points, raw_values), FRONIUS_DRIVER)
@@ -184,6 +195,9 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
+            return CommandWriteResult(False, {"stub_mode": False, "stage": "profile", "write_attempted": False},
+                "Comandi GT500 non abilitati: mappa e rilettura da verificare.")
         if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
             result = sungrow_sg110cx_service.write(device, point, value)
             return CommandWriteResult(result.success, result.diagnostics, result.error)
@@ -218,6 +232,8 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> tuple[object, ...] | None:
+        if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
+            return None
         if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
             return None
         if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
@@ -277,6 +293,9 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
+            return CommandWriteResult(False, {"stub_mode": False, "stage": "profile", "write_attempted": False},
+                "Broadcast GT500 non abilitato.")
         if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
             return CommandWriteResult(False, {'stub_mode': False, 'broadcast': True, 'stage': 'profile'},
                 'SG110CX Premium richiede identita e rilettura: broadcast non supportato.')

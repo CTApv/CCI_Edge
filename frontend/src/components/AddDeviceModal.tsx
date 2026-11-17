@@ -422,6 +422,7 @@ export function AddDeviceModal({ onClose, onCreated, prefill }: AddDeviceModalPr
   const signatureText = buildSignatureText(selectedCatalogEntry);
   const sourceReady = form.name.trim().length > 0;
   const profileReady =
+    selectedCatalogEntry?.verification.status !== "documentation_pending" &&
     form.brand.trim().length > 0 &&
     form.model.trim().length > 0 &&
     form.protocol.trim().length > 0 &&
@@ -987,7 +988,13 @@ export function AddDeviceModal({ onClose, onCreated, prefill }: AddDeviceModalPr
                             ? "Collaudato in campo"
                             : ["manual_verified", "documented_not_field_tested"].includes(selectedCatalogEntry.verification.status)
                               ? "Verificato da manuale"
-                              : "Da classificare"}
+                              : selectedCatalogEntry.verification.status === "documentation_pending"
+                                ? "Non operativo: mappa da acquisire"
+                                : selectedCatalogEntry.verification.status === "diagnostic_only"
+                                  ? "Solo diagnostica"
+                                  : selectedCatalogEntry.verification.status === "legacy_scope"
+                                    ? "Profilo legacy: ambito limitato"
+                                    : "Da classificare"}
                         </strong>
                         <span>
                           {selectedCatalogEntry.verification.source_document ?? "Fonte non dichiarata"}
