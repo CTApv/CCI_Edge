@@ -361,7 +361,8 @@ input::placeholder { color: var(--text-dim); }
   .sv-workspace { margin-left: 0; padding-bottom: 66px; }
   .sv-workspace { padding: 12px 12px 84px; }
   .sv-topbar { min-height: 62px; padding: 12px 14px; border-radius: 20px; flex-wrap: wrap; }
-  .sv-breadcrumb,.sv-topbar > div > span:nth-child(2),.sv-avatar { display: none; }
+  .sv-topbar > div > span:nth-child(2),.sv-avatar { display: none; }
+  .sv-breadcrumb { display: inline; font-size: 11px; }
   .sv-topbar > div { gap: 7px; }
   .sv-topbar .sv-live { font-size: 10px; }
   .sv-preview { font-size: 9px; }

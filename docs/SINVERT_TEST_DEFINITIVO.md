@@ -1,6 +1,6 @@
 # test sinvert definitivo
 
-Prerelease `v1.3.6-test-sinvert-definitivo`, basata su PV Guardian v1.3.
+Prerelease `v1.3.7-test-sinvert-definitivo`, basata su PV Guardian v1.3.
 
 La vista SINVERT usa ora la stessa base grafica di PV Guardian: colori e tipografia condivisi in `frontend/src/theme.css`, superfici e pulsanti coerenti, logo HBA/STE e ritorno alla dashboard. Panoramica e allarmi restano separati dalle viste tecniche Diagnostica e Collaudo. Sono conservati i link diretti al dispositivo e alla scheda selezionata, con navigazione mobile. Questo aggiornamento grafico mantiene il comportamento dei driver, dei consensi e del watchdog della v1.3.5; non attribuisce alle posizioni PLC una topologia master/slave ancora da verificare.
 
