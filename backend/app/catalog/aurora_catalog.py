@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from app.models.inverter_model import InverterModel, InverterPoint
 from app.services.aurora_service import AURORA_DRIVER
+from app.catalog.aurora_families import aurora_profile_specs, profile_metadata
 
 AURORA_PROTOCOL = "aurora"
 AURORA_TRANSPORT = "serial"
@@ -354,6 +355,20 @@ def build_aurora_models() -> list[InverterModel]:
         )
         for model_name in _POWER_REDUCTION_MODELS
     )
+    # Additional identities use the existing Aurora telemetry transport. Do not
+    # infer power-control compatibility from a commercial name or software label.
+    for spec in aurora_profile_specs():
+        model = _build_model(
+            brand=AURORA_POWERONE_BRAND,
+            model=str(spec["model"]),
+            power_reduction=False,
+        )
+        models.append(InverterModel(
+            brand=model.brand, model=model.model, protocol=model.protocol,
+            transport=model.transport, defaults=model.defaults,
+            features=model.features, telemetry_points=model.telemetry_points,
+            command_points=[], catalog_meta=profile_metadata(spec),
+        ))
     return models
 
 

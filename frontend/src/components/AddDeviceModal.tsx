@@ -986,6 +986,8 @@ export function AddDeviceModal({ onClose, onCreated, prefill }: AddDeviceModalPr
                         <strong>
                           {selectedCatalogEntry.verification.field_tested
                             ? "Collaudato in campo"
+                            : selectedCatalogEntry.verification.status === "identity_documented_driver_not_field_tested"
+                              ? "Identificato: letture da collaudare"
                             : ["manual_verified", "documented_not_field_tested"].includes(selectedCatalogEntry.verification.status)
                               ? "Verificato da manuale"
                               : selectedCatalogEntry.verification.status === "documentation_pending"
