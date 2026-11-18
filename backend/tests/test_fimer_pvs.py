@@ -140,6 +140,32 @@ class FimerPvsTests(unittest.TestCase):
         self.assertFalse(self.write().success)
         self.assertFalse(self.sim.writes)
 
+    def test_observed_b2_full_identity_reads_without_any_write(self):
+        self.device.model='PVS-100-TL B2'
+        for name in ['3Q4200', '-3Q4200-', '3Q42', '-3Q42-']:
+            with self.subTest(name=name):
+                self.sim=PvsSimulator('3Q42',100)
+                self.sim.set(1,'Md',name)
+                values=self.read()
+                self.assertEqual(values['model_code'],name)
+                self.assertEqual(values['active_power_kw'],100000)
+                self.assertFalse(self.sim.writes)
+
+    def test_b2_alias_does_not_relax_other_identity_guards(self):
+        for profile,name in [
+            ('PVS-100-TL','3Q4200'), ('PVS-100-TL B','3Q4200'), ('PVS-120-TL B2','3Q4200'),
+            ('PVS-100-TL B2','3Q420'), ('PVS-100-TL B2','3Q4201'),
+            ('PVS-100-TL B2','3Q42000'), ('PVS-100-TL B2','X3Q4200'),
+            ('PVS-100-TL B2','3Q4200X'), ('PVS-100-TL B2','3Q4100'),
+        ]:
+            with self.subTest(profile=profile,name=name):
+                self.device.model=profile
+                self.sim=PvsSimulator('3Q42',100)
+                self.sim.set(1,'Md',name)
+                with self.assertRaisesRegex(ValueError,'diversa'):self.read()
+                self.assertFalse(self.write().success)
+                self.assertFalse(self.sim.writes)
+
     def test_fresh_identity_even_after_successful_poll(self):
         self.read();self.sim.set(1,'Md','-3Q15-')
         with self.assertRaisesRegex(ValueError,'diversa'):self.read()

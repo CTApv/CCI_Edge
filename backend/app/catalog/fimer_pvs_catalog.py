@@ -10,6 +10,10 @@ PVS_MODELS = {
     "PVS-120-TL": ("3P20", 120), "PVS-120-TL B": ("3Q14", 120), "PVS-120-TL B2": ("3Q41", 120),
 }
 
+# Exact Common.Md observed on the PVS-100-TL B2 fleet on 2026-11-18.
+# Do not accept arbitrary suffixes or infer another hardware revision.
+PVS_MODEL_IDENTITY_ALIASES = {"PVS-100-TL B2": ("3Q4200",)}
+
 
 def telemetry_points():
     points = []

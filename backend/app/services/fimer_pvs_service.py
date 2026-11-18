@@ -6,7 +6,9 @@ import struct
 from threading import Lock
 from time import monotonic
 from pymodbus import FramerType
-from app.catalog.fimer_pvs_catalog import PVS_DRIVER, PVS_MAP, PVS_MODELS, commands, telemetry_points
+from app.catalog.fimer_pvs_catalog import (
+    PVS_DRIVER, PVS_MAP, PVS_MODELS, PVS_MODEL_IDENTITY_ALIASES, commands, telemetry_points,
+)
 from app.core.connection_settings import get_poll_timeout_seconds, get_write_timeout_seconds
 from app.services.connection_manager import connection_manager
 
@@ -124,7 +126,9 @@ class FimerPvsService:
         code, _ = PVS_MODELS[device.model]
         if not re.match(r"^(ABB|FIMER|POWER[- ]ONE)(?:\b|$)", manufacturer, re.I):
             raise ValueError("Costruttore diverso da ABB/FIMER.")
-        if not re.search(r"(?<![A-Z0-9])" + code + r"(?![A-Z0-9])", name, re.I):
+        identifiers = (code, *PVS_MODEL_IDENTITY_ALIASES.get(device.model, ()))
+        pattern = r"(?<![A-Z0-9])(?:" + "|".join(re.escape(item) for item in identifiers) + r")(?![A-Z0-9])"
+        if not re.search(pattern, name, re.I):
             raise ValueError(f"Modello/taglia/versione PVS diversa dal profilo {device.model}: {name}.")
         return common, name
 

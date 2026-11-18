@@ -11,6 +11,12 @@ Introdotto nella v1.4.2, con profili distinti per taglia e revisione hardware.
 | PVS-120-TL B | 3Q14 | 120 kW |
 | PVS-120-TL B2 | 3Q41 | 120 kW |
 
+Dalla v1.5.0-rc.2 il profilo PVS-100-TL B2 riconosce anche l'identificativo
+completo `3Q4200`, osservato sui dispositivi reali con firmware `2201B`.
+L'alias è esplicito: altri suffissi, taglie e revisioni restano rifiutati.
+Il collaudo del 18/11/2026 riguarda le letture; nessun comando di potenza è stato
+eseguito sugli inverter durante questa verifica.
+
 Ogni profilo e disponibile in Modbus TCP e RTU seriale; RTU su TCP usa il
 gateway compatibile con framer RTU. Non sono alias della mappa TRIO GT03.
 Stato: verificato su documentazione e simulatore, **non collaudato su hardware**.
