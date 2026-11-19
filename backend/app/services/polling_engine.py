@@ -2005,10 +2005,13 @@ class PollingEngine:
         previous_entry = live_cache.get(device.device_id)
         cached_entry = _merge_poll_entry(previous_entry, entry)
         live_cache.set(device.device_id, cached_entry)
-        if device.brand == "SINVERT" and device.protocol == "s7_tcp":
+        if (device.brand == "SINVERT" or is_ra1_device(device)) and device.protocol == "s7_tcp":
             try:
                 from app.services.sinvert_trace_service import sinvert_trace_service
                 sinvert_trace_service.append(device, cached_entry)
+                if is_ra1_device(device):
+                    from app.services.sinvert_ra1_trace_service import sinvert_ra1_trace_service
+                    sinvert_ra1_trace_service.append(device, cached_entry)
             except Exception as exc:
                 logger.warning("SINVERT trace storage failed for %s: %s", device.device_id, exc)
 

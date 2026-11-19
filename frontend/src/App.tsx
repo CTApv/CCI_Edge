@@ -6051,7 +6051,7 @@ export default function App() {
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   useEffect(() => {
     const selected = devices.find(device => device.device_id === selectedDeviceId);
-    if (selected?.protocol === "s7_tcp" && selected.brand === "SINVERT") {
+    if (selected?.protocol === "s7_tcp" && (selected.brand === "SINVERT" || selected.brand === "SINVERT RA1")) {
       window.location.assign(sinvertDeviceUrl(selected.device_id));
     }
   }, [selectedDeviceId, devices]);

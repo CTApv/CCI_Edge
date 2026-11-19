@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { SinvertDashboard } from "./SinvertDashboard";
+import { SinvertEntry } from "./SinvertEntry";
 import "./sinvert.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode><SinvertDashboard /></React.StrictMode>,
+  <React.StrictMode><SinvertEntry /></React.StrictMode>,
 );

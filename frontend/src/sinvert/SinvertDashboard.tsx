@@ -4,7 +4,7 @@ import { getSinvertBench, setSinvertBench, getSinvertNative, startSinvertNative,
 import { commandNames, explainBlocker, groupState, number, summary, timestamp, type Group, type Tab, type Tone } from "./presentation";
 import { requestedSinvertDevice, sinvertDeviceUrl } from "./routing";
 
-function Icon({ name, size = 20 }: { name: string; size?: number }) {
+export function Icon({ name, size = 20 }: { name: string; size?: number }) {
   const paths: Record<string, ReactNode> = {
     grid: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,
     bolt: <path d="m13 2-8 12h6l-1 8 9-13h-7z"/>,
@@ -24,7 +24,7 @@ function Icon({ name, size = 20 }: { name: string; size?: number }) {
   };
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name] ?? paths.grid}</svg>;
 }
-function Badge({ tone = "muted", children }: { tone?: Tone; children: ReactNode }) {
+export function Badge({ tone = "muted", children }: { tone?: Tone; children: ReactNode }) {
   return <span className={`sv-badge sv-badge--${tone}`}><i/>{children}</span>;
 }
 function Empty({ children }: { children: ReactNode }) { return <div className="sv-empty"><Icon name="chip" size={28}/><p>{children}</p></div>; }
@@ -95,7 +95,7 @@ export function SinvertDashboard() {
     mounted.current = true;
     getDevices().then(list => {
       if (!mounted.current) return;
-      const found = list.filter(device => device.protocol === "s7_tcp" && device.brand === "SINVERT");
+      const found = list.filter(device => device.protocol === "s7_tcp" && (device.brand === "SINVERT" || device.brand === "SINVERT RA1"));
       setDevices(found);
       const requested = requestedSinvertDevice(window.location.search);
       if (requested && !found.some(device => device.device_id === requested)) {
@@ -213,7 +213,7 @@ export function SinvertDashboard() {
       <header className="sv-topbar"><div><a className="sv-breadcrumb" href="/" aria-label="Torna alla dashboard PV Guardian">PV Guardian</a><span>/</span><strong>SINVERT</strong><span className="sv-preview">Profilo di collaudo</span></div><div><span className="sv-live"><i className={`sv-dot sv-dot--${fresh ? "ok" : "muted"}`}/>{fresh ? "Dati dal PLC" : "Dati da verificare"}</span><span className="sv-avatar">PV</span></div></header>
       <main className="sv-main">
         <div className="sv-page-heading"><div><div className="sv-eyebrow">SUPERVISIONE E CONTROLLO</div><h1>{tabs.find(item => item.key === tab)?.label === "Panoramica" ? "Dettaglio SINVERT" : tabs.find(item => item.key === tab)?.label}</h1><p>Un solo punto di controllo. Stato dei gruppi, disponibilità e richieste al PLC.</p></div><div className="sv-page-actions"><span><Icon name="clock" size={15}/>{timestamp(overview?.diagnostics.last_valid_data_at)}</span><button className="sv-button sv-button--white" disabled={loading || !selected} onClick={() => void fetchData(selected)}><Icon name="refresh" size={16}/>Aggiorna</button></div></div>
-        {devices.length > 1 && <label className="sv-selector">PLC da visualizzare<select value={selected} disabled={Boolean(busy)} onChange={event => setSelected(event.target.value)}>{devices.map(item => <option value={item.device_id} key={item.device_id}>{item.name}</option>)}</select></label>}
+        {devices.length > 1 && <label className="sv-selector">PLC da visualizzare<select value={selected} disabled={Boolean(busy)} onChange={event => { const target=devices.find(d => d.device_id===event.target.value); if (target?.brand === "SINVERT RA1") window.location.assign(sinvertDeviceUrl(target.device_id)); else setSelected(event.target.value); }}>{devices.map(item => <option value={item.device_id} key={item.device_id}>{item.name}</option>)}</select></label>}
         {loadError && <div className="sv-notice sv-notice--bad" role="alert"><Icon name="alert"/><div><strong>Acquisizione non disponibile</strong><p>{loadError} Gli ultimi valori non sono un consenso operativo.</p></div></div>}
         {loading && !overview ? <Empty>Acquisizione dello stato del PLC…</Empty> : !device ? <Empty>Nessun dispositivo SINVERT configurato. Aggiungi il PLC in PV Guardian per visualizzarlo qui.</Empty> : !monitor ? <Empty>Diagnostica SINVERT non disponibile. Attendere il prossimo campione o verificare il profilo del dispositivo.</Empty> : <>
           <section className="sv-status-strip" aria-label="Stato collegamenti"><div><span className="sv-status-icon"><Icon name="chip"/></span><div><small>CONTROLLER</small><strong>SIMATIC S7-300</strong><span>{String(device.connection_settings.host)} · CP343-1</span></div><Badge tone={fresh ? "ok" : "warn"}>{connection}</Badge></div><span className="sv-status-separator"/><div><span className="sv-status-icon"><Icon name="link"/></span><div><small>FEEDBACK INVERTER</small><strong>{fresh ? `${reporting.length} di ${configured.length} gruppi con dati validi` : "Non confermati"}</strong><span>Distinti dalla connessione Ethernet al PLC</span></div></div><span className="sv-status-separator"/><div><span className="sv-status-icon"><Icon name="settings"/></span><div><small>MODALITÀ INTERFACCIA</small><strong>{profileEnabled ? "Collaudo manuale" : "Consultazione"}</strong><span>{profileEnabled ? "Controlli PLC sempre attivi" : "Nessuna scrittura abilitata in questa pagina"}</span></div></div></section>
@@ -252,7 +252,7 @@ export function SinvertDashboard() {
   </div>;
 }
 
-function Metric({ label, value, unit, note, icon, tone }: { label: string; value: string; unit?: string; note: string; icon: string; tone?: Tone }) {
+export function Metric({ label, value, unit, note, icon, tone }: { label: string; value: string; unit?: string; note: string; icon: string; tone?: Tone }) {
   return <article className={`sv-metric ${tone === "bad" ? "sv-metric--alert" : ""}`}><div><span>{label}</span><Icon name={icon} size={18}/></div><strong>{value} {unit && <small>{unit}</small>}</strong><p>{note}</p></article>;
 }
 function Condition({ ok, title, detail }: { ok: boolean; title: string; detail: string }) {

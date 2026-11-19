@@ -21,7 +21,7 @@ def is_ra1_device(device):
 def ra1_points():
     points = []
     def add(key, label, db, offset, datatype="uint16", *, bit=None, area="DB", section="SINVERT RA1"):
-        size = 1 if datatype in ("bool", "uint8") else 4 if datatype == "float32" else 2
+        size = 1 if datatype in ("bool", "uint8") else 4 if datatype in ("float32", "uint32") else 2
         meta = {"driver": RA1_DRIVER, "area": area, "db": db,
                 "section": section, "semantics": "ra1_raw_plc_value"}
         if bit is not None:
@@ -38,6 +38,10 @@ def ra1_points():
     add("ra1_receive_event", "Nuovo telegramma CP", 600, 24, "bool", bit=0)
     add("ra1_receive_error", "Errore ricezione CP", 600, 24, "bool", bit=1)
     add("ra1_watchdog_fault", "Comunicazione esterna scaduta", 600, 24, "bool", bit=4)
+    add("ra1_requests", "Richieste collettive M34", 0, 34, "uint8", area="MK")
+    add("ra1_sequence", "Sequenza collettiva DB64", 64, 26, "uint8")
+    add("ra1_reset_active", "Reset PLC attivo", 0, 0, "bool", bit=4, area="MK")
+    add("ra1_reinitialize", "Reinizializzazione PLC attiva", 0, 23, "bool", bit=1, area="MK")
     for key, label, offset in [
         ("tx_id", "ID invio", 0), ("tx_laddr", "LADDR invio", 2),
         ("tx_db", "DB invio", 4), ("tx_offset", "Offset invio", 6), ("tx_length", "Byte invio", 8),
@@ -66,21 +70,46 @@ def ra1_points():
             ("reactive_power_raw", "Potenza reattiva PLC grezza", 402, hmi+110, "int16"),
             ("dc_voltage_raw", "Tensione DC PLC grezza", 402, hmi+72, "int16"),
             ("dc_current_raw", "Corrente DC PLC grezza", 402, hmi+46, "int16"),
+            ("frequency_raw", "Frequenza PLC grezza", 402, hmi+112, "int16"),
+            ("voltage_ac_raw", "Tensione AC PLC grezza", 402, hmi+100, "int16"),
         ]:
             add(f"ra1_group_{group}_{key}", label, db, offset, datatype, section=f"RA1 - Gruppo {group}")
+        add(f"ra1_group_{group}_test_mode", "Selettore AUTO/TEST", 402, hmi, "bool", bit=1, section=f"RA1 - Gruppo {group}")
+        add(f"ra1_group_{group}_operator_request", "Pulsante operatore", 402, hmi, "bool", bit=0, section=f"RA1 - Gruppo {group}")
+        for word in range(4):
+            for kind, offset in (("alarm", 144), ("warning", 128)):
+                add(f"ra1_group_{group}_{kind}_{word}", f"{kind}: bit {word*32}..{word*32+31}",
+                    401, offset+128*index+word*4, "uint32", section=f"RA1 - Gruppo {group}")
     return points
 
 
 def build_sinvert_ra1_models():
     return [InverterModel(brand=RA1_BRAND, model=RA1_MODEL, protocol="s7_tcp", transport="tcp",
         defaults={"port":102, "rack":0, "slot":2, "timeout_seconds":10,
-                  "retries":0, "poll_interval_seconds":15},
+                  "retries":0, "poll_interval_seconds":15, "ra1_write_mode":"read_only", "ra1_reference_max_raw":0},
         features=["Driver SINVERT RA1 separato", "Firma del programma PLC verificata",
-                  "Canale CP diretto DB944", "Diagnostica riferimenti e consensi", "Collaudo tecnico RA1 separato"],
-        telemetry_points=ra1_points(), command_points=[],
+                  "Canale CP diretto DB944", "ON/OFF e reset manuali RA1", "AUTO/TEST e pulsanti per gruppo", "Dashboard SINVERT dedicata", "Tracce RA1 ZIP/CSV", "Collaudo tecnico RA1 separato"],
+        telemetry_points=ra1_points(), command_points=ra1_commands(),
         catalog_meta={"series":"SINVERT RA1 / test sinvert 420", "verification_status":"diagnostic_only",
             "source_document":"test sinvert 420 - TIA V18; PLC MC7 comparison 2026-11-19",
             "source_version":"KOMM 3.0 / REGEL 3.9", "last_reviewed_at":"2026-11-19",
             "field_tested":False, "writes_enabled":False, "commissioning_available":True, "reference_scale_confirmed":False,
             "source_sha256":"cdb781c67e11a4d9bf6b636c6bef19f40c41fb29b297ba517ea634d1fee0c25d",
-            "notes":"12 blocchi confrontati byte per byte. Quattro gruppi; 420 identifica il progetto, non una potenza nominale certificata. Scala fisica, partner CP e TSAP da confermare. Collaudo tecnico separato: prova S7 isolata e sessione CP con TSAP confermati. Nessun comando di flotta."})]
+            "notes":"18 blocchi di controllo confrontati byte per byte; 12 verificati nelle letture e 18 nei comandi. Quattro gruppi; 420 identifica il progetto, non una potenza nominale certificata. Scala fisica, partner CP e TSAP da confermare. Collaudo tecnico separato: prova S7 isolata e sessione CP con TSAP confermati. Nessun comando di flotta."})]
+
+
+def ra1_commands():
+    """Discoverable manual capabilities. Generic I/O is deliberately not authorized."""
+    specs=[('on','ON collettivo',34,1,'uint8'),('off','OFF collettivo',34,1,'uint8'),
+           ('reset_all','Reset dei gruppi configurati',842,1,'uint8'),
+           ('reference_a','Riferimento A grezzo (collaudo)',32,4,'float32')]
+    for group in range(1,5):
+        for action,label in [('test','AUTO/TEST'),('operator','Pulsante operatore'),('reset','Reset gruppo')]:
+            specs.append((f'group_{group}_{action}',f'Gruppo {group}: {label}',842+194*(group-1),1,'uint8'))
+    return [InverterPoint(key='sinvert_ra1_'+key,label=label,kind='command',register_type='s7',
+            address=offset,length=length,datatype=datatype,writable=True,
+            protocol_meta={'driver':'sinvert_ra1_manual','manual_only':True,'command_alias':key,
+                'section':'Collaudo SINVERT RA1','requires_dedicated_api':True,
+                'min_value':0 if key.endswith('_test') or key=='reference_a' else 1,
+                'max_value':1000000 if key=='reference_a' else 1,'step':.1 if key=='reference_a' else 1})
+            for key,label,offset,length,datatype in specs]

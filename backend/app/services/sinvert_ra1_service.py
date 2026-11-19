@@ -1,6 +1,7 @@
 """RA1 read-only driver. Does not inherit the legacy SINVERT command path."""
 import math
 import struct
+import time
 from threading import Lock
 from time import monotonic
 from app.catalog.sinvert_ra1_catalog import (
@@ -8,7 +9,7 @@ from app.catalog.sinvert_ra1_catalog import (
 )
 from app.services.sinvert_s7_service import sinvert_s7_service, S7ReadResult
 
-FORMATS={"uint8":">B", "uint16":">H", "int16":">h", "float32":">f"}
+FORMATS={"uint8":">B", "uint16":">H", "int16":">h", "float32":">f", "uint32":">I"}
 CANONICAL={p.key:p for p in ra1_points()}
 
 
@@ -19,7 +20,7 @@ class SinvertRa1Service:
         self._cache_lock=Lock()
 
     @staticmethod
-    def _verify(client):
+    def _verify(client, cooperate=None):
         from snap7.type import Block
         cpu=client.get_cpu_info().ModuleTypeName.decode('latin1').strip('\0 ')
         if cpu!='CPU 315-2 DP':raise ValueError('RA1: tipo CPU diverso dal progetto verificato.')
@@ -28,9 +29,11 @@ class SinvertRa1Service:
             info=client.get_block_info(kind,int(name[2:]))
             if (int(info.MC7Size),int(info.CheckSum))!=(size,checksum):
                 raise ValueError(f'RA1: firma programma diversa in {name}; lettura del profilo bloccata.')
+            if cooperate:cooperate()
         for db,size in RA1_DB_SIZES.items():
             if int(client.get_block_info(Block.DB,db).MC7Size)!=size:
                 raise ValueError(f'RA1: dimensione DB{db} diversa dal progetto.')
+            if cooperate:cooperate()
 
     def read_points(self,device,points):
         if not is_ra1_device(device) or device.protocol!='s7_tcp' or device.transport!='tcp':
@@ -45,6 +48,7 @@ class SinvertRa1Service:
         endpoint=(host,port,rack,slot);lock=sinvert_s7_service.endpoint_lock(*endpoint)
         if not lock.acquire(timeout=timeout):raise TimeoutError('Endpoint RA1 occupato.')
         client=None
+        lock_held=True
         try:
             from snap7.client import Client
             from snap7.type import Areas
@@ -52,12 +56,22 @@ class SinvertRa1Service:
             client.connect(host,rack,slot,tcp_port=port)
             connection=getattr(client,'connection',None)
             deadline=monotonic()+timeout
+            def cooperate():
+                nonlocal lock_held
+                if lock_held:
+                    lock.release()
+                    lock_held=False
+                time.sleep(.005)
+                remaining=deadline-monotonic()
+                if remaining<=0 or not lock.acquire(timeout=remaining):
+                    raise TimeoutError('Tempo RA1 esaurito in attesa dell’endpoint.')
+                lock_held=True
             if connection is not None:
                 connection.timeout=timeout
                 if getattr(connection,'socket',None) is not None:connection.socket.settimeout(timeout)
             with self._cache_lock:verified=self._verified.get(endpoint)
             if verified is None or monotonic()-verified>=60:
-                try:self._verify(client)
+                try:self._verify(client,cooperate)
                 except Exception:
                     with self._cache_lock:self._verified.pop(endpoint,None)
                     raise
@@ -72,6 +86,9 @@ class SinvertRa1Service:
             values={};errors={}
             for area,db,start,end,items in spans:
                 try:
+                    # Read snapshots are already non-atomic. Yield between requests so
+                    # the CP owner's fresh checks/send cannot be starved by bulk polls.
+                    cooperate()
                     remaining=deadline-monotonic()
                     if remaining<=0:raise TimeoutError('Tempo di lettura RA1 esaurito.')
                     if connection is not None:
@@ -95,7 +112,8 @@ class SinvertRa1Service:
                 if client is not None:
                     try:client.disconnect()
                     finally:client.destroy()
-            finally:lock.release()
+            finally:
+                if lock_held:lock.release()
 
 
 def build_ra1_monitor(values):

@@ -213,6 +213,15 @@ class SinvertRa1LabService:
             raise ValueError('Impostare un limite grezzo positivo e un riferimento compreso nel limite.')
         return value
 
+    def validate_reference(self, device, value, maximum):
+        if device.connection_settings.get('ra1_write_mode') != 'commissioning':
+            raise ValueError('Abilitare il collaudo RA1 nelle impostazioni dell’app.')
+        configured = raw_float(device.connection_settings.get('ra1_reference_max_raw', 0))
+        requested = raw_float(maximum)
+        if requested > configured:
+            raise ValueError('Il limite della prova supera il massimo salvato nell’app.')
+        return self.validate(value, requested)
+
     def status(self, device):
         endpoint = self.endpoint(device)
         with self._lock:
@@ -229,7 +238,7 @@ class SinvertRa1LabService:
     def available(self, device):
         with self._lock:
             session = self._sessions.get(self.endpoint(device))
-            if session and session.state in ('starting', 'active', 'stopping', 'bench_probe'):
+            if session and session.state in ('starting', 'active', 'stopping', 'bench_probe', 'command'):
                 raise ValueError('Endpoint RA1 gia impegnato: arrestare o attendere la prova in corso.')
 
     def preflight(self, device, *, bench):
@@ -259,7 +268,7 @@ class SinvertRa1LabService:
     def probe(self, device, value, maximum, *, cpu_only_confirmed):
         if cpu_only_confirmed is not True:
             raise ValueError('Confermare banco con sola CPU e CP, senza inverter o periferiche.')
-        value = self.validate(value, maximum)
+        value = self.validate_reference(device, value, maximum)
         endpoint = self.endpoint(device)
         with self._lock:
             self.available(device)
@@ -322,7 +331,7 @@ class SinvertRa1LabService:
         for tsap in (local_tsap, remote_tsap):
             if not isinstance(tsap, str) or not 1 <= len(bytes.fromhex(tsap)) <= 32:
                 raise ValueError('Specificare entrambi i TSAP in esadecimale.')
-        value = self.validate(value, maximum)
+        value = self.validate_reference(device, value, maximum)
         endpoint = self.endpoint(device)
         with self._lock:
             self.available(device)
@@ -389,6 +398,7 @@ class SinvertRa1LabService:
                                 device = (self.device_getter or device_service.get_device)(session.device.device_id)
                                 if device is None or self.endpoint(device) != session.endpoint:
                                     raise ValueError('Profilo o endpoint del dispositivo cambiato.')
+                                self.validate_reference(device, session.value, session.options['maximum'])
                                 if now-session.last_program_check >= 15:
                                     self.verify(client)
                                     session.last_program_check = time.monotonic()
@@ -428,7 +438,7 @@ class SinvertRa1LabService:
         with session.lock:
             if session.state != 'active' or session.stop.is_set() or time.monotonic() >= session.deadline:
                 raise ValueError('Sessione non attiva: riavvio esplicito richiesto.')
-            value = self.validate(value, session.options['maximum'])
+            value = self.validate_reference(device, value, session.options['maximum'])
             self.audit(device, 'reference_requested', raw_value=value, renew=renew)
             session.value = value
             session.feedback = {**session.feedback, 'received_matches': False, 'regulator_input_confirmed': False}

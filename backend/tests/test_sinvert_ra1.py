@@ -110,8 +110,33 @@ class SinvertRa1Tests(unittest.TestCase):
         result=self.read();self.assertIsNone(result.values['ra1_received_reference_a'])
         self.assertIn('ra1_received_reference_a',result.errors)
 
-    def test_no_commands_or_legacy_native_fallback(self):
-        self.assertEqual(self.model.command_points,[])
+    def test_bulk_reads_yield_endpoint_without_sharing_a_client(self):
+        from threading import Thread, Event
+        from app.services.sinvert_s7_service import sinvert_s7_service
+        waiting=Event();acquired=Event();threads=[]
+        original=self.plc.db_read
+        lock=sinvert_s7_service.endpoint_lock('192.0.2.42',102,0,2)
+        def other_owner():
+            waiting.set()
+            if lock.acquire(timeout=2):
+                acquired.set();lock.release()
+        def read(db,start,size):
+            if not threads:
+                t=Thread(target=other_owner);threads.append(t);t.start();waiting.wait(.5)
+            else:self.assertTrue(acquired.is_set(),'A complete telemetry batch must not starve the CP owner')
+            return original(db,start,size)
+        self.plc.db_read=read
+        self.read()
+        for thread in threads:thread.join(timeout=2)
+        self.assertTrue(acquired.is_set())
+
+    def test_manual_commands_are_catalogued_but_never_use_generic_or_legacy_fallback(self):
+        self.assertEqual(len(self.model.command_points),16)
+        self.assertTrue(all(p.protocol_meta['manual_only'] for p in self.model.command_points))
+        for point in self.model.command_points:
+            result=inverter_io_service.write_command(self.device,point,1)
+            self.assertFalse(result.success)
+            self.assertFalse(result.diagnostics['write_attempted'])
         old=build_sinvert_s7_models()[1].command_points[0]
         with patch('app.services.sinvert_s7_command_service.sinvert_s7_command_service.write') as legacy:
             result=inverter_io_service.write_command(self.device,old,1)

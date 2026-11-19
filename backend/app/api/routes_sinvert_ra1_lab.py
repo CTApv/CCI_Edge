@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel, ConfigDict, FiniteFloat, StrictBool, Field
 
 from app.catalog.sinvert_ra1_catalog import is_ra1_device
@@ -35,6 +35,52 @@ class Start(Reference):
 class Change(Request):
     value: FiniteFloat = Field(strict=True)
     renew: StrictBool = False
+
+
+class Manual(Request):
+    command: str
+    value: FiniteFloat = Field(default=1, strict=True)
+    dry_run: StrictBool = True
+    enabled: StrictBool = False
+    bench: StrictBool = False
+    scope_confirmed: StrictBool = False
+
+
+class LabSettings(Request):
+    enabled: StrictBool
+    maximum: FiniteFloat = Field(strict=True, ge=0, le=1000000)
+
+
+@router.post('/{device_id}/sinvert-ra1/lab/settings')
+def settings(device_id: str, payload: LabSettings):
+    from app.schemas.device_schemas import DeviceUpdate
+    device = device_for(device_id)
+    state=lab.status(device)
+    if state.get('state') in ('starting','active','stopping','bench_probe','command'):
+        if payload.enabled:
+            raise HTTPException(409, 'Arrestare il collaudo prima di cambiare le impostazioni.')
+        lab.stop(device)
+        if lab.status(device).get('state') in ('starting','active','stopping','bench_probe','command'):
+            raise HTTPException(409,'Arresto ancora in corso: attendere prima di cambiare impostazioni.')
+    current=device.model_dump(exclude={'device_id','created_at'})
+    current['connection_settings']={**device.connection_settings,
+        'ra1_write_mode':'commissioning' if payload.enabled else 'read_only',
+        'ra1_reference_max_raw':payload.maximum}
+    return device_service.update_device(device_id,DeviceUpdate(**current))
+
+
+@router.get('/{device_id}/sinvert-ra1/lab/trace.zip')
+def trace(device_id: str):
+    from app.services.sinvert_ra1_trace_service import sinvert_ra1_trace_service
+    device_for(device_id)
+    return Response(sinvert_ra1_trace_service.export(device_id),media_type='application/zip',
+                    headers={'Content-Disposition':'attachment; filename="sinvert-ra1-trace.zip"'})
+
+
+@router.post('/{device_id}/sinvert-ra1/lab/command')
+def manual(device_id: str, payload: Manual):
+    from app.services.sinvert_ra1_command_service import sinvert_ra1_command_service
+    return invoke(device_id, lambda d: sinvert_ra1_command_service.execute(d, **payload.model_dump()))
 
 
 def device_for(device_id):

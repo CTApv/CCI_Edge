@@ -39,8 +39,7 @@ fisico indipendente. Anche il valore dopo rampa resta espresso in unitÃ  PLC.
 
 ## Collaudo tecnico (rc.5)
 
-La pagina RA1 espone un collaudo dedicato, distinto dai comandi generici. Il catalogo
-non espone comandi di flotta, ON/OFF, TEST o reset. La barriera I/O generale rimane
+La pagina RA1 espone un collaudo dedicato, distinto dai comandi generici. Il catalogo espone 16 capacit? manuali tramite API dedicate; non espone comandi di flotta. La barriera I/O generale rimane
 attiva e il vecchio collaudo SINVERT non viene riutilizzato.
 
 Prima di ogni operazione si verificano CPU in RUN mediante SZL 0424, firma dei 12
@@ -109,3 +108,49 @@ Il catalogo e i driver SINVERT precedenti restano invariati.
 Nessun progetto TIA, sorgente Siemens proprietario, binario MC7 o dato runtime
 del cliente viene distribuito nel repository; vengono inclusi solo la mappa
 dell'adattatore e le firme necessarie all'interoperabilit?.
+
+## Adeguamento della v1.4.2 al progetto 420 (rc.6)
+
+La dashboard dedicata `/sinvert.html?device=<id>` sceglie esplicitamente il profilo
+SINVERT originale oppure RA1. La RA1 riprende navigazione, componenti e stile della
+v1.4.2: Panoramica, Allarmi e avvisi, Diagnostica e Collaudo. Il selettore consente
+il passaggio fra i due profili senza mescolare API o mappe.
+
+| Funzione | Adattamento RA1 |
+| --- | --- |
+| ON collettivo | Impulso M34.2, ritiro anche su ACK perso; elaborazione distinta dall'accettazione |
+| OFF collettivo | M34.3, resta al PLC; prima chiude il canale RA1 del dispositivo |
+| AUTO/TEST, pulsante e reset di ciascun gruppo | DB402 byte 842+194*n, bit 1/0/1, oppure sorgente DB511 byte 14+2*n quando FC501 ? attivo |
+| Reset generale | Sequenza di impulsi sui soli gruppi configurati; non ? una transazione atomica |
+| Riferimento e watchdog | I percorsi S7 isolato e CP della rc.5, con limite massimo salvato nell'app |
+| Impostazioni | Abilitazione e limite RA1 persistenti, disabilitati/zero di default; nessuna scrittura PLC al salvataggio |
+| Tracce | File RA1 dedicati, ZIP con audit e CSV del solo dispositivo selezionato |
+
+Il vecchio ACK DB402.DBX0.1 non ? stato identificato come comando consumato nella
+copia 420 esaminata. Non viene scritto speculativamente. Il reset generale della
+RA1 usa quindi gli impulsi AUTO/TEST dei gruppi, esattamente dichiarati in UI e nel
+risultato. Non si dichiara cancellazione degli allarmi n? si riavvia la CPU.
+
+Prima dei comandi si verificano anche FB30, FB230, FB33, FB10 e FC401, confrontati
+integralmente con il codice del progetto. Il controllo manuale verifica 18 blocchi
+(12 della lettura, FC500 e questi cinque). Non usa la cache delle letture.
+ON richiede consensi/assenza di altre sequenze; OFF rimane indipendente da M55.
+Gli altri comandi sono esclusi mentre il canale CP ? posseduto da una sessione;
+OFF lo arresta prima della richiesta S7. In banco sono ricontrollati ramo CP,
+M55 e M102..105. Non vengono attivati consensi o gate.
+
+FC501 copia le intestazioni HMI da DB511 a DB402 quando DB400.DBX16.7 ? attivo:
+la RA1 sceglie il produttore in base a quel bit e verifica sorgente/copia. Con
+ramo disattivo scrive l'intestazione DB402 direttamente. Un cambio del percorso
+interrompe il comando, senza reinvio su un'altra sorgente. Impulsi e reset sono
+ritirati sulla sorgente originale sotto lo stesso mutex e prima della disconnessione.
+Eventuali mancate conferme o esiti parziali restano espliciti nel risultato.
+
+La telemetria comprende 106 punti, incluse le finestre di 128 bit di allarmi e
+avvisi per gruppo. Gli indirizzi sono esposti senza riutilizzare descrizioni o
+scale fisiche non ancora validate per il 420. Lo stato resta un codice PLC.
+
+Le letture RA1 cedono il mutex fra richieste S7 e fra verifiche dei blocchi: una
+acquisizione estesa non deve monopolizzare il canale rispetto al watchdog CP.
+Le verifiche di scrittura mantengono invece il mutex fino al termine del comando
+e del ritiro degli impulsi. La scadenza della lettura resta limitata.

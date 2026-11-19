@@ -209,10 +209,10 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
-        if is_ra1_device(device) or point.protocol_meta.get("driver")==RA1_DRIVER:
+        if is_ra1_device(device) or point.protocol_meta.get("driver") in {RA1_DRIVER,"sinvert_ra1_manual"}:
             return CommandWriteResult(False,{"stub_mode":False,"driver":RA1_DRIVER,
                 "write_attempted":False,"write_accepted":False,"physical_execution_confirmed":False,
-                "stage":"blocked"},"SINVERT RA1: scritture non abilitate; scala e connessione CP da validare.")
+                "stage":"blocked"},"Usare il collaudo SINVERT RA1 dedicato con conferma dell’ambito; invio generico non autorizzato.")
         if is_pvs_device(device):
             result = fimer_pvs_service.write(device, point, value)
             return CommandWriteResult(result.success, result.diagnostics, result.error)

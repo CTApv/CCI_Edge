@@ -917,12 +917,23 @@ export type Ra1LabResult = {
   active?: boolean; state?: string; remaining_seconds?: number; raw_value?: number; maximum?: number;
   sent_count?: number; write_attempted?: boolean; write_accepted?: boolean;
   success?: boolean; restored?: boolean; stage?: string; error?: string | null;
+  command?: string; plc_processed?: boolean; cleanup_error?: string; group_results?: Record<string, unknown>[];
   feedback?: { received_raw: number | null; regulator_raw: number | null; processed_raw: number | null;
     received_matches: boolean; regulator_input_confirmed: boolean; watchdog_fault: boolean; receive_error: boolean };
 };
 
 export function getRa1Lab(deviceId: string): Promise<Ra1LabResult> {
   return request(`/devices/${encodeURIComponent(deviceId)}/sinvert-ra1/lab`);
+}
+
+export function saveRa1Settings(deviceId: string, enabled: boolean, maximum: number): Promise<Device> {
+  return request(`/devices/${encodeURIComponent(deviceId)}/sinvert-ra1/lab/settings`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ enabled, maximum }),
+  });
+}
+
+export function ra1TraceUrl(deviceId: string): string {
+  return `${API_BASE_URL}/devices/${encodeURIComponent(deviceId)}/sinvert-ra1/lab/trace.zip`;
 }
 
 export function runRa1Lab(deviceId: string, action: string, payload?: Record<string, unknown>): Promise<Ra1LabResult> {

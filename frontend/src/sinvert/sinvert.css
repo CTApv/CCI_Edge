@@ -1,5 +1,17 @@
 @import "../theme.css";
 
+.sv-ra1 .sv-status-strip { display: flex; flex-wrap: wrap; align-items: center; }
+.sv-ra1 .sv-ra1-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; }
+.sv-ra1 .detail-section { background: var(--panel); color: var(--text-main); border: 1px solid var(--panel-border); border-radius: 10px; padding: 24px; margin: 24px 0; }
+.sv-ra1 .detail-section > * + * { margin-top: 14px; }
+.sv-ra1 .detail-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 16px; }
+.sv-ra1 .detail-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.sv-ra1 .detail-section label { display: block; font-size: 12px; line-height: 1.8; }
+.sv-ra1 .detail-section input:not([type=checkbox]), .sv-ra1 .detail-section select { display: block; width: 100%; padding: 10px; border: 1px solid var(--panel-border); border-radius: 7px; background: var(--panel); color: var(--text-main); }
+.sv-ra1 .detail-actions button { padding: 10px 14px; border: 1px solid var(--panel-border); border-radius: 7px; background: var(--panel); color: var(--text-main); }
+.sv-ra1 .detail-actions button:disabled { opacity: .55; cursor: not-allowed; }
+.sv-ra1 .sv-panel > p { margin-top: 12px; line-height: 1.7; }
+
 * { box-sizing: border-box; }
 body { margin: 0; }
 button, input, select { font: inherit; }

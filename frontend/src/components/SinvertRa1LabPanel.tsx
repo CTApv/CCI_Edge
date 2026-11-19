@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getRa1Lab, runRa1Lab, type Ra1LabResult } from "../api";
 
-export function SinvertRa1LabPanel({ deviceId }: { deviceId: string }) {
+export function SinvertRa1LabPanel({ deviceId, enabled = false, referenceLimit = 0 }: { deviceId: string; enabled?: boolean; referenceLimit?: number }) {
   const [mode, setMode] = useState("bench");
   const [value, setValue] = useState("");
   const [maximum, setMaximum] = useState("");
@@ -15,6 +15,7 @@ export function SinvertRa1LabPanel({ deviceId }: { deviceId: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [reachable, setReachable] = useState(false);
+  useEffect(() => { setMaximum(String(referenceLimit)); }, [referenceLimit]);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,10 +42,10 @@ export function SinvertRa1LabPanel({ deviceId }: { deviceId: string }) {
     return () => { cancelled = true; window.clearInterval(timer); };
   }, [deviceId]);
 
-  const occupied = !!session && ["starting", "active", "stopping", "bench_probe"].includes(session.state ?? "");
+  const occupied = !!session && ["starting", "active", "stopping", "bench_probe", "command"].includes(session.state ?? "");
   const valid = value.trim() !== "" && maximum.trim() !== "" && Number.isFinite(Number(value)) &&
-    Number.isFinite(Number(maximum)) && Number(maximum) > 0 && Number(maximum) <= 1000000 &&
-    Number(value) >= 0 && Number(value) <= Number(maximum);
+    Number.isFinite(Number(maximum)) && Number(maximum) > 0 && Number(maximum) <= 1000000 && Number(maximum) <= referenceLimit &&
+    Number(value) >= 0 && Number(value) <= Number(maximum) && Number(value) <= referenceLimit;
   const act = async (action: string, payload?: Record<string, unknown>) => {
     setBusy(true); setError(""); setResult(null);
     try {
@@ -57,6 +58,7 @@ export function SinvertRa1LabPanel({ deviceId }: { deviceId: string }) {
   const current = result?.feedback ?? session?.feedback;
   return <section className="detail-section">
     <h3>Collaudo SINVERT RA1</h3>
+    {!enabled && <p>Profilo in sola lettura. Abilitare il collaudo nelle impostazioni della dashboard SINVERT RA1.</p>}
     <p>Riferimento A in unità PLC grezze. Il collaudo non certifica potenza fisica, percentuale o risposta dell’inverter.</p>
     <label>Percorso di prova <select value={mode} disabled={busy || occupied} onChange={e => { setMode(e.target.value); setResult(null); }}>
       <option value="bench">Prova S7 temporanea · solo CPU e CP isolati</option>
@@ -64,7 +66,7 @@ export function SinvertRa1LabPanel({ deviceId }: { deviceId: string }) {
     </select></label>
     <div className="detail-kpi-grid">
       <label>Riferimento A grezzo <input type="number" min="0" step="any" value={value} disabled={busy} onChange={e => setValue(e.target.value)} /></label>
-      <label>Limite massimo della prova <input type="number" min="0" max="1000000" step="any" value={maximum} disabled={busy || occupied} onChange={e => setMaximum(e.target.value)} /></label>
+      <label>Limite massimo della prova <input type="number" min="0" max={referenceLimit} step="any" value={maximum} disabled={busy || occupied} onChange={e => setMaximum(e.target.value)} /></label>
     </div>
     {mode === "bench" ? <>
       <p>Scrive temporaneamente DB944.DBD32, controlla l’ingresso del regolatore e ripristina il valore iniziale. Richiede ramo CP, consensi e uscite inattivi. Questa prova non alimenta né verifica il watchdog CP.</p>
@@ -81,10 +83,10 @@ export function SinvertRa1LabPanel({ deviceId }: { deviceId: string }) {
     </>}
     <div className="detail-actions">
       <button type="button" className="secondary-button" disabled={busy || !reachable || occupied} onClick={() => void act("preflight", { bench: mode === "bench" })}>Verifica senza scrivere</button>
-      {mode === "bench" ? <button type="button" disabled={busy || !reachable || occupied || !valid || !cpuOnly} onClick={() => void act("probe", { value: Number(value), maximum: Number(maximum), cpu_only_confirmed: cpuOnly })}>Esegui prova S7 e ripristina</button> : <>
-        <button type="button" disabled={busy || !reachable || occupied || !valid || !localTsap.trim() || !remoteTsap.trim() || !connectionConfirmed || !exclusive} onClick={() => void act("start", { value: Number(value), maximum: Number(maximum), local_tsap: localTsap.trim(), remote_tsap: remoteTsap.trim(), connection_confirmed: connectionConfirmed, exclusive_confirmed: exclusive })}>Avvia sessione CP</button>
-        <button type="button" disabled={busy || !reachable || !session?.active || !valid} onClick={() => void act("reference", { value: Number(value), renew: false })}>Invia nuovo riferimento</button>
-        <button type="button" disabled={busy || !reachable || !session?.active || session.raw_value == null} onClick={() => void act("reference", { value: session?.raw_value, renew: true })}>Rinnova per 60 s</button>
+      {mode === "bench" ? <button type="button" disabled={busy || !enabled || !reachable || occupied || !valid || !cpuOnly} onClick={() => void act("probe", { value: Number(value), maximum: Number(maximum), cpu_only_confirmed: cpuOnly })}>Esegui prova S7 e ripristina</button> : <>
+        <button type="button" disabled={busy || !enabled || !reachable || occupied || !valid || !localTsap.trim() || !remoteTsap.trim() || !connectionConfirmed || !exclusive} onClick={() => void act("start", { value: Number(value), maximum: Number(maximum), local_tsap: localTsap.trim(), remote_tsap: remoteTsap.trim(), connection_confirmed: connectionConfirmed, exclusive_confirmed: exclusive })}>Avvia sessione CP</button>
+        <button type="button" disabled={busy || !enabled || !reachable || !session?.active || !valid} onClick={() => void act("reference", { value: Number(value), renew: false })}>Invia nuovo riferimento</button>
+        <button type="button" disabled={busy || !enabled || !reachable || !session?.active || session.raw_value == null} onClick={() => void act("reference", { value: session?.raw_value, renew: true })}>Rinnova per 60 s</button>
       </>}
       <button type="button" className="secondary-button" disabled={busy || !occupied || session?.state === "bench_probe"} onClick={() => void act("stop")}>Interrompi invii CP</button>
     </div>

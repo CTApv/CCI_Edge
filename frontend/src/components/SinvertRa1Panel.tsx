@@ -1,5 +1,5 @@
 import type { DeviceOverview } from "../api";
-import { SinvertRa1LabPanel } from "./SinvertRa1LabPanel";
+import { sinvertDeviceUrl } from "../sinvert/routing";
 
 const format = (value: number | null | undefined) =>
   value == null ? "—" : new Intl.NumberFormat("it-IT", { maximumFractionDigits: 3 }).format(value);
@@ -30,6 +30,6 @@ export function SinvertRa1Panel({ overview }: { overview: DeviceOverview }) {
       </table>
       <h4>Condizioni da verificare prima del controllo</h4>
       <ul>{monitor.blockers.map(reason => <li key={reason}>{reason}</li>)}</ul>
-    </section><SinvertRa1LabPanel key={overview.device.device_id} deviceId={overview.device.device_id} /></>
+    </section><a className="secondary-button" href={sinvertDeviceUrl(overview.device.device_id)+"&tab=commissioning"}>Apri la dashboard dedicata e il collaudo SINVERT RA1</a></>
   );
 }

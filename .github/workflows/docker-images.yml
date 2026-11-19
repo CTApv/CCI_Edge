@@ -49,6 +49,7 @@ jobs:
           npm run build
           node scripts/check-sinvert-presentation.mjs
           node scripts/check-sinvert-routing.mjs
+          node scripts/check-sinvert-ra1.mjs
           node scripts/check-sinvert-profile.mjs
       - name: Compose validation
         env:

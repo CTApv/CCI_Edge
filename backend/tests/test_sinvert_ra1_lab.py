@@ -64,7 +64,7 @@ class Ra1LabTests(unittest.TestCase):
         self.events = []
         self.device = SimpleNamespace(device_id='ra1', brand=RA1_BRAND, model=RA1_MODEL,
             protocol='s7_tcp', transport='tcp', profile_overrides={},
-            connection_settings={'host':'192.0.2.44'})
+            connection_settings={'host':'192.0.2.44','ra1_write_mode':'commissioning','ra1_reference_max_raw':1000})
         self.factory_calls = []
         def factory(*args):
             self.factory_calls.append(args)
