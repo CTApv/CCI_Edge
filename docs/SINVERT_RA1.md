@@ -37,7 +37,7 @@ Le misure e i riferimenti sono esplicitamente grezzi; non si deducono kW o
 percentuali dal nome o dalla taglia presunta. I dati PLC non sono un riscontro
 fisico indipendente. Anche il valore dopo rampa resta espresso in unitÃ  PLC.
 
-## Collaudo tecnico (rc.4)
+## Collaudo tecnico (rc.5)
 
 La pagina RA1 espone un collaudo dedicato, distinto dai comandi generici. Il catalogo
 non espone comandi di flotta, ON/OFF, TEST o reset. La barriera I/O generale rimane
@@ -76,6 +76,7 @@ consensi di gruppo/esterno presenti, parametri DB600 conformi, campi diversi dal
 riferimento A neutri e nessun comando HMI/TEST attivo. Nessun gate, consenso,
 uscita o bit del watchdog viene scritto dal driver.
 
+Il primo riferimento deve differire da quello attuale per confermare una variazione.
 Trasmette telegrammi di 64 byte con solo A a offset 32, ogni 0,8 secondi. B resta
 zero: il controllo del secondo riferimento non ? incluso. Verifica tramite S7
 DB944.DBD32, DB570.DBD2 e i flag di errore/watchdog DB600.DBX24.1/.4.

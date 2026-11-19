@@ -359,6 +359,8 @@ class SinvertRa1LabService:
             with self.connection(session.device) as client:
                 session.client = client
                 self.conditions(client, bench=False)
+                if self.read(client, 944, 32, 4) == struct.pack('>f', session.value):
+                    raise ValueError('Per avviare il collaudo scegliere un riferimento diverso da quello attuale: serve verificare una variazione.')
                 self.audit(session.device, 'before_native_start', raw_value=session.value, options=session.options)
                 if session.stop.is_set():
                     raise ValueError('Avvio annullato.')

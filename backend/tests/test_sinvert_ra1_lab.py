@@ -189,6 +189,14 @@ class Ra1LabTests(unittest.TestCase):
         self.assertEqual(self.factory_calls, [])
         self.assertEqual(self.plc.writes, [])
 
+    def test_initial_reference_must_change_to_prove_receive_path(self):
+        self.native_ready()
+        self.plc.dbs[944][32:36] = struct.pack('>f', 400)
+        self.start()
+        status = self.wait_state('fault')
+        self.assertFalse(status['write_attempted'])
+        self.assertEqual(self.factory_calls, [])
+
     def test_native_hmi_conflict_and_changed_cp_mapping_are_blocked(self):
         self.native_ready()
         self.plc.dbs[511][10] = 1
