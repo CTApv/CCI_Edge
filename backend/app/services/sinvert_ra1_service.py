@@ -99,7 +99,7 @@ class SinvertRa1Service:
 
 
 def build_ra1_monitor(values):
-    reasons=['Scritture RA1 non abilitate: scala dei riferimenti e connessione CP da validare.']
+    reasons=['Controllo di flotta disabilitato. Usare il collaudo RA1 dedicato con riferimenti grezzi.']
     if values.get('ra1_cp_enabled') is False:reasons.append('Ramo di comunicazione CP disabilitato nel PLC.')
     if values.get('ra1_external_b') is False:reasons.append('Abilitazione del riferimento esterno non attiva.')
     if values.get('ra1_watchdog_fault') is True:reasons.append('Watchdog del canale esterno scaduto.')

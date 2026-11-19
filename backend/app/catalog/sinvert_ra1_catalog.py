@@ -76,11 +76,11 @@ def build_sinvert_ra1_models():
         defaults={"port":102, "rack":0, "slot":2, "timeout_seconds":10,
                   "retries":0, "poll_interval_seconds":15},
         features=["Driver SINVERT RA1 separato", "Firma del programma PLC verificata",
-                  "Canale CP diretto DB944", "Diagnostica riferimenti e consensi", "Sola lettura"],
+                  "Canale CP diretto DB944", "Diagnostica riferimenti e consensi", "Collaudo tecnico RA1 separato"],
         telemetry_points=ra1_points(), command_points=[],
         catalog_meta={"series":"SINVERT RA1 / test sinvert 420", "verification_status":"diagnostic_only",
             "source_document":"test sinvert 420 - TIA V18; PLC MC7 comparison 2026-11-19",
             "source_version":"KOMM 3.0 / REGEL 3.9", "last_reviewed_at":"2026-11-19",
-            "field_tested":False, "writes_enabled":False, "reference_scale_confirmed":False,
+            "field_tested":False, "writes_enabled":False, "commissioning_available":True, "reference_scale_confirmed":False,
             "source_sha256":"cdb781c67e11a4d9bf6b636c6bef19f40c41fb29b297ba517ea634d1fee0c25d",
-            "notes":"12 blocchi confrontati byte per byte. Quattro gruppi; 420 identifica il progetto, non una potenza nominale certificata. Scala fisica, partner CP e TSAP da confermare. Nessun comando PLC implementato."})]
+            "notes":"12 blocchi confrontati byte per byte. Quattro gruppi; 420 identifica il progetto, non una potenza nominale certificata. Scala fisica, partner CP e TSAP da confermare. Collaudo tecnico separato: prova S7 isolata e sessione CP con TSAP confermati. Nessun comando di flotta."})]

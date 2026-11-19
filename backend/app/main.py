@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes_sinvert_lab import router as sinvert_lab_router
+from app.api.routes_sinvert_ra1_lab import router as sinvert_ra1_lab_router
 from app.api.routes_catalog import router as catalog_router
 from app.api.routes_commands import router as commands_router
 from app.api.routes_fleet_control import router as fleet_control_router
@@ -37,6 +38,8 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         yield
     finally:
         from app.services.sinvert_native_service import sinvert_native_service
+        from app.services.sinvert_ra1_lab_service import sinvert_ra1_lab_service
+        sinvert_ra1_lab_service.stop_all()
         sinvert_native_service.stop_all()
         polling_engine.stop()
         fleet_dispatch_service.stop()
@@ -57,6 +60,7 @@ app.add_middleware(
 )
 
 app.include_router(sinvert_lab_router)
+app.include_router(sinvert_ra1_lab_router)
 app.include_router(catalog_router)
 app.include_router(commands_router)
 app.include_router(fleet_control_router)

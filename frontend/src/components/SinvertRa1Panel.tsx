@@ -1,4 +1,5 @@
 import type { DeviceOverview } from "../api";
+import { SinvertRa1LabPanel } from "./SinvertRa1LabPanel";
 
 const format = (value: number | null | undefined) =>
   value == null ? "—" : new Intl.NumberFormat("it-IT", { maximumFractionDigits: 3 }).format(value);
@@ -8,11 +9,11 @@ export function SinvertRa1Panel({ overview }: { overview: DeviceOverview }) {
   if (!monitor) return null;
   const fresh = overview.diagnostics.data_freshness === "fresh";
   return (
-    <section className="detail-section">
+    <><section className="detail-section">
       <h3>SINVERT RA1 · 420 S7-300</h3>
       <p>
         {fresh && monitor.program_verified ? "Programma PLC riconosciuto" : "Verificare freschezza e identificazione PLC"}
-        {" · "}Profilo in sola lettura · {format(monitor.position_count)} posizioni
+        {" · "}Telemetria RA1 · {format(monitor.position_count)} posizioni
       </p>
       <div className="detail-kpi-grid">
         <article><h4>Canale CP</h4><p>{monitor.cp_enabled == null ? "Dato assente" : monitor.cp_enabled ? "Abilitato" : "Disabilitato nel PLC"}</p></article>
@@ -29,6 +30,6 @@ export function SinvertRa1Panel({ overview }: { overview: DeviceOverview }) {
       </table>
       <h4>Condizioni da verificare prima del controllo</h4>
       <ul>{monitor.blockers.map(reason => <li key={reason}>{reason}</li>)}</ul>
-    </section>
+    </section><SinvertRa1LabPanel key={overview.device.device_id} deviceId={overview.device.device_id} /></>
   );
 }
