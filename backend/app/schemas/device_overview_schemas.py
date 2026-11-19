@@ -18,6 +18,7 @@ class DeviceOverviewMetrics(BaseModel):
 
 class DeviceOverviewDiagnostics(BaseModel):
     sinvert: dict | None = None
+    sinvert_ra1: dict | None = None
     failed_points: int = 0
     read_errors: dict[str, str] = Field(default_factory=dict)
     last_poll_status: str

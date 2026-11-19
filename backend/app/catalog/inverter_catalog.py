@@ -23,6 +23,7 @@ from app.catalog.xantrex_catalog import build_xantrex_gt_models
 from app.catalog.zcs_catalog import build_zcs_models
 from app.services.kaco_sunspec_service import KACO_SUNSPEC_DRIVER
 from app.catalog.sinvert_s7_catalog import build_sinvert_s7_models
+from app.catalog.sinvert_ra1_catalog import build_sinvert_ra1_models
 
 
 def telemetry_point(
@@ -3566,6 +3567,7 @@ INVERTER_CATALOG: list[InverterModel] = [
 
 
 INVERTER_CATALOG += build_sinvert_s7_models()
+INVERTER_CATALOG += build_sinvert_ra1_models()
 INVERTER_CATALOG += build_fimer_pvs_models("modbus_tcp", "tcp") + build_fimer_pvs_models("modbus_rtu", "serial")
 
 

@@ -645,6 +645,21 @@ export type DeviceOverviewCommandPoint = {
 
 export type DeviceOverviewDiagnostics = {
   sinvert?: SinvertMonitor | null;
+  sinvert_ra1?: {
+    program_verified: boolean;
+    program_check_age_seconds: number | null;
+    writes_enabled: boolean;
+    physical_execution_confirmed: boolean;
+    cp_parameters_match: boolean;
+    cp_enabled: boolean | null;
+    blockers: string[];
+    reference_a: number | null;
+    reference_b: number | null;
+    regulator_a: number | null;
+    regulator_b: number | null;
+    processed_a: number | null;
+    position_count: number | null;
+  } | null;
   failed_points?: number;
   read_errors?: Record<string, string>;
   last_poll_status: string;

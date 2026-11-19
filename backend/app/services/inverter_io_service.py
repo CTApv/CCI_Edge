@@ -31,6 +31,8 @@ from app.services.bonfiglioli_modbus_service import (
 )
 from app.services.connection_manager import connection_manager
 from app.services.sinvert_s7_service import sinvert_s7_service
+from app.catalog.sinvert_ra1_catalog import is_ra1_device, RA1_DRIVER
+from app.services.sinvert_ra1_service import sinvert_ra1_service
 from app.services.delta_rs485_service import DELTA_RS485_DRIVER, delta_rs485_service
 from app.services.ingeteam_command_service import (
     INGETEAM_UNIT_COMMAND_DRIVER,
@@ -135,6 +137,8 @@ class InverterIoService:
         device: DeviceResponse,
         inverter_model: InverterModel,
     ) -> TelemetryReadResult:
+        if is_ra1_device(device):
+            return self.read_telemetry(device, inverter_model)
         if is_pvs_device(device):
             return self._read_telemetry_points(device, inverter_model, [p for p in inverter_model.telemetry_points if p.key in {"operating_state", "active_power_kw"}])
         if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
@@ -172,6 +176,9 @@ class InverterIoService:
         inverter_model: InverterModel,
         points: list[InverterPoint],
     ) -> TelemetryReadResult:
+        if is_ra1_device(device) or any(p.protocol_meta.get("driver")==RA1_DRIVER for p in points):
+            result=sinvert_ra1_service.read_points(device,points)
+            return TelemetryReadResult(result.values,RA1_DRIVER,read_errors=result.errors)
         if is_pvs_device(device):
             values = fimer_pvs_service.read_points(device, points)
             return TelemetryReadResult(self._apply_point_scaling(points, values), PVS_DRIVER)
@@ -202,6 +209,10 @@ class InverterIoService:
         point: InverterPoint,
         value: float,
     ) -> CommandWriteResult:
+        if is_ra1_device(device) or point.protocol_meta.get("driver")==RA1_DRIVER:
+            return CommandWriteResult(False,{"stub_mode":False,"driver":RA1_DRIVER,
+                "write_attempted":False,"write_accepted":False,"physical_execution_confirmed":False,
+                "stage":"blocked"},"SINVERT RA1: scritture non abilitate; scala e connessione CP da validare.")
         if is_pvs_device(device):
             result = fimer_pvs_service.write(device, point, value)
             return CommandWriteResult(result.success, result.diagnostics, result.error)

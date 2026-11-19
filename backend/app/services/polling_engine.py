@@ -33,6 +33,8 @@ from app.services.live_cache import LiveCacheEntry, live_cache
 from app.services.power_history_service import power_history_service
 from app.services.power_value_sanitizer import sanitize_device_power_kw
 from app.services.sinvert_monitor import build_sinvert_monitor
+from app.catalog.sinvert_ra1_catalog import is_ra1_device
+from app.services.sinvert_ra1_service import build_ra1_monitor
 from app.services.telemetry_quality_service import telemetry_quality_service
 
 SUPPORTED_POLL_PROTOCOLS = {"modbus_tcp", "modbus_rtu", "sunspec", "aurora", "delta_rs485", "s7_tcp"}
@@ -185,7 +187,8 @@ def poll_device(
                 ),
             ),
             diagnostics=DeviceOverviewDiagnostics(
-                sinvert=build_sinvert_monitor(values,device.connection_settings) if device.protocol == "s7_tcp" else None,
+                sinvert=build_sinvert_monitor(values,device.connection_settings) if device.protocol == "s7_tcp" and not is_ra1_device(device) else None,
+                sinvert_ra1=build_ra1_monitor(values) if is_ra1_device(device) else None,
                 failed_points=len(telemetry.read_errors or {}),
                 read_errors=telemetry.read_errors or {},
                 last_poll_status=(
@@ -2351,7 +2354,7 @@ def _build_telemetry_points(
     device: object | None = None,
 ) -> list[DeviceTelemetryPoint]:
     telemetry_items: list[DeviceTelemetryPoint] = []
-    sinvert_groups = build_sinvert_monitor(values)["groups"] if inverter_model.protocol == "s7_tcp" else []
+    sinvert_groups = build_sinvert_monitor(values)["groups"] if inverter_model.protocol == "s7_tcp" and not is_ra1_device(inverter_model) else []
     for point in inverter_model.telemetry_points:
         if not point.visible or point.key not in values:
             continue

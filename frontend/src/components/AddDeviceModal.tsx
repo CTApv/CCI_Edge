@@ -406,7 +406,9 @@ export function AddDeviceModal({ onClose, onCreated, prefill }: AddDeviceModalPr
     form.protocol && form.transport
       ? buildConnectionSettingsError(form.protocol, form.transport, form.connectionSettingsText)
       : null;
-  const guidedFields = getGuidedConnectionFields(form.protocol, form.transport);
+  const guidedFields = getGuidedConnectionFields(form.protocol, form.transport).filter(
+    field => form.brand !== "SINVERT RA1" || !field.key.startsWith("sinvert_"),
+  );
   const connectionEntries =
     parsedConnectionSettings !== null
       ? buildConnectionReviewEntries(form.protocol, form.transport, parsedConnectionSettings)

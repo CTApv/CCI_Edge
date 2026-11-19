@@ -15,6 +15,7 @@ import {
 } from "../api";
 import { AdvancedHistoryDrawer } from "./AdvancedHistoryDrawer";
 import { SinvertMonitorPanel } from "./SinvertMonitorPanel";
+import { SinvertRa1Panel } from "./SinvertRa1Panel";
 import {
   PowerHistoryChart,
   type PowerHistoryChartSeries,
@@ -617,6 +618,7 @@ export function DeviceDetailPanel({
             </section>
 
             {device.protocol === "s7_tcp" && (showLiveSections || showCommandSection) ? <SinvertMonitorPanel key={device.device_id} overview={overview} onSettingsSaved={() => void loadDeviceDetail(false)} /> : null}
+            {device.protocol === "s7_tcp" && (showLiveSections || showCommandSection) ? <SinvertRa1Panel overview={overview} /> : null}
             {showLiveSections ? (
               <>
                 <section className="detail-section">
