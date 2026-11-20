@@ -266,7 +266,18 @@ class DeviceService:
         *,
         exclude_device_id: str | None = None,
     ) -> None:
+        from app.catalog.sma_stp60_catalog import MANAGER_MODEL, INVERTER_MODEL
+        sma_models = {MANAGER_MODEL, INVERTER_MODEL}
         candidate_endpoint = self._addressed_endpoint_key(candidate)
+        if candidate.brand == "SMA" and candidate.model in sma_models:
+            for existing in self._devices:
+                if existing.device_id == exclude_device_id:
+                    continue
+                if (existing.brand == "SMA" and existing.model in sma_models
+                    and self._addressed_endpoint_key(existing) == candidate_endpoint
+                    and (existing.model == MANAGER_MODEL or candidate.model == MANAGER_MODEL)):
+                    raise ValueError("Questo SMA Inverter Manager è già rappresentato nel catalogo impianto. "
+                        "Scegliere il gruppo oppure i singoli inverter: aggiungerli insieme duplica potenza ed energia.")
         candidate_unit_id = self._addressed_unit_id(candidate.connection_settings)
         if candidate_endpoint is None or candidate_unit_id is None:
             return

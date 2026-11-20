@@ -3,6 +3,8 @@ from app.services.fimer_pvs_service import fimer_pvs_service, is_pvs_device
 from app.catalog.xantrex_gt500_catalog import GT500_GATEWAY_DRIVER, GT500_E_MODELS, is_gt500_family
 from app.services.xantrex_gt500_service import xantrex_gt500_service
 from app.services.fronius_sunspec_service import FRONIUS_DRIVER, fronius_sunspec_service
+from app.catalog.sma_stp60_catalog import SMA_DRIVER
+from app.services.sma_stp60_service import sma_stp60_service
 from dataclasses import dataclass
 from struct import pack, unpack
 from time import perf_counter, sleep
@@ -145,7 +147,7 @@ class InverterIoService:
             # Always validate the complete gateway diagnostic block, including
             # link health; the generic synthetic probe has no canonical mapping.
             return self.read_telemetry(device, inverter_model)
-        if any(p.protocol_meta.get("driver") == FRONIUS_DRIVER for p in inverter_model.telemetry_points):
+        if any(p.protocol_meta.get("driver") in {FRONIUS_DRIVER, SMA_DRIVER} for p in inverter_model.telemetry_points):
             return self._read_telemetry_points(device, inverter_model,
                 [p for p in inverter_model.telemetry_points if p.key in {"operating_state", "active_power_kw"}])
         probe_point = self._select_heartbeat_probe_point(inverter_model)
@@ -187,6 +189,9 @@ class InverterIoService:
                 raise ValueError("Sottofamiglia GT500 non operativa: mappa Modbus da acquisire.")
             values = xantrex_gt500_service.read_points(device, points)
             return TelemetryReadResult(values, GT500_GATEWAY_DRIVER)
+        if any(p.protocol_meta.get("driver") == SMA_DRIVER for p in points):
+            raw_values = sma_stp60_service.read_points(device, points)
+            return TelemetryReadResult(self._apply_point_scaling(points, raw_values), SMA_DRIVER)
         if any(p.protocol_meta.get("driver") == FRONIUS_DRIVER for p in points):
             raw_values = fronius_sunspec_service.read_points(device, points)
             return TelemetryReadResult(self._apply_point_scaling(points, raw_values), FRONIUS_DRIVER)
@@ -222,6 +227,12 @@ class InverterIoService:
         if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
             result = sungrow_sg110cx_service.write(device, point, value)
             return CommandWriteResult(result.success, result.diagnostics, result.error)
+        if point.protocol_meta.get("driver") == SMA_DRIVER:
+            try:
+                return CommandWriteResult(True, sma_stp60_service.write_point(device, point, value))
+            except Exception as exc:
+                return CommandWriteResult(False, {"stub_mode": False, "driver": SMA_DRIVER,
+                    "physical_execution_confirmed": False, "stage": "write_sma"}, str(exc))
         if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
             try:
                 result = fronius_sunspec_service.write_point(device, point, value)
@@ -259,7 +270,7 @@ class InverterIoService:
             return None
         if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
             return None
-        if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
+        if point.protocol_meta.get("driver") in {FRONIUS_DRIVER, SMA_DRIVER}:
             return None
         if device.protocol not in {"modbus_rtu", "modbus_tcp"}:
             return None
@@ -324,6 +335,9 @@ class InverterIoService:
         if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
             return CommandWriteResult(False, {'stub_mode': False, 'broadcast': True, 'stage': 'profile'},
                 'SG110CX Premium richiede identita e rilettura: broadcast non supportato.')
+        if point.protocol_meta.get("driver") == SMA_DRIVER:
+            return CommandWriteResult(False, {"stub_mode": False, "driver": SMA_DRIVER, "broadcast": True,
+                "write_attempted": False}, "SMA: comandi solo indirizzati al Manager, broadcast escluso.")
         if point.protocol_meta.get("driver") == FRONIUS_DRIVER:
             return CommandWriteResult(False, {"stub_mode": False, "stage": "profile", "broadcast": True},
                 "Fronius SunSpec richiede comandi indirizzati con verifica; broadcast disabilitato.")
