@@ -8,8 +8,9 @@ import subprocess
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
+from app.services.plant_identity_service import plant_identity_service
 
-DEFAULT_APP_VERSION = "v1.6.0"
+DEFAULT_APP_VERSION = "v1.6.1"
 _VIRTUAL_INTERFACE_PREFIXES = ("br-", "docker", "tailscale", "veth", "virbr", "zt")
 _BUILD_METADATA_NAMES = {
     "PV_EDGE_MANAGER_VERSION",
@@ -30,6 +31,7 @@ class SystemIdentityService:
             self._cached_identity = self._build_snapshot()
         return {
             **self._cached_identity,
+            "plant_name": plant_identity_service.get(self._cached_identity["edge_id"]).get("plant_name"),
             "backend_started_at": self._started_at,
         }
 

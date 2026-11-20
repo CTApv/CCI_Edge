@@ -1,0 +1,14 @@
+--- a/backend/app/services/fleet_inventory.py
++++ b/backend/app/services/fleet_inventory.py
+@@ -19,0 +20,2 @@
++from app.services.plant_identity_sync import sync_plant_identity
++from app.services.metadata_repository import DeviceMetadataStore
+@@ -375,0 +378,8 @@
++        identity = system_health.get("identity", {})
++        if "plant_name" in identity:
++            try:
++                metadata = DeviceMetadataStore(self.store.path.parent).get(str(device.get("id") or ""))
++                sync_plant_identity(base_url, identity, device, metadata, timeout=timeout)
++            except Exception:  # optional label synchronization must not break telemetry
++                # Leave the successful health/power collection intact; retry next cycle.
++                logger.warning("Nome impianto non sincronizzato per %s; nuovo tentativo al prossimo ciclo", device.get("id"))

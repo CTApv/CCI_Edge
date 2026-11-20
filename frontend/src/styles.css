@@ -10052,12 +10052,8 @@
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   }
 
-  .app-footer__item:nth-of-type(2) {
-    grid-column: 1 / -1;
-  }
-
-  .app-footer__item--host {
-    display: none;
+  .app-footer__item--plant {
+    min-width: 0;
   }
 
   .hero,

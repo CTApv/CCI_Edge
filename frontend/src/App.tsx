@@ -4816,9 +4816,11 @@ function AppFooter({
         <span>Versione app</span>
         <strong>{buildFooterVersionLabel(health)}</strong>
       </div>
-      <div className="app-footer__item app-footer__item--host">
-        <span>Host</span>
-        <strong>{health?.identity.hostname ?? "locale"}</strong>
+      <div className="app-footer__item app-footer__item--plant">
+        <span>Nome impianto</span>
+        <strong title={health?.identity.plant_name?.trim() || undefined}>
+          {health?.identity.plant_name?.trim() || "Impianto da configurare"}
+        </strong>
       </div>
     </footer>
   );

@@ -11,12 +11,28 @@ from app.schemas.system_schemas import (
     SystemHealthResponse,
     TRANSPORT_OPTIONS,
     SystemOptionsResponse,
+    PlantIdentityUpdateRequest,
 )
 from app.services.network_config_service import network_config_service
 from app.services.network_interface_service import network_interface_service
 from app.services.system_health_service import system_health_service
+from app.services.system_identity_service import system_identity_service
+from app.services.plant_identity_service import plant_identity_service
 
 router = APIRouter(prefix="/api/system", tags=["system"])
+
+
+@router.put("/plant-identity")
+def update_plant_identity(payload: PlantIdentityUpdateRequest) -> dict:
+    edge_id = system_identity_service.get_snapshot()["edge_id"]
+    if payload.edge_id != edge_id:
+        raise HTTPException(status_code=409, detail="ID edge diverso dal dispositivo destinatario.")
+    try:
+        return plant_identity_service.update(edge_id, payload.plant_name, payload.revision)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except OSError as exc:
+        raise HTTPException(status_code=503, detail="Salvataggio del nome impianto non riuscito.") from exc
 
 
 @router.get("/options", response_model=SystemOptionsResponse)

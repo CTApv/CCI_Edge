@@ -492,6 +492,7 @@ export type SystemHealthIdentitySnapshot = {
   edge_id: string;
   edge_id_source: string;
   hostname: string;
+  plant_name?: string | null;
   platform: string;
   app_version: string;
   release_tag: string | null;

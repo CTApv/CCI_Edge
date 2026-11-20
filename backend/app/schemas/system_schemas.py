@@ -1,6 +1,6 @@
 from typing import Literal, get_args
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from app.schemas.device_schemas import ProtocolValue, TransportValue
 
@@ -227,6 +227,7 @@ class SystemHealthIdentitySnapshot(BaseModel):
     edge_id: str
     edge_id_source: str
     hostname: str
+    plant_name: str | None = None
     platform: str
     app_version: str
     release_tag: str | None
@@ -235,6 +236,13 @@ class SystemHealthIdentitySnapshot(BaseModel):
     build_time: str | None
     backend_started_at: str
     backend_path: str
+
+
+class PlantIdentityUpdateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    edge_id: str = Field(min_length=1, max_length=120)
+    plant_name: str = Field(max_length=200)
+    revision: int | None = Field(default=None, ge=0)
 
 
 class SystemHealthBroadcastDevice(BaseModel):
