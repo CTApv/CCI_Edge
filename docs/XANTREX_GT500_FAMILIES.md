@@ -2,12 +2,12 @@
 
 Le famiglie GT500 non ereditano la mappa legacy `GT Series` via gateway/Xanbus.
 Questa integrazione separa le otto varianti documentate e rende esplicito lo
-stato effettivo del supporto. Nessuna variante e collaudata sull'hardware.
+stato effettivo del supporto. GT500 E e stato collaudato il 27 novembre 2026.
 
 | Profilo | Interfaccia nel catalogo | Supporto attuale |
 |---|---|---|
-| GT500 E / PVGT12542EDI | Modbus TCP | Diagnostica passiva |
-| GT500 E GI / PVGT12542EDI | Modbus TCP | Diagnostica passiva |
+| GT500 E / PVGT12542EDI | Modbus TCP | Telemetria e limite MPPT collaudati |
+| GT500 E GI / PVGT12542EDI | Modbus TCP | Stessa mappa; hardware da collaudare |
 | GT500 MVX | Modbus RTU; TCP tramite gateway da verificare | Non operativo: mappa mancante |
 | GT500 MVX PG | Modbus RTU; TCP tramite gateway da verificare | Non operativo: mappa mancante |
 | GT500 480 | Modbus RTU; TCP tramite gateway da verificare | Non operativo: mappa mancante |
@@ -15,37 +15,70 @@ stato effettivo del supporto. Nessuna variante e collaudata sull'hardware.
 | GT500 600 | Modbus RTU; TCP tramite gateway da verificare | Non operativo: mappa mancante |
 | GT500 600 PG | Modbus RTU; TCP tramite gateway da verificare | Non operativo: mappa mancante |
 
-## Diagnostica europea
+## Driver europeo v1.6.2
 
-Il manuale italiano 975-0582-01-01 Rev B descrive il convertitore PVGT12542EDI,
-che traduce il protocollo proprietario seriale RS422 in Modbus TCP. Il software
-non implementa il protocollo proprietario e non presume che altri convertitori
-forniscano la stessa mappa.
+Il 27 novembre 2026 sono stati collaudati due GT500 E dell'impianto RCA,
+tramite convertitori Schneider XAGT10042ED, interfaccia web v1.1, firmware
+inverter H=0x0710/L=0x0C0D. La variante GI condivide la mappa documentata ma
+resta da collaudare sull'hardware.
 
-La tabella 1-1 e la verifica descritta a pagina 1-26 consentono un primo profilo
-diagnostico: holding, funzione 03, primi otto registri, senza scritture.
-Il registro 1 del manuale e trattato come PDU 0: la convenzione deve essere
-confermata sul gateway reale. I campi successivi sono stato obiettivo, stato
-sistema, guasto grezzo, stato inverter, stato FV e due parole versione software.
-Non si deducono misure fisiche o identita inverter da questi campi.
+FC03 legge il blocco PDU 0..33 in una richiesta. Gli stati comunicazione e
+inverter, lunghezza e formato sono validati prima di pubblicare i dati.
+Il guasto di un inverter non viene confuso con una perdita di comunicazione:
+lo stato fault sospende i comandi flotta fino al rientro del guasto.
+Anche i cicli rapidi conservano stati e riferimento.
 
-Ogni lettura richiede l'intero blocco diagnostico e stato comunicazione zero.
-Stato 4 o qualsiasi altro valore, eccezioni Modbus e risposte tronche bloccano
-la pubblicazione dei dati. Indirizzi, lunghezze, scale e tipi dei punti sono
-vincolati al profilo canonico anche in presenza di override. Le scritture e il
-broadcast sono esclusi anche se viene passato un comando del profilo legacy.
-Nessuna selezione di code storiche viene eseguita durante il polling.
+| Valore | Offset PDU | Formato |
+|---|---:|---|
+| Gateway, obiettivo, sistema, guasto, inverter, FV | 0..5 | uint16 |
+| Versioni firmware H/L | 6..7 | uint16 grezzi |
+| Tensioni AC A-B/B-C/C-A | 12..14 | uint16 V |
+| Potenza attiva | 18 | int16, 0.1 kW |
+| Temperatura matrice | 19 | int16 C |
+| Tensione DC | 21 | uint16 V |
+| Corrente DC | 22 | int16 A |
+| Potenza DC | 23 | int16, 0.1 kW |
+| Frequenza | 24 | uint16, 0.1 Hz |
+| Limite corrente MPPT | 31 (manuale 32) | uint16, 0..100% |
 
-Il profilo espone solo stati grezzi. Potenze, correnti, tensioni, contatori e
-modulazione restano non disponibili finche formato, scale e indirizzi non sono
-verificati. Il test connessione conferma la diagnostica del gateway, senza
-confermare modello inverter o potenza. Il profilo non partecipa al riconoscimento
-automatico: un registro zero non identifica un GT500.
+Le scale di potenza sono state confrontate con tensione/corrente DC e risposta
+alla limitazione in campo; il collaudo non e una taratura metrologica.
+Contatori energia e correnti AC restano esclusi in attesa di validazione.
+Il polling non esegue scritture e non partecipa all'identificazione automatica.
 
-Il valore iniziale software dell'Unit ID e 1 e deve essere verificato. L'indirizzo
-IP 192.168.1.254 viene dal manuale del convertitore; non implica che un impianto
-reale usi l'indirizzo predefinito. Il gateway puo sospendere Modbus durante una
-sessione PV View, come descritto dal produttore.
+## Comando e rilettura
+
+Abilitare il booleano `connection_settings.xantrex_pvgt_control_enabled=true`
+solo dopo conferma della mappa sul sito. Il default false evita di abilitare
+comandi su siti non collaudati al solo aggiornamento della release.
+Il driver verifica firmware 0710/0C0D, obiettivo MPPT e assenza di guasti.
+
+Si scrive solo FC16, un registro a PDU 31, con passo 1%; le richieste frazionarie
+sono arrotondate al punto percentuale piu vicino. Nessun reset, arresto, APC
+ID 85/86, fattore di potenza o broadcast. Un riferimento gia corrispondente
+non viene riscritto. Il limite e persistente, senza scadenza documentata:
+il ripristino richiede un nuovo riferimento, normalmente 100%.
+
+Polling e comandi condividono sessione e lock dello stesso endpoint. I gateway
+provati accettano una sola connessione: non aprire una seconda sessione per
+il controllo. Il timeout socket di scrittura coincide con quello di polling
+per evitare che il connection manager ricrei la sessione.
+
+La cache del gateway aggiorna i valori con ritardo. Dopo ACK, il driver rilegge
+ogni 0.5 s fino a 12 s e conferma solo il riferimento effettivamente osservato.
+Un timeout segnala esito incerto; un errore dopo invio non causa replay
+automatico. `physical_execution_confirmed=false` distingue il riferimento
+confermato dalla verifica fisica della produzione.
+
+## Collaudo RCA
+
+Endpoint 192.168.0.16, .26 e .36, TCP 502, Unit ID 1.
+Su .16 e .26: sequenza 100 -> 2 -> 100, forte riduzione della potenza e
+rilettura dei riferimenti ripristinati. Una lettura immediata era rimasta al
+vecchio valore: questo ritardo ha motivato la conferma fino a 12 secondi.
+Sul terzo inverter: sistema 7, guasto grezzo 53 (0x0035), nessuna produzione;
+nessun reset o collaudo fisico di modulazione. Il suo canale e la firma firmware
+sono stati verificati e il controllo resta pronto per il rientro del guasto.
 
 ## Famiglie native MVX e 480/600
 
@@ -63,32 +96,14 @@ parametri seriali e indirizzo sono valori da confermare sul kit, non impostazion
 certificate. Nessuno di questi parametri viene utilizzato finche il profilo
 rimane non operativo.
 
-## Controllo di potenza: lavoro ancora necessario
+## Compatibilita e verifiche
 
-Il manuale europeo documenta APC Enable ID 85 e APC percent ID 86, con
-disponibilita dipendente dalla configurazione. Sono ID di parametri, non
-indirizzi Modbus dimostrati. La percentuale APC e descritta come limite di
-corrente nominale impiegato dal controllo di potenza: non viene convertita
-automaticamente in kW. Anche il limite MPPT del gateway non viene equiparato
-all'APC. La nota del gateway limita FC10 alla scrittura di un registro per
-richiesta: una futura implementazione non deve copiarvi la scrittura coordinata
-a due registri del driver Sungrow.
-
-Per completare i driver servono mappa del kit/gateway e firmware corrispondenti,
-formati e scale, identificazione del dispositivo, sequenza di abilitazione e
-riferimento, rilettura e comportamento alla perdita di comunicazione. Quindi
-simulatore di protocollo e collaudo fisico. Nessun watchdog viene inventato.
-
-## Compatibilita, verifiche e distribuzione
-
-Il vecchio nome GT Series rimane disponibile per le configurazioni esistenti,
-con una nota che ne limita l'ambito. Non sono migrati dispositivi gia configurati.
-I metadati di verifica vengono preservati dal resolver anche con override.
-Test offline coprono catalogo, percorsi di blocco, override, assenza di scritture,
-risposte tronche, perdita di comunicazione e descrizione delle capability.
-
-Questo lavoro e successivo al tag v1.4: non ne riscrive il contenuto e non
-costituisce una nuova release pubblicata. Non e stato eseguito alcun deploy IOT.
+GT Series, MVX e 480/600 mantengono il proprio ambito. Le configurazioni GT500 E
+esistenti ricevono la telemetria, ma i comandi richiedono il consenso di
+commissioning descritto sopra. La release non inventa watchdog inverter.
+I test coprono conferma ritardata, timeout incerto, ACK errato, perdita ACK
+senza reinvio, firmware estraneo, override, guasti, idempotenza, risposta
+tronca, formato firmato e stato fault distinto dalla comunicazione online.
 
 ## Fonti del produttore, ripubblicate da archivi terzi
 

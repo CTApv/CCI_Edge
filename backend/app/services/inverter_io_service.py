@@ -127,7 +127,7 @@ class InverterIoService:
     ) -> TelemetryReadResult:
         points = (
             self._select_essential_readable_points(inverter_model.telemetry_points)
-            if essential_only and device.protocol != "s7_tcp"
+            if essential_only and device.protocol != "s7_tcp" and not is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", ""))
             else self._select_readable_points(inverter_model.telemetry_points)
         )
         if not points:
@@ -164,6 +164,8 @@ class InverterIoService:
         device: DeviceResponse,
         inverter_model: InverterModel,
     ) -> TelemetryReadResult:
+        if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
+            return self.read_telemetry(device, inverter_model)
         points = self._select_active_power_points(inverter_model.telemetry_points)
         if not points:
             return self.read_heartbeat(device, inverter_model)
@@ -188,7 +190,7 @@ class InverterIoService:
             if device.model not in GT500_E_MODELS:
                 raise ValueError("Sottofamiglia GT500 non operativa: mappa Modbus da acquisire.")
             values = xantrex_gt500_service.read_points(device, points)
-            return TelemetryReadResult(values, GT500_GATEWAY_DRIVER)
+            return TelemetryReadResult(self._apply_point_scaling(points, values), GT500_GATEWAY_DRIVER)
         if any(p.protocol_meta.get("driver") == SMA_DRIVER for p in points):
             raw_values = sma_stp60_service.read_points(device, points)
             return TelemetryReadResult(self._apply_point_scaling(points, raw_values), SMA_DRIVER)
@@ -222,8 +224,8 @@ class InverterIoService:
             result = fimer_pvs_service.write(device, point, value)
             return CommandWriteResult(result.success, result.diagnostics, result.error)
         if is_gt500_family(getattr(device, "brand", ""), getattr(device, "model", "")):
-            return CommandWriteResult(False, {"stub_mode": False, "stage": "profile", "write_attempted": False},
-                "Comandi GT500 non abilitati: mappa e rilettura da verificare.")
+            result = xantrex_gt500_service.write(device, point, value)
+            return CommandWriteResult(result.success, result.diagnostics, result.error)
         if point.protocol_meta.get('driver') == SG110CX_POWER_DRIVER:
             result = sungrow_sg110cx_service.write(device, point, value)
             return CommandWriteResult(result.success, result.diagnostics, result.error)

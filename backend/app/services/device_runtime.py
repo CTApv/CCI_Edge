@@ -385,6 +385,13 @@ def resolve_runtime_status(
     if communication_state != "online":
         return communication_state
 
+    # PVGT communication remains healthy when the inverter itself is faulted.
+    # Preserve that distinction for fleet dispatch (which suspends faulted units).
+    if device.brand == "Xantrex" and device.model in {"GT500 E / PVGT12542EDI", "GT500 E GI / PVGT12542EDI"} and cache_entry is not None:
+        values = {point.key: point.value for point in cache_entry.telemetry if point.quality == "valid"}
+        if values.get("fault_code", 0) != 0 or values.get("system_state") == 7:
+            return "fault"
+
     if cache_entry is not None and is_successful_full_poll(cache_entry) and is_recent_full_data(
         device,
         lifecycle,

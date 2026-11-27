@@ -23,7 +23,7 @@ class XantrexGt500Tests(unittest.TestCase):
             connection_settings={'host': '127.0.0.1', 'port': 502, 'unit_id': 1}, profile_overrides={})
         self.client = Mock()
         self.client.read_holding_registers.return_value = SimpleNamespace(
-            registers=[0, 4, 4, 0, 4, 3, 123, 456], isError=lambda: False)
+            registers=[0, 4, 4, 0, 4, 3, 0x0710, 0x0C0D] + [0]*10 + [330, 12, 3, 582, 55, 355, 500] + [0]*6 + [100, 0, 0], isError=lambda: False)
 
     def read(self):
         with patch('app.services.xantrex_gt500_service.connection_manager.execute_modbus_tcp',
@@ -35,17 +35,20 @@ class XantrexGt500Tests(unittest.TestCase):
         self.assertEqual({m.model for m in models}, {'GT Series', *GT500_E_MODELS, *GT500_NATIVE_MODELS})
         self.assertEqual(len(build_xantrex_gt500_models('modbus_rtu', 'serial')), 6)
         for model in self.models:
-            self.assertFalse(model.command_points)
-            self.assertIsNone(active_power_limit_resolver.resolve_for_write(model, 50))
-            self.assertFalse(model.catalog_meta['field_tested'])
+            if model.model in GT500_NATIVE_MODELS:
+                self.assertFalse(model.command_points)
+                self.assertIsNone(active_power_limit_resolver.resolve_for_write(model, 50))
+                self.assertFalse(model.catalog_meta['field_tested'])
+            else:
+                self.assertIsNotNone(active_power_limit_resolver.resolve_for_write(model, 50))
 
     def test_diagnostics_are_passive_and_bounded(self):
         result = self.read()
         self.assertEqual(result.values['system_state'], 4)
-        self.assertNotIn('active_power_kw', result.values)
-        self.client.read_holding_registers.assert_called_once_with(0, count=8, device_id=1)
+        self.assertAlmostEqual(result.values['active_power_kw'], 33.0)
+        self.client.read_holding_registers.assert_called_once_with(0, count=34, device_id=1)
         self.client.write_registers.assert_not_called()
-        self.assertFalse(inverter_io_service.supports_active_power_fast_poll(self.gateway))
+        self.assertTrue(inverter_io_service.supports_active_power_fast_poll(self.gateway))
 
     def test_gateway_error_does_not_publish_stale_states(self):
         for status in [4, 1, 0xFFFF]:
@@ -105,7 +108,7 @@ class XantrexGt500Tests(unittest.TestCase):
     def test_gateway_canonical_map_is_enforced(self):
         for kwargs in [{'address': 99}, {'scale': .1}, {'datatype': 'uint32'}, {'unit': 'kW'}, {'register_type': 'input'}]:
             point = replace(self.gateway.telemetry_points[0], **kwargs)
-            with self.subTest(kwargs=kwargs), self.assertRaisesRegex(ValueError, 'Mappa diagnostica'):
+            with self.subTest(kwargs=kwargs), self.assertRaisesRegex(ValueError, 'Mappa PVGT'):
                 xantrex_gt500_service.read_points(self.device, [point])
         self.client.read_holding_registers.assert_not_called()
 
@@ -122,9 +125,10 @@ class XantrexGt500Tests(unittest.TestCase):
         entries = [m for m in list_catalog_models() if m['brand'] == 'Xantrex' and m['model'] != 'GT Series']
         self.assertEqual(len(entries), 14)
         for entry in entries:
-            self.assertFalse(entry['capabilities']['has_active_power_limit'])
-            self.assertFalse(entry['capabilities']['supports_power_history'])
-            self.assertEqual(entry['command_count'], 0)
+            operational = entry['model'] in GT500_E_MODELS
+            self.assertEqual(entry['capabilities']['has_active_power_limit'], operational)
+            self.assertEqual(entry['capabilities']['supports_power_history'], operational)
+            self.assertEqual(entry['command_count'], int(operational))
             if entry['model'] in GT500_NATIVE_MODELS:
                 self.assertFalse(entry['capabilities']['supports_live_telemetry'])
 
@@ -137,12 +141,120 @@ class XantrexGt500Tests(unittest.TestCase):
     def test_metadata_survives_profile_overrides(self):
         self.device.profile_overrides = {'defaults': {'timeout_seconds': 3}}
         model = inverter_profile_resolver.resolve_for_device(self.device)
-        self.assertEqual(model.catalog_meta['scope'], 'diagnostics_only')
+        self.assertEqual(model.catalog_meta['scope'], 'pvgt_mppt_control')
 
-    def test_connection_success_only_claims_diagnostics(self):
+    def test_connection_success_reads_complete_profile(self):
         with patch('app.services.xantrex_gt500_service.connection_manager.execute_modbus_tcp',
                    side_effect=lambda *a, **kw: kw['operation'](self.client)):
             result = ProtocolTestService().test_connection(ProtocolTestRequest(brand='Xantrex', model=self.gateway.model,
                 protocol='modbus_tcp', transport='tcp', connection_settings={'host': '127.0.0.1'}))
         self.assertTrue(result.success)
-        self.assertIn('identita inverter e potenza non confermate', result.message)
+        self.assertEqual(result.diagnostics['telemetry_values_read'], len(self.gateway.telemetry_points))
+
+
+class XantrexGt500ControlTests(unittest.TestCase):
+    read = XantrexGt500Tests.read
+
+    def setUp(self):
+        XantrexGt500Tests.setUp(self)
+        self.device.connection_settings['xantrex_pvgt_control_enabled'] = True
+        self.command = self.gateway.command_points[0]
+        self.before = list(self.client.read_holding_registers.return_value.registers)
+        self.client.write_registers.return_value = SimpleNamespace(isError=lambda: False, address=31, count=1)
+
+    def response(self, limit=100, fault=0, status=4):
+        words = list(self.before)
+        words[31], words[3], words[2] = limit, fault, status
+        return SimpleNamespace(registers=words, isError=lambda: False)
+
+    def write(self, value=2):
+        with patch('app.services.xantrex_gt500_service.connection_manager.execute_modbus_tcp',
+                side_effect=lambda *a, **kw: kw['operation'](self.client)), patch('app.services.xantrex_gt500_service.sleep'):
+            return inverter_io_service.write_command(self.device, self.command, value)
+
+    def test_delayed_readback_uses_fc16_one_word_and_confirms(self):
+        self.client.read_holding_registers.side_effect = [self.response(), self.response(), self.response(2)]
+        result = self.write()
+        self.assertTrue(result.success)
+        self.assertTrue(result.diagnostics['readback_confirmed'])
+        self.assertFalse(result.diagnostics['physical_execution_confirmed'])
+        self.client.write_registers.assert_called_once_with(31, [2], device_id=1)
+
+    def test_unchanged_limit_does_not_write_eeprom(self):
+        result = self.write(100)
+        self.assertTrue(result.success)
+        self.assertFalse(result.diagnostics['write_attempted'])
+        self.client.write_registers.assert_not_called()
+
+    def test_requires_commissioning_opt_in(self):
+        for value in [False, 'true', 1, None]:
+            self.device.connection_settings['xantrex_pvgt_control_enabled'] = value
+            self.assertFalse(self.write().success)
+        self.client.write_registers.assert_not_called()
+
+    def test_fault_or_manual_mode_blocks_before_write(self):
+        for response in [self.response(fault=53, status=7), self.response(status=5)]:
+            self.client.read_holding_registers.return_value = response
+            result = self.write()
+            self.assertFalse(result.success)
+            self.assertFalse(result.diagnostics['write_attempted'])
+        self.client.write_registers.assert_not_called()
+
+    def test_uncommissioned_firmware_cannot_write(self):
+        self.client.read_holding_registers.return_value.registers[6] = 999
+        self.assertFalse(self.write().success)
+        self.client.write_registers.assert_not_called()
+
+    def test_failed_write_is_not_replayed(self):
+        self.client.write_registers.side_effect = ConnectionError('lost ACK')
+        result = self.write()
+        self.assertFalse(result.success)
+        self.assertTrue(result.diagnostics['write_attempted'])
+        self.assertFalse(result.diagnostics['readback_confirmed'])
+        self.client.write_registers.assert_called_once()
+
+    def test_ack_without_matching_readback_is_uncertain_failure(self):
+        with patch('app.services.xantrex_gt500_service.monotonic', side_effect=[0, 0, 13]):
+            result = self.write()
+        self.assertFalse(result.success)
+        self.assertTrue(result.diagnostics['write_accepted'])
+        self.assertFalse(result.diagnostics['readback_confirmed'])
+        self.assertIn('esito incerto', result.error)
+        self.client.write_registers.assert_called_once()
+
+    def test_wrong_ack_is_rejected(self):
+        self.client.write_registers.return_value.address = 32
+        self.assertFalse(self.write().success)
+
+    def test_fractional_targets_quantize_to_one_percent(self):
+        self.client.read_holding_registers.side_effect = [self.response(), self.response(3)]
+        result = self.write(2.5)
+        self.assertTrue(result.success)
+        self.assertEqual(result.diagnostics['effective_percent'], 3)
+
+    def test_bad_targets_and_map_cannot_write(self):
+        for value in [-1, 101, float('nan'), float('inf')]:
+            self.assertFalse(self.write(value).success)
+        self.command = replace(self.command, address=85)
+        self.assertFalse(self.write().success)
+        self.client.write_registers.assert_not_called()
+
+    def test_fast_and_essential_polls_include_fault_and_readback(self):
+        for method in [lambda: inverter_io_service.read_telemetry(self.device, self.gateway, essential_only=True),
+                lambda: inverter_io_service.read_active_power_only(self.device, self.gateway)]:
+            with patch('app.services.xantrex_gt500_service.connection_manager.execute_modbus_tcp',
+                    side_effect=lambda *a, **kw: kw['operation'](self.client)):
+                result = method()
+            self.assertIn('fault_code', result.values)
+            self.assertIn('active_power_limit', result.values)
+            self.assertEqual(result.values['active_power_kw'], 33)
+
+    def test_negative_dc_current_is_signed(self):
+        self.client.read_holding_registers.return_value.registers[22] = 65534
+        self.assertEqual(self.read().values['dc_current_a'], -2)
+
+    def test_runtime_fault_is_distinct_from_communication_failure(self):
+        from app.services.device_runtime import resolve_runtime_status
+        cache = SimpleNamespace(telemetry=[SimpleNamespace(key='fault_code', value=53, quality='valid')])
+        with patch('app.services.device_runtime.resolve_communication_state', return_value='online'), patch('app.services.device_runtime.resolve_data_freshness', return_value='fresh'):
+            self.assertEqual(resolve_runtime_status(self.device, cache, Mock()), 'fault')
